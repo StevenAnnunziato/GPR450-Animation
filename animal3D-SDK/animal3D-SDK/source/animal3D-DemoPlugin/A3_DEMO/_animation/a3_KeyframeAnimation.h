@@ -61,7 +61,7 @@ struct a3_Keyframe
 
 	// duration of keyframe
 	a3real duration;
-	a3real invrerseDuration;
+	a3real inverseDuration;
 
 	// data to store in the keyframe
 	a3i32 data;
