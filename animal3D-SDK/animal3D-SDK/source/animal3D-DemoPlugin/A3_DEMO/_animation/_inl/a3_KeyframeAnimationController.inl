@@ -41,6 +41,8 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	const a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
 	const a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
+	//While not within the [0,1) of the keyframe Parameter
+
 	if (dt > 0) {
 		//Time is greater than
 
@@ -73,17 +75,6 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		//Time is unchanged
 		return 0;
 	}
-
-	
-
-
-
-
-
-
-
-
-	
 
 	//Post Resolution
 
