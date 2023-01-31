@@ -32,7 +32,13 @@
 // initialize clip controller
 a3i32 a3clipControllerInit(a3_ClipController* clipCtrl_out, const a3byte ctrlName[a3keyframeAnimation_nameLenMax], const a3_ClipPool* clipPool, const a3ui32 clipIndex_pool)
 {
-	return -1;
+	*(clipCtrl_out->name) = ctrlName;
+
+	if (a3clipControllerSetClip(clipCtrl_out, clipPool, clipIndex_pool) != 0) {
+		return -1;
+	}
+	
+	return 0;
 }
 
 

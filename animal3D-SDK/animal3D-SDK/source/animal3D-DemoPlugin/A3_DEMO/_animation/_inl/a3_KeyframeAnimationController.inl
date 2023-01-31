@@ -32,13 +32,73 @@
 // update clip controller
 inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt)
 {
+	//Pre Resolution
+	clipCtrl->clipTime += dt;
+	clipCtrl->keyframeTime += dt;
+
+
+	//Resolve Time
+	const a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+	const a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+
+
+	
+	if (dt > 0) {
+		//Time is greater than
+
+		if(clipCtrl->keyframeTime >   )
+			//Time is after the keyframe
+
+				//Time is after the clip
+	}
+	else if (dt < 0) {
+		//time is less than 
+
+			//Time is before the keyframe	
+
+				//Time is before the clip
+	}
+	else {
+		//Time is unchanged
+
+	}
+
+	
+
+
+
+
+
+
+
+
+	
+
+	//Post Resolution
+
+
 	return -1;
 }
 
 // set clip to play
 inline a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipPool* clipPool, const a3ui32 clipIndex_pool)
 {
-	return -1;
+	clipCtrl->clipPool = clipPool;
+
+	clipCtrl->clipIndex = clipIndex_pool;
+	clipCtrl->clipTime = 0.0f;
+	clipCtrl->clipParameter = 0.0f;
+
+	const a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+	if (currentClip.keyframePool == 0) {
+		return -1;
+	}
+
+	clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+	clipCtrl->keyframeTime = 0.0f;
+	clipCtrl->keyfreamParameter = 0.0f;
+
+	return 0;
 }
 
 
