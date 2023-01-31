@@ -41,26 +41,37 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	const a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
 	const a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
-
-	
 	if (dt > 0) {
 		//Time is greater than
 
-		if(clipCtrl->keyframeTime >   )
+		if (clipCtrl->keyframeTime >= currentKeyframe.duration) {
 			//Time is after the keyframe
 
+			if (clipCtrl->clipTime >= currentClip.duration) {
 				//Time is after the clip
+
+			}
+
+		}
+
 	}
 	else if (dt < 0) {
 		//time is less than 
 
+		if (clipCtrl->keyframeTime < currentKeyframe.duration) {
 			//Time is before the keyframe	
 
+			if (clipCtrl->clipTime < currentClip.duration) {
 				//Time is before the clip
+
+			}
+
+		}
+			
 	}
 	else {
 		//Time is unchanged
-
+		return 0;
 	}
 
 	
