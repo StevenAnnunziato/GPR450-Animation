@@ -38,21 +38,50 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 
 
 	//Resolve Time
-	const a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
-	const a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+	a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+	a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
 	//While not within the [0,1) of the keyframe Parameter
 
 	if (dt > 0) {
 		//Time is greater than
 
+		if (clipCtrl->clipTime >= currentClip.duration) {
+			//Time is after the clip
+
+			//Move to next clip
+
+			//Resolve Clip time
+			clipCtrl->clipTime -= currentClip.duration;
+
+			//Increment clip index
+			clipCtrl->clipIndex++;
+
+			//Check clip is in the pool
+			if (clipCtrl->clipIndex >= clipCtrl->clipPool->count) {
+				//Clip index doesn't exists
+				return -1;
+			}
+
+			currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+
+			//Resolve Keyframe time
+			clipCtrl->keyframeTime -= currentKeyframe.duration;
+
+		}
+
 		if (clipCtrl->keyframeTime >= currentKeyframe.duration) {
 			//Time is after the keyframe
 
-			if (clipCtrl->clipTime >= currentClip.duration) {
-				//Time is after the clip
+			//Move to next Keyframe
+		
+			//Resolve Duration
+			clipCtrl->keyframeTime -= currentKeyframe.duration;
 
-			}
+			//Increment keyframe index
+			clipCtrl->keyframeIndex++;
+
+			
 
 		}
 
