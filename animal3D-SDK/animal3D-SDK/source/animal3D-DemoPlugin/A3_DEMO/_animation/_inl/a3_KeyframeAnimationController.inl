@@ -51,25 +51,19 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			//Increment to the next keyframe
 			clipCtrl->keyframeTime -= currentKeyframe.duration;
 			clipCtrl->keyframeIndex++;
-			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+
 			// case 3: the whole clip is done
 			if (clipCtrl->clipTime >= currentClip.duration)
 			{
 				//Terminus action
-				
 
-				if (clipCtrl->clipIndex >= clipCtrl->clipPool->count - 1)
-				{
-					// the clip is done playing - call terminus
-				}
-				// there are more clips, so advance to the next one
-				else
-				{
-					clipCtrl->clipTime -= currentClip.duration;
-					clipCtrl->clipIndex++;
-					currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
-				}
+				//Loop keyframe
+				clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+				clipCtrl->clipTime -= currentClip.duration;
+
 			}
+
+			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 		}
 		
 	}
@@ -79,27 +73,25 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		// case 5: the current keyframe is complete
 		while (clipCtrl->keyframeTime < 0)
 		{
-			// move to previous keyframe
+			//Decrement Keyframe index
 			clipCtrl->keyframeIndex--;
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 			clipCtrl->keyframeTime += currentKeyframe.duration;
-		}
-		// case 6: the whole clip is done
-		if (clipCtrl->clipTime < 0)
-		{
-			// if there are no more clips
-			if (clipCtrl->clipIndex <= 0)
+
+			// case 6: the whole clip is done
+			if (clipCtrl->clipTime < 0)
 			{
-				// the clip is done playing - call terminus
-			}
-			// there are more clips, so advance to the next one
-			else
-			{
-				clipCtrl->clipIndex--;
-				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				//Terminus action
+
+				//Loop keyframe
+				clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
 				clipCtrl->clipTime -= currentClip.duration;
+
 			}
+
+			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 		}
+
 	}
 	// if we are stopped
 	else
