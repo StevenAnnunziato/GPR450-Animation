@@ -32,55 +32,50 @@
 // update clip controller
 inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt)
 {
+	const a3real changeInTime = clipCtrl->playbackDirection * dt;
+	
 	//Pre Resolution
-	clipCtrl->clipTime += dt;
-	clipCtrl->keyframeTime += dt;
+	clipCtrl->clipTime += changeInTime;
+	clipCtrl->keyframeTime += changeInTime;
 
 	//Resolve Time
 	a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
 	a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
-	// if we are moving forward...
+	// case 1: continue to advance the current interpolation
 	if (clipCtrl->playbackDirection > 0)
 	{
-		// case 1: continue to advance the current interpolation
-		if (clipCtrl->keyframeTime < currentKeyframe.duration)
-		{
-			// nothing to do here
-		}
 		// case 2: the current keyframe is complete
 		while (clipCtrl->keyframeTime >= currentKeyframe.duration)
 		{
-			// move to next keyframe
+			//Increment to the next keyframe
 			clipCtrl->keyframeTime -= currentKeyframe.duration;
 			clipCtrl->keyframeIndex++;
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
-		}
-		// case 3: the whole clip is done
-		if (clipCtrl->clipTime >= currentClip.duration)
-		{
-			// if there are no more clips
-			if (clipCtrl->clipIndex >= clipCtrl->clipPool->count - 1)
+			// case 3: the whole clip is done
+			if (clipCtrl->clipTime >= currentClip.duration)
 			{
-				// the clip is done playing - call terminus
-			}
-			// there are more clips, so advance to the next one
-			else
-			{
-				clipCtrl->clipTime -= currentClip.duration;
-				clipCtrl->clipIndex++;
-				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				//Terminus action
+				
+
+				if (clipCtrl->clipIndex >= clipCtrl->clipPool->count - 1)
+				{
+					// the clip is done playing - call terminus
+				}
+				// there are more clips, so advance to the next one
+				else
+				{
+					clipCtrl->clipTime -= currentClip.duration;
+					clipCtrl->clipIndex++;
+					currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				}
 			}
 		}
+		
 	}
-	// if we are moving backward...
+	// case 4: continue to advance the current interpolation
 	else if (clipCtrl->playbackDirection < 0)
 	{
-		// case 4: continue to advance the current interpolation
-		if (clipCtrl->keyframeTime > 0.0f)
-		{
-			// nothing to do here
-		}
 		// case 5: the current keyframe is complete
 		while (clipCtrl->keyframeTime < 0)
 		{
@@ -109,79 +104,13 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	// if we are stopped
 	else
 	{
-		// case 7: time is unchanged
-		// do nothing
 	}
 
-	// resolve parameterized time
-	clipCtrl->keyframeParameter = clipCtrl->keyframeTime / currentKeyframe.duration;
-	clipCtrl->clipParameter = clipCtrl->clipTime / currentClip.duration;
+	// Post Resolution
+	clipCtrl->keyframeParameter = clipCtrl->keyframeTime * currentKeyframe.inverseDuration;
+	clipCtrl->clipParameter = clipCtrl->clipTime * currentClip.inverseDuration;
 
-	//While not within the [0,1) of the keyframe Parameter
-
-	/*if (dt > 0) {
-		//Time is greater than
-
-		if (clipCtrl->clipTime >= currentClip.duration) {
-			//Time is after the clip
-
-			//Move to next clip
-
-			//Resolve Clip time
-			clipCtrl->clipTime -= currentClip.duration;
-
-			//Increment clip index
-			clipCtrl->clipIndex++;
-
-			//Check clip is in the pool
-			if (clipCtrl->clipIndex >= clipCtrl->clipPool->count) {
-				//Clip index doesn't exists
-				return -1;
-			}
-
-			currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
-
-			//Resolve Keyframe time
-			clipCtrl->keyframeTime -= currentKeyframe.duration;
-
-		}
-
-		if (clipCtrl->keyframeTime >= currentKeyframe.duration) {
-			//Time is after the keyframe
-
-			//Move to next Keyframe
-		
-			//Resolve Duration
-			clipCtrl->keyframeTime -= currentKeyframe.duration;
-
-			//Increment keyframe index
-			clipCtrl->keyframeIndex++;
-
-			
-
-		}
-
-	}
-	else if (dt < 0) {
-		//time is less than 
-
-		if (clipCtrl->keyframeTime < currentKeyframe.duration) {
-			//Time is before the keyframe	
-
-			if (clipCtrl->clipTime < currentClip.duration) {
-				//Time is before the clip
-
-			}
-
-		}
-			
-	}
-	else {
-		//Time is unchanged
-		return 0;
-	}*/
-
-	//Post Resolution
+	
 
 
 	return -1;
