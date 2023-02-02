@@ -54,7 +54,7 @@ struct a3_ClipController
 
 	a3ui32 keyframeIndex;
 	a3real keyframeTime;
-	a3real keyfreamParameter;
+	a3real keyframeParameter;
 
 	a3ui8 playbackDirection;
 	a3_ClipPool* clipPool;

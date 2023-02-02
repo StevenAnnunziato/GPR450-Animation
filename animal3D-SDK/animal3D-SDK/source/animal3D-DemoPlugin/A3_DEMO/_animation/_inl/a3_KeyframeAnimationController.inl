@@ -36,14 +36,90 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	clipCtrl->clipTime += dt;
 	clipCtrl->keyframeTime += dt;
 
-
 	//Resolve Time
 	a3_Clip currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
 	a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
+	// if we are moving forward...
+	if (clipCtrl->playbackDirection > 0)
+	{
+		// case 1: continue to advance the current interpolation
+		if (clipCtrl->keyframeTime < currentKeyframe.duration)
+		{
+			// nothing to do here
+		}
+		// case 2: the current keyframe is complete
+		while (clipCtrl->keyframeTime >= currentKeyframe.duration)
+		{
+			// move to next keyframe
+			clipCtrl->keyframeTime -= currentKeyframe.duration;
+			clipCtrl->keyframeIndex++;
+			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+		}
+		// case 3: the whole clip is done
+		if (clipCtrl->clipTime >= currentClip.duration)
+		{
+			// if there are no more clips
+			if (clipCtrl->clipIndex >= clipCtrl->clipPool->count - 1)
+			{
+				// the clip is done playing - call terminus
+			}
+			// there are more clips, so advance to the next one
+			else
+			{
+				clipCtrl->clipTime -= currentClip.duration;
+				clipCtrl->clipIndex++;
+				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+			}
+		}
+	}
+	// if we are moving backward...
+	else if (clipCtrl->playbackDirection < 0)
+	{
+		// case 4: continue to advance the current interpolation
+		if (clipCtrl->keyframeTime > 0.0f)
+		{
+			// nothing to do here
+		}
+		// case 5: the current keyframe is complete
+		while (clipCtrl->keyframeTime < 0)
+		{
+			// move to previous keyframe
+			clipCtrl->keyframeIndex--;
+			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+			clipCtrl->keyframeTime += currentKeyframe.duration;
+		}
+		// case 6: the whole clip is done
+		if (clipCtrl->clipTime < 0)
+		{
+			// if there are no more clips
+			if (clipCtrl->clipIndex <= 0)
+			{
+				// the clip is done playing - call terminus
+			}
+			// there are more clips, so advance to the next one
+			else
+			{
+				clipCtrl->clipIndex--;
+				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				clipCtrl->clipTime -= currentClip.duration;
+			}
+		}
+	}
+	// if we are stopped
+	else
+	{
+		// case 7: time is unchanged
+		// do nothing
+	}
+
+	// resolve parameterized time
+	clipCtrl->keyframeParameter = clipCtrl->keyframeTime / currentKeyframe.duration;
+	clipCtrl->clipParameter = clipCtrl->clipTime / currentClip.duration;
+
 	//While not within the [0,1) of the keyframe Parameter
 
-	if (dt > 0) {
+	/*if (dt > 0) {
 		//Time is greater than
 
 		if (clipCtrl->clipTime >= currentClip.duration) {
@@ -103,7 +179,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	else {
 		//Time is unchanged
 		return 0;
-	}
+	}*/
 
 	//Post Resolution
 
@@ -127,7 +203,7 @@ inline a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipP
 
 	clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
 	clipCtrl->keyframeTime = 0.0f;
-	clipCtrl->keyfreamParameter = 0.0f;
+	clipCtrl->keyframeParameter = 0.0f;
 
 	return 0;
 }
