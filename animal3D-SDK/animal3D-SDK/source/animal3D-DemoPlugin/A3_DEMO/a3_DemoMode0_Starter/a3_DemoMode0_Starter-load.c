@@ -31,6 +31,7 @@
 #include "../a3_DemoMode0_Starter.h"
 
 #include "../a3_DemoState.h"
+#include <stdio.h>
 
 
 //-----------------------------------------------------------------------------
@@ -165,6 +166,10 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 
 	demoMode->targetCount[starter_passScene] = starter_target_scene_max;
 	demoMode->targetCount[starter_passComposite] = 1;
+
+	// testing keyframes, clips, etc
+	printf("Hello, World\n");
+
 }
 
 

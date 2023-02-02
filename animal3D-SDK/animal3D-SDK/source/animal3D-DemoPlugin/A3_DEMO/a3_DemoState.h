@@ -180,6 +180,7 @@ struct a3_DemoState
 	a3boolean skipIntermediatePasses;
 
 
+
 	//-------------------------------------------------------------------------
 	// object arrays: organized as anonymous unions for two reasons: 
 	//	1. easy to manage entire sets of the same type of object using the 
