@@ -90,7 +90,7 @@ a3i32 a3clipPoolCreate(a3_ClipPool* clipPool_out, const a3ui32 count)
 	// initialize clip data
 	for (a3ui32 i = 0; i < count; i++)
 	{
-		a3clipInit(&clipPool_out->clip[i], NULL, NULL, 0, 0);
+		//a3clipInit(&clipPool_out->clip[i], "", NULL, 0, 0);
 	}
 
 	return 0;
