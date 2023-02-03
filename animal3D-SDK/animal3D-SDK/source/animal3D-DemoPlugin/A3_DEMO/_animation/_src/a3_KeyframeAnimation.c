@@ -108,6 +108,7 @@ a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_na
 {
 	*(clip_out->name) = *clipName;
 	(clip_out->keyframePool) = (a3_KeyframePool*)keyframePool;
+	clip_out->keyframeCount = keyframePool->count;
 	clip_out->firstKeyframeIndex = firstKeyframeIndex;
 	clip_out->lastKeyframeIndex = finalKeyframeIndex;
 	a3clipCalculateDuration(clip_out);

@@ -53,14 +53,19 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			clipCtrl->keyframeIndex++;
 
 			// case 3: the whole clip is done
-			if (clipCtrl->clipTime >= currentClip.duration-0.1)
+			if (clipCtrl->keyframeIndex >= currentClip.keyframeCount)
 			{
-				//Terminus action
+				// Terminus action
 
-				//Loop keyframe
+				// Loop keyframe
 				clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
 				clipCtrl->clipTime -= currentClip.duration;
 
+				// Stop
+				//clipCtrl->playbackDirection = 0;
+
+				// Ping Pong
+				//clipCtrl->playbackDirection *= -1;
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -73,23 +78,31 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		// case 5: the current keyframe is complete
 		while (clipCtrl->keyframeTime < 0)
 		{
-			//Decrement Keyframe index
-			clipCtrl->keyframeIndex--;
-			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
-			clipCtrl->keyframeTime += currentKeyframe.duration;
-
 			// case 6: the whole clip is done
-			if (clipCtrl->clipTime < 0)
+			if (clipCtrl->keyframeIndex == 0)
 			{
-				//Terminus action
+				// Terminus action
 
-				//Loop keyframe
+				// Loop keyframe
 				clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
-				clipCtrl->clipTime -= currentClip.duration;
+				clipCtrl->clipTime += currentClip.duration;
+
+				// Stop
+				//clipCtrl->playbackDirection = 0;
+
+				// Ping Pong
+				//clipCtrl->playbackDirection *= -1;
 
 			}
-
-			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+			else
+			{
+				//Decrement Keyframe index{
+				clipCtrl->keyframeIndex--;
+			}
+			
+		// resolve keyframe time
+		currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+		clipCtrl->keyframeTime += currentKeyframe.duration;
 		}
 
 	}

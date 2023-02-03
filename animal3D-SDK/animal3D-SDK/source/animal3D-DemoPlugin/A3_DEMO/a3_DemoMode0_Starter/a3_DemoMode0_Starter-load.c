@@ -187,7 +187,7 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 
 	// create clip controller
 	a3clipControllerInit(&demoMode->clipController, "I love animal3D <3", &demoMode->clipPool, 0);
-	demoMode->clipController.playbackDirection = 1;
+	demoMode->clipController.playbackDirection = -1;
 
 }
 
