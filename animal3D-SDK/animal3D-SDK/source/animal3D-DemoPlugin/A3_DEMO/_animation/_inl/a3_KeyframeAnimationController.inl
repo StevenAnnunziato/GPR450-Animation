@@ -53,7 +53,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			clipCtrl->keyframeIndex++;
 
 			// case 3: the whole clip is done
-			if (clipCtrl->clipTime >= currentClip.duration)
+			if (clipCtrl->clipTime >= currentClip.duration-0.1)
 			{
 				//Terminus action
 
@@ -111,7 +111,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 // set clip to play
 inline a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipPool* clipPool, const a3ui32 clipIndex_pool)
 {
-	*(clipCtrl->clipPool) = *clipPool;
+	(clipCtrl->clipPool) = (a3_ClipPool*)clipPool;
 
 	clipCtrl->clipIndex = clipIndex_pool;
 	clipCtrl->clipTime = 0.0f;

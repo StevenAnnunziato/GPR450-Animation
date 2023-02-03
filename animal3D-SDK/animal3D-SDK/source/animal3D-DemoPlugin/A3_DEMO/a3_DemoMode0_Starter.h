@@ -33,9 +33,10 @@
 //-----------------------------------------------------------------------------
 
 #include "_a3_demo_utilities/a3_DemoSceneObject.h"
+#include <A3_DEMO/_animation/a3_KeyframeAnimationController.h>
 
 // for testing keyframes
-#include "_animation/a3_KeyframeAnimationController.h"
+//#include "_animation/a3_KeyframeAnimationController.h"
 
 //-----------------------------------------------------------------------------
 
