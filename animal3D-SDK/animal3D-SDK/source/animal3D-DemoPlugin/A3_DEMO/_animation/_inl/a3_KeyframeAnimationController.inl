@@ -56,10 +56,9 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			if (clipCtrl->keyframeIndex >= currentClip.keyframeCount)
 			{
 				// Terminus - refer to the current clip's forward transition
-				// re-init clip controller
-				a3clipControllerInit(clipCtrl, clipCtrl->name, currentClip.forwardTransition->targetClipPool, currentClip.forwardTransition->targetClipIndex);
-
-				// set playback speed directly
+				// re-init clip controller data
+				clipCtrl->clipPool = currentClip.forwardTransition->targetClipPool;
+				clipCtrl->clipIndex = currentClip.forwardTransition->targetClipIndex;
 				clipCtrl->playbackSpeed = currentClip.forwardTransition->playbackSpeed;
 			}
 
@@ -77,12 +76,10 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			if (clipCtrl->keyframeIndex == 0)
 			{
 				// Terminus - refer to the current clip's backward transition
-				// re-init clip controller
-				a3clipControllerInit(clipCtrl, clipCtrl->name, currentClip.backwardTransition->targetClipPool, currentClip.backwardTransition->targetClipIndex);
-
-				// set playback speed directly
+				// re-init clip controller data
+				clipCtrl->clipPool = currentClip.backwardTransition->targetClipPool;
+				clipCtrl->clipIndex = currentClip.backwardTransition->targetClipIndex;
 				clipCtrl->playbackSpeed = currentClip.backwardTransition->playbackSpeed;
-
 			}
 			else
 			{
