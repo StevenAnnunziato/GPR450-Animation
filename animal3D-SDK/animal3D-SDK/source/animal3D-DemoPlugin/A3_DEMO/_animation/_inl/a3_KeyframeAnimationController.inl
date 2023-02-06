@@ -55,17 +55,12 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			// case 3: the whole clip is done
 			if (clipCtrl->keyframeIndex >= currentClip.keyframeCount)
 			{
-				// Terminus action
+				// Terminus - refer to the current clip's forward transition
+				// re-init clip controller
+				a3clipControllerInit(clipCtrl, clipCtrl->name, currentClip.forwardTransition->targetClipPool, currentClip.forwardTransition->targetClipIndex);
 
-				// Loop keyframe
-				clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
-				clipCtrl->clipTime -= currentClip.duration;
-
-				// Stop
-				//clipCtrl->playbackSpeed = 0;
-
-				// Ping Pong
-				//clipCtrl->playbackSpeed *= -1;
+				// set playback speed directly
+				clipCtrl->playbackSpeed = currentClip.forwardTransition->playbackSpeed;
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -81,17 +76,12 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			// case 6: the whole clip is done
 			if (clipCtrl->keyframeIndex == 0)
 			{
-				// Terminus action
+				// Terminus - refer to the current clip's backward transition
+				// re-init clip controller
+				a3clipControllerInit(clipCtrl, clipCtrl->name, currentClip.backwardTransition->targetClipPool, currentClip.backwardTransition->targetClipIndex);
 
-				// Loop keyframe
-				clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
-				clipCtrl->clipTime += currentClip.duration;
-
-				// Stop
-				//clipCtrl->playbackSpeed = 0;
-
-				// Ping Pong
-				//clipCtrl->playbackSpeed *= -1;
+				// set playback speed directly
+				clipCtrl->playbackSpeed = currentClip.backwardTransition->playbackSpeed;
 
 			}
 			else
@@ -106,9 +96,10 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		}
 
 	}
-	// if we are stopped
+	// case 7: we are stopped
 	else
 	{
+		// do nothing
 	}
 
 	// Post Resolution
