@@ -138,9 +138,11 @@ a3i32 a3clipGetIndexInPool(const a3_ClipPool* clipPool, const a3byte clipName[a3
 
 a3i32 a3clipTransitionInit(a3_ClipTransition* transition_out, const a3_ClipPool* targetClipPool, const a3ui32 targetClipIndex, const a3real playbackSpeed)
 {
-	transition_out->targetClipPool = targetClipPool;
+	transition_out->targetClipPool = (a3_ClipPool*)targetClipPool;
 	transition_out->targetClipIndex = targetClipIndex;
 	transition_out->playbackSpeed = playbackSpeed;
+
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
