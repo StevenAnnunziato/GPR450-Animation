@@ -40,10 +40,12 @@ typedef struct a3_Keyframe					a3_Keyframe;
 typedef struct a3_KeyframePool				a3_KeyframePool;
 typedef struct a3_Clip						a3_Clip;
 typedef struct a3_ClipPool					a3_ClipPool;
+typedef struct a3_ClipTransition			a3_ClipTransition;
 #endif	// __cplusplus
 
-
 //-----------------------------------------------------------------------------
+
+
 
 // constant values
 enum
@@ -108,6 +110,10 @@ struct a3_Clip
 	a3ui32 firstKeyframeIndex;
 	a3ui32 lastKeyframeIndex;
 	a3_KeyframePool* keyframePool;
+
+	// transition info
+	a3_ClipTransition* forwardTransition;
+	a3_ClipTransition* backwardTransition;
 };
 
 // group of clips
@@ -120,6 +126,13 @@ struct a3_ClipPool
 	a3ui32 count;
 };
 
+// transition from clip to clip
+struct a3_ClipTransition
+{
+	a3_ClipPool* targetClipPool;
+	a3ui32 targetClipIndex;
+	a3real playbackSpeed;
+};
 
 // allocate clip pool
 a3i32 a3clipPoolCreate(a3_ClipPool* clipPool_out, const a3ui32 count);
@@ -128,7 +141,7 @@ a3i32 a3clipPoolCreate(a3_ClipPool* clipPool_out, const a3ui32 count);
 a3i32 a3clipPoolRelease(a3_ClipPool* clipPool);
 
 // initialize clip with first and last indices
-a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_nameLenMax], const a3_KeyframePool* keyframePool, const a3ui32 firstKeyframeIndex, const a3ui32 finalKeyframeIndex);
+a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_nameLenMax], const a3_KeyframePool* keyframePool, const a3ui32 firstKeyframeIndex, const a3ui32 finalKeyframeIndex, const a3_ClipTransition* forwardTransition, const a3_ClipTransition* backwardTransition);
 
 // get clip index from pool
 a3i32 a3clipGetIndexInPool(const a3_ClipPool* clipPool, const a3byte clipName[a3keyframeAnimation_nameLenMax]);
@@ -139,6 +152,8 @@ a3i32 a3clipCalculateDuration(a3_Clip* clip);
 // calculate keyframes' durations by distributing clip's duration
 a3i32 a3clipDistributeDuration(a3_Clip* clip, const a3real newClipDuration);
 
+// initialize a clip transition
+a3i32 a3clipTransitionInit(a3_ClipTransition* transition_out, const a3_ClipPool* targetClipPool, const a3ui32 targetClipIndex, const a3real playbackSpeed);
 
 //-----------------------------------------------------------------------------
 

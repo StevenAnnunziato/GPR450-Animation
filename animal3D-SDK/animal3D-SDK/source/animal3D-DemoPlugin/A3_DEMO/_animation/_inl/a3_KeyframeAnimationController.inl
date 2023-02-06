@@ -32,7 +32,7 @@
 // update clip controller
 inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt)
 {
-	const a3real changeInTime = clipCtrl->playbackDirection * dt;
+	const a3real changeInTime = clipCtrl->playbackSpeed * dt;
 	
 	//Pre Resolution
 	clipCtrl->clipTime += changeInTime;
@@ -43,7 +43,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
 	// case 1: continue to advance the current interpolation
-	if (clipCtrl->playbackDirection > 0)
+	if (clipCtrl->playbackSpeed > 0)
 	{
 		// case 2: the current keyframe is complete
 		while (clipCtrl->keyframeTime >= currentKeyframe.duration)
@@ -55,17 +55,11 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			// case 3: the whole clip is done
 			if (clipCtrl->keyframeIndex >= currentClip.keyframeCount)
 			{
-				// Terminus action
-
-				// Loop keyframe
-				clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
-				clipCtrl->clipTime -= currentClip.duration;
-
-				// Stop
-				//clipCtrl->playbackDirection = 0;
-
-				// Ping Pong
-				//clipCtrl->playbackDirection *= -1;
+				// Terminus - refer to the current clip's forward transition
+				// re-init clip controller data
+				clipCtrl->clipPool = currentClip.forwardTransition->targetClipPool;
+				clipCtrl->clipIndex = currentClip.forwardTransition->targetClipIndex;
+				clipCtrl->playbackSpeed = currentClip.forwardTransition->playbackSpeed;
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -73,7 +67,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		
 	}
 	// case 4: continue to advance the current interpolation
-	else if (clipCtrl->playbackDirection < 0)
+	else if (clipCtrl->playbackSpeed < 0)
 	{
 		// case 5: the current keyframe is complete
 		while (clipCtrl->keyframeTime < 0)
@@ -81,18 +75,11 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			// case 6: the whole clip is done
 			if (clipCtrl->keyframeIndex == 0)
 			{
-				// Terminus action
-
-				// Loop keyframe
-				clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
-				clipCtrl->clipTime += currentClip.duration;
-
-				// Stop
-				//clipCtrl->playbackDirection = 0;
-
-				// Ping Pong
-				//clipCtrl->playbackDirection *= -1;
-
+				// Terminus - refer to the current clip's backward transition
+				// re-init clip controller data
+				clipCtrl->clipPool = currentClip.backwardTransition->targetClipPool;
+				clipCtrl->clipIndex = currentClip.backwardTransition->targetClipIndex;
+				clipCtrl->playbackSpeed = currentClip.backwardTransition->playbackSpeed;
 			}
 			else
 			{
@@ -106,16 +93,17 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		}
 
 	}
-	// if we are stopped
+	// case 7: we are stopped
 	else
 	{
+		// do nothing
 	}
 
 	// Post Resolution
 	clipCtrl->keyframeParameter = clipCtrl->keyframeTime * currentKeyframe.inverseDuration;
 	clipCtrl->clipParameter = clipCtrl->clipTime * currentClip.inverseDuration;
 
-	return -1;
+	return 0;
 }
 
 // set clip to play
