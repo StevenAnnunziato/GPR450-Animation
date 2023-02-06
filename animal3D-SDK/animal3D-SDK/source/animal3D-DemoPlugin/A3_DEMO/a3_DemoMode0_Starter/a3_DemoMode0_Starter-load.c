@@ -33,6 +33,8 @@
 #include "../a3_DemoState.h"
 #include <stdio.h>
 
+#include "A3_DEMO/_a3_demo_utilities/a3_JsonFileParser.h"
+
 
 //-----------------------------------------------------------------------------
 
@@ -180,7 +182,9 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 5);
 
 	// create clip pool
-	a3clipPoolCreate(&demoMode->clipPool, 1);
+	a3ui32* clipPoolSize = 0;
+	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize);
+	if (&demoMode->clipPool == NULL) return;
 
 	// create clip
 	a3clipInit(&demoMode->clipPool.clip[0], "Starter clip", &(demoMode->keyPool), 0, 4);
