@@ -99,6 +99,8 @@ a3i32 a3clipPoolCreate(a3_ClipPool* clipPool_out, const a3ui32 count)
 // release clip pool
 a3i32 a3clipPoolRelease(a3_ClipPool* clipPool)
 {
+	// TODO: check that clipPool is valid and not null
+
 	free(clipPool->clip);
 	return 0;
 }
@@ -121,7 +123,7 @@ a3i32 a3clipGetIndexInPool(const a3_ClipPool* clipPool, const a3byte clipName[a3
 	// linear search for the given clipName
 	for (a3ui32 i = 0; i < clipPool->count; i++)
 	{
-		if (clipPool->clip[i].name == clipName)
+		if (clipPool->clip[i].name == clipName) // TODO: fix
 			return i;
 	}
 

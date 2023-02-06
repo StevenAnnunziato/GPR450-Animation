@@ -115,9 +115,6 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	clipCtrl->keyframeParameter = clipCtrl->keyframeTime * currentKeyframe.inverseDuration;
 	clipCtrl->clipParameter = clipCtrl->clipTime * currentClip.inverseDuration;
 
-	
-
-
 	return -1;
 }
 
