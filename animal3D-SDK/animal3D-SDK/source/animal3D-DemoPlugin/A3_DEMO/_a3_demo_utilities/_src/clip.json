@@ -1,0 +1,29 @@
+{
+	"Clips" : [
+		{
+			"name" : "Clip1",
+			"duration" : 10.0,
+			"firstKeyframeIndex" : 0,
+			"lastKeyframeIndex" : 2,
+			"forwardTransition" : {
+				"direction" : 1, //0(pause),1(forward begin),-1(backward begin),2(forward),-2(backward), 3(skip forward),-3(skip backward)
+				"nextClipName" : "Clip1"
+			},
+			"backwardTransition" : {
+				"direction" : 1, //0(pause),1(forward begin),-1(backward begin),2(forward),-2(backward), 3(skip forward),-3(skip backward)
+				"nextClipName" : "Clip1"
+			}
+		}
+	],
+	"Keyframes" : [
+		{
+			"data":[1,2,3]
+		},
+		{
+			"data":[4,5,6]
+		},
+		{
+			"data":[7,8,9]
+		},
+	]
+}
