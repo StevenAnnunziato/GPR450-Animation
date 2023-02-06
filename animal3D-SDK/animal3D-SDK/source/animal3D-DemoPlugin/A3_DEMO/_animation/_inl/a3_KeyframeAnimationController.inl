@@ -32,7 +32,7 @@
 // update clip controller
 inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt)
 {
-	const a3real changeInTime = clipCtrl->playbackDirection * dt;
+	const a3real changeInTime = clipCtrl->playbackSpeed * dt;
 	
 	//Pre Resolution
 	clipCtrl->clipTime += changeInTime;
@@ -43,7 +43,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
 	// case 1: continue to advance the current interpolation
-	if (clipCtrl->playbackDirection > 0)
+	if (clipCtrl->playbackSpeed > 0)
 	{
 		// case 2: the current keyframe is complete
 		while (clipCtrl->keyframeTime >= currentKeyframe.duration)
@@ -62,10 +62,10 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 				clipCtrl->clipTime -= currentClip.duration;
 
 				// Stop
-				//clipCtrl->playbackDirection = 0;
+				//clipCtrl->playbackSpeed = 0;
 
 				// Ping Pong
-				//clipCtrl->playbackDirection *= -1;
+				//clipCtrl->playbackSpeed *= -1;
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -73,7 +73,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		
 	}
 	// case 4: continue to advance the current interpolation
-	else if (clipCtrl->playbackDirection < 0)
+	else if (clipCtrl->playbackSpeed < 0)
 	{
 		// case 5: the current keyframe is complete
 		while (clipCtrl->keyframeTime < 0)
@@ -88,10 +88,10 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 				clipCtrl->clipTime += currentClip.duration;
 
 				// Stop
-				//clipCtrl->playbackDirection = 0;
+				//clipCtrl->playbackSpeed = 0;
 
 				// Ping Pong
-				//clipCtrl->playbackDirection *= -1;
+				//clipCtrl->playbackSpeed *= -1;
 
 			}
 			else
@@ -115,7 +115,7 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 	clipCtrl->keyframeParameter = clipCtrl->keyframeTime * currentKeyframe.inverseDuration;
 	clipCtrl->clipParameter = clipCtrl->clipTime * currentClip.inverseDuration;
 
-	return -1;
+	return 0;
 }
 
 // set clip to play

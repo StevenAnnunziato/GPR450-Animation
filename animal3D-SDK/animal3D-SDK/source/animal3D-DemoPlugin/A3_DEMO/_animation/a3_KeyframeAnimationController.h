@@ -56,7 +56,7 @@ struct a3_ClipController
 	a3real keyframeTime;
 	a3real keyframeParameter;
 
-	a3i8 playbackDirection; // TODO: float for slow motion
+	a3real playbackSpeed;
 	a3_ClipPool* clipPool;
 };
 

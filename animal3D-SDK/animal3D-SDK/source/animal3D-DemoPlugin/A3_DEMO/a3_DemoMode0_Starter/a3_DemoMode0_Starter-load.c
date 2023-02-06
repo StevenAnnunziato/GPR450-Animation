@@ -183,11 +183,11 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 	a3clipPoolCreate(&demoMode->clipPool, 1);
 
 	// create clip
-	a3clipInit(&demoMode->clipPool.clip[0], "Starter clip", &(demoMode->keyPool), 0, 4);
+	a3clipInit(&demoMode->clipPool.clip[0], "Starter clip", &(demoMode->keyPool), 0, 4, NULL, NULL);
 
 	// create clip controller
 	a3clipControllerInit(&demoMode->clipController, "I love animal3D <3", &demoMode->clipPool, 0);
-	demoMode->clipController.playbackDirection = -1;
+	demoMode->clipController.playbackSpeed = -1.0f;
 
 }
 
