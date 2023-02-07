@@ -183,7 +183,7 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 
 	// create clip pool
 	a3ui32* clipPoolSize = 0;
-	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize);
+	a3_InitClipPoolFromFile("animal3D-SDK/animal3D-SDK/resource/animdata/clip.json", &demoMode->clipPool, clipPoolSize);
 	if (&demoMode->clipPool == NULL) return;
 
 	// create clip
