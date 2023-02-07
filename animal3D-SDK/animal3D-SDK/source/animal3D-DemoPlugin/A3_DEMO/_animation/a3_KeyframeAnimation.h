@@ -35,6 +35,7 @@
 #ifdef __cplusplus
 extern "C"
 {
+	struct a3_ClipTransition;
 #else	// !__cplusplus
 typedef struct a3_Keyframe					a3_Keyframe;
 typedef struct a3_KeyframePool				a3_KeyframePool;
