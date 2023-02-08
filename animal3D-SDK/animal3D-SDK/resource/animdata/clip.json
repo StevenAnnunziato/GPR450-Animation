@@ -7,11 +7,11 @@
 			"lastKeyframeIndex" : 2,
 			"forwardTransition" : {
 				"direction" : 1, 
-				"nextClipName" : "Clip1"
+				"nextClipName" : 0
 			},
 			"backwardTransition" : {
 				"direction" : 1, 
-				"nextClipName" : "Clip1"
+				"nextClipName" : 0
 			}
 		}
 	],

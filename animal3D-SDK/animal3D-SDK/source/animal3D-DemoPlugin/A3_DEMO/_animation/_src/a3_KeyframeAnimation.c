@@ -116,8 +116,9 @@ a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_na
 	a3clipCalculateDuration(clip_out);
 
 	// set clip transitions
-	clip_out->forwardTransition = (a3_ClipTransition*)forwardTransition;
-	clip_out->backwardTransition = (a3_ClipTransition*)backwardTransition;
+	a3clipTransitionCopy(&clip_out->forwardTransition, forwardTransition);
+	a3clipTransitionCopy(&clip_out->backwardTransition, backwardTransition);
+
 
 	return 0;
 }
@@ -143,6 +144,11 @@ a3i32 a3clipTransitionInit(a3_ClipTransition* transition_out, const a3_ClipPool*
 	transition_out->playbackSpeed = playbackSpeed;
 
 	return 0;
+}
+
+a3i32 a3clipTransitionCopy(a3_ClipTransition* transition_out, const a3_ClipTransition* transition_in)
+{
+	return a3clipTransitionInit(transition_out, transition_in->targetClipPool, transition_in->targetClipIndex, transition_in->playbackSpeed);
 }
 
 //-----------------------------------------------------------------------------

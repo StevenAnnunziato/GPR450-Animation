@@ -183,16 +183,13 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 
 	// create clip pool
 	a3ui32* clipPoolSize = 0;
-	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize);
+	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize, &demoMode->keyPool);
 	if (&demoMode->clipPool == NULL) 
 		return;
 
-	// create clip
-	a3clipInit(&demoMode->clipPool.clip[0], "Starter clip", &(demoMode->keyPool), 0, 4, NULL, NULL);
-
 	// create clip controller
 	a3clipControllerInit(&demoMode->clipController, "I love animal3D <3", &demoMode->clipPool, 0);
-	demoMode->clipController.playbackSpeed = -1.0f;
+	demoMode->clipController.playbackSpeed = 1;
 
 }
 
