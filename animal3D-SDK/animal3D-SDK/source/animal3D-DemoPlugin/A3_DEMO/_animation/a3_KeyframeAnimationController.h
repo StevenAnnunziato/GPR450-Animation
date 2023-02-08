@@ -75,6 +75,10 @@ a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipPool* cl
 
 //-----------------------------------------------------------------------------
 
+// lerp function
+a3real lerp(a3real a, a3real b, a3real u);
+
+//-----------------------------------------------------------------------------
 
 #ifdef __cplusplus
 }
