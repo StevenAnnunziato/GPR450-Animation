@@ -88,7 +88,7 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 
 	a3clipControllerUpdate(&demoMode->clipController, (a3real)dt);
 
-	printf("anim %i", demoMode->keyPool.keyframe[demoMode->clipController.keyframeIndex].data);
+	printf("anim %i", demoMode->keyPool.keyframe[demoMode->clipController.keyframeIndex].val_x);
 }
 
 

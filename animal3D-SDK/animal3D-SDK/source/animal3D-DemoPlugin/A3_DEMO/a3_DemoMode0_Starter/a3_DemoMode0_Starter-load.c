@@ -175,11 +175,11 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 	a3keyframePoolCreate(&demoMode->keyPool, 5);
 
 	// init keyframes
-	a3keyframeInit(&demoMode->keyPool.keyframe[0], 1.1f, 1);
-	a3keyframeInit(&demoMode->keyPool.keyframe[1], 1.2f, 2);
-	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 3);
-	a3keyframeInit(&demoMode->keyPool.keyframe[3], 1.4f, 4);
-	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 5);
+	a3keyframeInit(&demoMode->keyPool.keyframe[0], 1.1f, 1, 5, 1);
+	a3keyframeInit(&demoMode->keyPool.keyframe[1], 1.2f, 2, 4, 2);
+	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 3, 3, 3);
+	a3keyframeInit(&demoMode->keyPool.keyframe[3], 1.4f, 4, 2, 4);
+	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 5, 1, 5);
 
 	// create clip pool
 	a3ui32* clipPoolSize = 0;

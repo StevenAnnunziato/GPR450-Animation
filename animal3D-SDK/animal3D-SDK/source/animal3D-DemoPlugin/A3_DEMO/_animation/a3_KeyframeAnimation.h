@@ -67,7 +67,9 @@ struct a3_Keyframe
 	a3real inverseDuration;
 
 	// data to store in the keyframe
-	a3i32 data;
+	a3i32 val_x;
+	a3i32 val_y;
+	a3i32 val_z;
 };
 
 // pool of keyframe descriptors
@@ -87,7 +89,7 @@ a3i32 a3keyframePoolCreate(a3_KeyframePool* keyframePool_out, const a3ui32 count
 a3i32 a3keyframePoolRelease(a3_KeyframePool* keyframePool);
 
 // initialize keyframe
-a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x);
+a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x, const a3ui32 value_y, const a3ui32 value_z);
 
 
 //-----------------------------------------------------------------------------

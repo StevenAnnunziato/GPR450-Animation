@@ -51,7 +51,7 @@ a3i32 a3keyframePoolCreate(a3_KeyframePool* keyframePool_out, const a3ui32 count
 	// initialize all to default values
 	for (a3ui32 i = 0; i < count; i++)
 	{
-		a3keyframeInit(&keyframePool_out->keyframe[i], 0.0f, 0);
+		a3keyframeInit(&keyframePool_out->keyframe[i], 0.0f, 0, 0, 0);
 	}
 
 	return 0;
@@ -65,11 +65,13 @@ a3i32 a3keyframePoolRelease(a3_KeyframePool* keyframePool)
 }
 
 // initialize keyframe
-a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x)
+a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x, const a3ui32 value_y, const a3ui32 value_z)
 {
 	keyframe_out->duration = duration;
 	keyframe_out->inverseDuration = 1.0f / duration;
-	keyframe_out->data = value_x;
+	keyframe_out->val_x = value_x;
+	keyframe_out->val_y = value_y;
+	keyframe_out->val_z = value_z;
 	return 0;
 }
 
