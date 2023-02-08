@@ -1,3 +1,4 @@
+#include "a3_KeyframeAnimationController.h"
 /*
 	Copyright 2011-2020 Daniel S. Buckstein
 
@@ -125,6 +126,11 @@ inline a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipP
 	clipCtrl->keyframeParameter = 0.0f;
 
 	return 0;
+}
+
+inline a3real lerp(a3real a, a3real b, a3real u)
+{
+	return a + (b - a) * u;
 }
 
 

@@ -48,10 +48,12 @@ struct a3_ClipController
 {
 	a3byte name[a3keyframeAnimation_nameLenMax];
 
+	// index of currently playing clip
 	a3ui32 clipIndex;
 	a3real clipTime;
 	a3real clipParameter;
 
+	// index of currently playing keyframe
 	a3ui32 keyframeIndex;
 	a3real keyframeTime;
 	a3real keyframeParameter;
@@ -75,6 +77,10 @@ a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipPool* cl
 
 //-----------------------------------------------------------------------------
 
+// lerp function
+a3real lerp(a3real a, a3real b, a3real u);
+
+//-----------------------------------------------------------------------------
 
 #ifdef __cplusplus
 }
