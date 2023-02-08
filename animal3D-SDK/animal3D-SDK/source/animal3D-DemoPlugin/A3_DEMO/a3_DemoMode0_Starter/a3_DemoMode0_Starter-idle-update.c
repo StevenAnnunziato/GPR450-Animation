@@ -86,6 +86,7 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 			demoMode->object_scene[i].modelMat.m, a3mat4_identity.m);
 	}
 
+	// update clip controller, tick keyframes etc
 	a3clipControllerUpdate(&demoMode->clipController, (a3real)dt);
 
 	// apply animation controller values to scene objects
@@ -132,7 +133,7 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 	demoMode->obj_torus->position.z = lerp(z0, z1, demoMode->clipController.keyframeParameter);
 
 	// print debug info of which frame we're on
-	printf("keyframe index %i", demoMode->clipController.keyframeIndex);
+	printf("keyframe index %i\n", demoMode->clipController.keyframeIndex);
 }
 
 
