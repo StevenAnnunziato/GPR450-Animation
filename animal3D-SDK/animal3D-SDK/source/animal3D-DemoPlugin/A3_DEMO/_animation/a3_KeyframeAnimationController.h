@@ -48,10 +48,12 @@ struct a3_ClipController
 {
 	a3byte name[a3keyframeAnimation_nameLenMax];
 
+	// index of currently playing clip
 	a3ui32 clipIndex;
 	a3real clipTime;
 	a3real clipParameter;
 
+	// index of currently playing keyframe
 	a3ui32 keyframeIndex;
 	a3real keyframeTime;
 	a3real keyframeParameter;

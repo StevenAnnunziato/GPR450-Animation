@@ -130,7 +130,7 @@ a3i32 a3clipGetIndexInPool(const a3_ClipPool* clipPool, const a3byte clipName[a3
 	// linear search for the given clipName
 	for (a3ui32 i = 0; i < clipPool->count; i++)
 	{
-		if (clipPool->clip[i].name == clipName) // TODO: fix
+		if (strcmp(clipPool->clip[i].name, clipName) == 0)
 			return i;
 	}
 

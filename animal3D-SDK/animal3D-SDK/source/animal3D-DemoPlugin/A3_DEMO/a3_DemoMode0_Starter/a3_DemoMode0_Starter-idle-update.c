@@ -88,7 +88,51 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 
 	a3clipControllerUpdate(&demoMode->clipController, (a3real)dt);
 
-	printf("anim %f", demoMode->keyPool.keyframe[demoMode->clipController.keyframeIndex].val_x);
+	// apply animation controller values to scene objects
+	a3_Clip currentClip = demoMode->clipPool.clip[demoMode->clipController.clipIndex];
+	a3ui32 currentKeyframeIndex = demoMode->clipController.keyframeIndex;
+	a3_Keyframe currentKeyframe = currentClip.keyframePool->keyframe[currentKeyframeIndex];
+
+	// get data from this and next keyframes
+	a3real x0 = currentKeyframe.val_x;
+	a3real y0 = currentKeyframe.val_y;
+	a3real z0 = currentKeyframe.val_z;
+	a3real x1, y1, z1 = 0;
+
+	// is this the last keyframe?
+	if (currentKeyframeIndex >= currentClip.lastKeyframeIndex)
+	{
+		// moving forward
+		if (demoMode->clipController.playbackSpeed > 0)
+		{
+			a3_Clip nextClip = demoMode->clipPool.clip[currentClip.forwardTransition->targetClipIndex];
+			// take the FIRST frame of the next clip
+			x1 = nextClip.keyframePool->keyframe[nextClip.firstKeyframeIndex].val_x;
+			y1 = nextClip.keyframePool->keyframe[nextClip.firstKeyframeIndex].val_y;
+			z1 = nextClip.keyframePool->keyframe[nextClip.firstKeyframeIndex].val_z;
+		}
+		else { // moving backward
+			a3_Clip nextClip = demoMode->clipPool.clip[currentClip.backwardTransition->targetClipIndex];
+			// take the LAST frame of the next clip
+			x1 = nextClip.keyframePool->keyframe[nextClip.lastKeyframeIndex].val_x;
+			y1 = nextClip.keyframePool->keyframe[nextClip.lastKeyframeIndex].val_y;
+			z1 = nextClip.keyframePool->keyframe[nextClip.lastKeyframeIndex].val_z;
+		}
+		
+	}
+	else { // not the last keyframe, so interpolate to the next one
+		x1 = currentClip.keyframePool->keyframe[currentKeyframeIndex + 1].val_x;
+		y1 = currentClip.keyframePool->keyframe[currentKeyframeIndex + 1].val_y;
+		z1 = currentClip.keyframePool->keyframe[currentKeyframeIndex + 1].val_z;
+	}
+
+	// set the torus's position
+	demoMode->obj_torus->position.x = lerp(x0, x1, demoMode->clipController.keyframeParameter);
+	demoMode->obj_torus->position.y = lerp(y0, y1, demoMode->clipController.keyframeParameter);
+	demoMode->obj_torus->position.z = lerp(z0, z1, demoMode->clipController.keyframeParameter);
+
+	// print debug info of which frame we're on
+	printf("keyframe index %i", demoMode->clipController.keyframeIndex);
 }
 
 
