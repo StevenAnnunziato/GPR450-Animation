@@ -106,14 +106,14 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 		// moving forward
 		if (demoMode->clipController.playbackSpeed > 0)
 		{
-			a3_Clip nextClip = demoMode->clipPool.clip[currentClip.forwardTransition->targetClipIndex];
+			a3_Clip nextClip = demoMode->clipPool.clip[currentClip.forwardTransition.targetClipIndex];
 			// take the FIRST frame of the next clip
 			x1 = nextClip.keyframePool->keyframe[nextClip.firstKeyframeIndex].val_x;
 			y1 = nextClip.keyframePool->keyframe[nextClip.firstKeyframeIndex].val_y;
 			z1 = nextClip.keyframePool->keyframe[nextClip.firstKeyframeIndex].val_z;
 		}
 		else { // moving backward
-			a3_Clip nextClip = demoMode->clipPool.clip[currentClip.backwardTransition->targetClipIndex];
+			a3_Clip nextClip = demoMode->clipPool.clip[currentClip.backwardTransition.targetClipIndex];
 			// take the LAST frame of the next clip
 			x1 = nextClip.keyframePool->keyframe[nextClip.lastKeyframeIndex].val_x;
 			y1 = nextClip.keyframePool->keyframe[nextClip.lastKeyframeIndex].val_y;

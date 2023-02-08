@@ -61,6 +61,16 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 				clipCtrl->clipPool = currentClip.forwardTransition.targetClipPool;
 				clipCtrl->clipIndex = currentClip.forwardTransition.targetClipIndex;
 				clipCtrl->playbackSpeed = currentClip.forwardTransition.playbackSpeed;
+
+				//resove terminus
+				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				if (clipCtrl->playbackSpeed > 0) {
+					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+				}
+				else {
+					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
+				}
+
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -81,6 +91,15 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 				clipCtrl->clipPool = currentClip.backwardTransition.targetClipPool;
 				clipCtrl->clipIndex = currentClip.backwardTransition.targetClipIndex;
 				clipCtrl->playbackSpeed = currentClip.backwardTransition.playbackSpeed;
+
+				//resove terminus
+				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				if (clipCtrl->playbackSpeed > 0) {
+					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+				}
+				else {
+					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
+				}
 			}
 			else
 			{
