@@ -128,9 +128,13 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 	}
 
 	// set the torus's position
-	demoMode->obj_torus->position.x = lerp(x0, x1, demoMode->clipController.keyframeParameter);
+	/*demoMode->obj_torus->position.x = lerp(x0, x1, demoMode->clipController.keyframeParameter);
 	demoMode->obj_torus->position.y = lerp(y0, y1, demoMode->clipController.keyframeParameter);
-	demoMode->obj_torus->position.z = lerp(z0, z1, demoMode->clipController.keyframeParameter);
+	demoMode->obj_torus->position.z = lerp(z0, z1, demoMode->clipController.keyframeParameter);*/
+
+	demoMode->obj_torus->position.x = x0;
+	demoMode->obj_torus->position.y = y0;
+	demoMode->obj_torus->position.z = z0;
 
 	// print debug info of which frame we're on
 	printf("keyframe index %i\n", demoMode->clipController.keyframeIndex);
