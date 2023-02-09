@@ -177,7 +177,7 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 	// init keyframes
 	a3keyframeInit(&demoMode->keyPool.keyframe[0], 1.1f, 0.0f, 0.0f, 0.0f);
 	a3keyframeInit(&demoMode->keyPool.keyframe[1], 1.2f, 2.0f, 2.0f, 2.0f);
-	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 3.0f, 3.0f, 3.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 4.0f, 4.0f, 4.0f);
 	a3keyframeInit(&demoMode->keyPool.keyframe[3], 1.4f, 6.0f, 6.0f, 6.0f);
 	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 8.0f, 8.0f, 8.0f);
 
