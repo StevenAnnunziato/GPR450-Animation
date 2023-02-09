@@ -1,7 +1,7 @@
 {
 	"Clips" : [
 		{
-			"name": "Clip1",
+			"name": "Clip0",
 			"duration": 10.0,
 			"firstKeyframeIndex": 0,
 			"lastKeyframeIndex": 2,
@@ -15,9 +15,9 @@
 			}
 		},
 		{
-			"name": "Clip2",
+			"name": "Clip1",
 			"duration": 10.0,
-			"firstKeyframeIndex": 1,
+			"firstKeyframeIndex": 2,
 			"lastKeyframeIndex": 4,
 			"forwardTransition": {
 				"direction": 1,
@@ -25,7 +25,7 @@
 			},
 			"backwardTransition": {
 				"direction": -1,
-				"nextClipName": 0
+				"nextClipName": 1
 			}
 		}
 	],
