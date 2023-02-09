@@ -17,14 +17,14 @@
 		{
 			"name": "Clip2",
 			"duration": 10.0,
-			"firstKeyframeIndex": 1,
+			"firstKeyframeIndex": 2,
 			"lastKeyframeIndex": 4,
 			"forwardTransition": {
 				"direction": 1,
 				"nextClipName": 0
 			},
 			"backwardTransition": {
-				"direction": -1,
+				"direction": 0,
 				"nextClipName": 0
 			}
 		}

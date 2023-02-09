@@ -66,11 +66,12 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
 				currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
+				// forward -> forward
 				if (clipCtrl->playbackSpeed > 0) {
 					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
 
 				}
-				else {
+				else { // forward -> backward
 					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
 					clipCtrl->keyframeTime = currentKeyframe.duration - clipCtrl->keyframeTime;
 
@@ -101,12 +102,13 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
 				currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
 
+				// backward -> forward
 				if (clipCtrl->playbackSpeed > 0) {
 					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
 					clipCtrl->keyframeTime *= -1;
 
 				}
-				else {
+				else { // backward -> backward
 					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
 
 				}
