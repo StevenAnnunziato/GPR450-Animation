@@ -64,13 +64,18 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 
 				//resove terminus
 				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+
 				if (clipCtrl->playbackSpeed > 0) {
 					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+
 				}
 				else {
 					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
-				}
+					clipCtrl->keyframeTime = currentKeyframe.duration - clipCtrl->keyframeTime;
 
+				}
+				
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -94,12 +99,18 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 
 				//resove terminus
 				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+
 				if (clipCtrl->playbackSpeed > 0) {
 					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+					clipCtrl->keyframeTime *= -1;
+
 				}
 				else {
 					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
+
 				}
+				
 			}
 			else
 			{
