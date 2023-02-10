@@ -61,8 +61,30 @@ struct a3_HierarchyPoseGroup
 	// pointer to hierarchy
 	const a3_Hierarchy* hierarchy;
 
-	// number of hierarchical poses
+	// all spacial poses in continuous memory
+	a3_SpatialPose* spatialPosePool;
+
+	// pointer to hierarchy poses for a specific hierarchy
+	a3_HierarchyPose* hierarchicalPoses;
+
+	//Channels
+	a3_SpatialPoseChannel* channel; // needs to be a list
+
+	//order
+	a3_SpatialPoseEulerOrder eulerOrder;
+
+	// number of poses
 	a3ui32 poseCount;
+
+	// number of hierarchical poses
+	a3ui32 hierarchicalPoseCount;
+
+	//number of spatial poses
+	a3ui32 spatialPoseCount;
+
+
+
+
 };
 
 

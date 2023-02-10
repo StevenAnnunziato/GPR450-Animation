@@ -41,11 +41,16 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 
 		// allocate everything (one malloc)
 		//??? = (...)malloc(sz);
+		poseGroup_out->hierarchicalPoses = malloc(sizeof(a3_HierarchyPose) * poseCount);
 
 		// set pointers
 		poseGroup_out->hierarchy = hierarchy;
 
 		// reset all data
+		for (a3ui32 i = 0; i < poseCount; ++i) 
+		{
+			
+		}
 
 		// done
 		return 1;
