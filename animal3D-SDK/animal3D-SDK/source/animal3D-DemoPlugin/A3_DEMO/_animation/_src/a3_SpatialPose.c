@@ -27,6 +27,20 @@
 
 //-----------------------------------------------------------------------------
 
+// general init
+a3i32 a3spatialPoseInit(a3_SpatialPose* spatialPose, const a3mat4 transform_mat)
+{
+	if (spatialPose)
+	{
+		spatialPose->transform = transform_mat;
+		a3spatialPoseSetRotation(spatialPose, 0.0f, 0.0f, 0.0f);
+		a3spatialPoseSetScale(spatialPose, 0.0f, 0.0f, 0.0f);
+		a3spatialPoseSetTranslation(spatialPose, 0.0f, 0.0f, 0.0f);
+		
+		return 0;
+	}
 
+	return -1;
+}
 
 //-----------------------------------------------------------------------------
