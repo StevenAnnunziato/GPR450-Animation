@@ -51,6 +51,7 @@ typedef struct a3_HierarchyState		a3_HierarchyState;
 // makes algorithms easier to keep this as a separate data type
 struct a3_HierarchyPose
 {
+	// pointer to the start of the spatial pose array
 	a3_SpatialPose* spatialPose;
 };
 
@@ -112,6 +113,9 @@ a3i32 a3hierarchyPoseGroupGetNodePoseOffsetIndex(const a3_HierarchyPoseGroup *po
 
 
 //-----------------------------------------------------------------------------
+
+// init hierarchy pose
+a3ui32 a3hierarchyPoseInit(a3_HierarchyPose* pose_inout, const a3_SpatialPose* spatialPoseHead);
 
 // reset full hierarchy pose
 a3i32 a3hierarchyPoseReset(const a3_HierarchyPose* pose_inout, const a3ui32 nodeCount);

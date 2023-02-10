@@ -35,7 +35,11 @@ inline a3i32 a3spatialPoseSetRotation(a3_SpatialPose* spatialPose, const a3f32 r
 {
 	if (spatialPose)
 	{
+		spatialPose->eulerX = rx_degrees;
+		spatialPose->eulerY = ry_degrees;
+		spatialPose->eulerZ = rz_degrees;
 
+		return 0;
 	}
 	return -1;
 }
@@ -45,7 +49,11 @@ inline a3i32 a3spatialPoseSetScale(a3_SpatialPose* spatialPose, const a3f32 sx, 
 {
 	if (spatialPose)
 	{
+		spatialPose->scaleX = sx;
+		spatialPose->scaleY = sy;
+		spatialPose->scaleZ = sz;
 
+		return 0;
 	}
 	return -1;
 }
@@ -55,7 +63,11 @@ inline a3i32 a3spatialPoseSetTranslation(a3_SpatialPose* spatialPose, const a3f3
 {
 	if (spatialPose)
 	{
+		spatialPose->translationX = tx;
+		spatialPose->translationY = ty;
+		spatialPose->translationZ = tz;
 
+		return 0;
 	}
 	return -1;
 }
