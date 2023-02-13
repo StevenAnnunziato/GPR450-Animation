@@ -51,7 +51,7 @@ typedef struct a3_HierarchyState		a3_HierarchyState;
 // makes algorithms easier to keep this as a separate data type
 struct a3_HierarchyPose
 {
-	// pointer to the start of the spatial pose array
+	// Pointer to a specific hierarchies pose
 	a3_SpatialPose* spatialPose;
 };
 
@@ -76,16 +76,6 @@ struct a3_HierarchyPoseGroup
 
 	// number of poses
 	a3ui32 poseCount;
-
-	// number of hierarchical poses
-	a3ui32 hierarchicalPoseCount;
-
-	//number of spatial poses
-	a3ui32 spatialPoseCount;
-
-
-
-
 };
 
 
