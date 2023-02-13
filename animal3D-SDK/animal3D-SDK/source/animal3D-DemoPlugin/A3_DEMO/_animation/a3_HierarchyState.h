@@ -84,6 +84,16 @@ struct a3_HierarchyState
 {
 	// pointer to hierarcy
 	const a3_Hierarchy* hierarchy;
+
+	// hierarchical pose representing each node's animated pose at the current time
+	// pointer?
+	a3_HierarchyPose samplePose;
+
+	// hierarchical pose representing each node's transformation relative to its parent's space
+	a3_HierarchyPose localSpacePose;
+
+	// hierarchical pose representing each node's transformation relative to the root's parent space
+	a3_HierarchyPose objectSpacePose;
 };
 	
 
