@@ -23,7 +23,7 @@ void a3_InitClipPoolFromFile(const a3byte fileName[a3keyframeAnimation_nameLenMa
 		printf(std::to_string(data["Clips"].size()).c_str());
 		//printf(s.c_str());
 
-		a3clipPoolCreate(out_pool, data["Clips"].size());
+		a3clipPoolCreate(out_pool, (a3ui32)data["Clips"].size());
 
 		// create clip
 		for (int i = 0; i < (int)data["Clips"].size(); ++i)
