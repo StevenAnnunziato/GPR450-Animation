@@ -82,7 +82,8 @@ a3i32 a3hierarchyPoseGroupRelease(a3_HierarchyPoseGroup *poseGroup)
 // init hierarchy pose
 a3ui32 a3hierarchyPoseInit(a3_HierarchyPose* pose_inout, const a3_SpatialPose* spatialPoseHead)
 {
-	pose_inout->spatialPose = spatialPoseHead;
+	pose_inout->spatialPose = (a3_SpatialPose*)spatialPoseHead;
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
