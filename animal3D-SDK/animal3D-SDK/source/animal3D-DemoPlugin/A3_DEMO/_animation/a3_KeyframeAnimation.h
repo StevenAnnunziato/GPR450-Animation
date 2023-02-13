@@ -35,6 +35,7 @@
 #ifdef __cplusplus
 extern "C"
 {
+	struct a3_ClipTransition;
 #else	// !__cplusplus
 typedef struct a3_Keyframe					a3_Keyframe;
 typedef struct a3_KeyframePool				a3_KeyframePool;
@@ -44,8 +45,6 @@ typedef struct a3_ClipTransition			a3_ClipTransition;
 #endif	// __cplusplus
 
 //-----------------------------------------------------------------------------
-
-
 
 // constant values
 enum
@@ -66,7 +65,9 @@ struct a3_Keyframe
 	a3real inverseDuration;
 
 	// data to store in the keyframe
-	a3i32 data;
+	a3real val_x;
+	a3real val_y;
+	a3real val_z;
 };
 
 // pool of keyframe descriptors
@@ -86,10 +87,19 @@ a3i32 a3keyframePoolCreate(a3_KeyframePool* keyframePool_out, const a3ui32 count
 a3i32 a3keyframePoolRelease(a3_KeyframePool* keyframePool);
 
 // initialize keyframe
-a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x);
+a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3real value_x, const a3real value_y, const a3real value_z);
 
 
 //-----------------------------------------------------------------------------
+
+struct a3_ClipPool;
+
+struct a3_ClipTransition
+{
+	a3_ClipPool* targetClipPool;
+	a3ui32 targetClipIndex;
+	a3real playbackSpeed;
+};
 
 // description of single clip
 // metaphor: timeline
@@ -112,9 +122,10 @@ struct a3_Clip
 	a3_KeyframePool* keyframePool;
 
 	// transition info
-	a3_ClipTransition* forwardTransition;
-	a3_ClipTransition* backwardTransition;
+	a3_ClipTransition forwardTransition;
+	a3_ClipTransition backwardTransition;
 };
+
 
 // group of clips
 struct a3_ClipPool
@@ -126,13 +137,6 @@ struct a3_ClipPool
 	a3ui32 count;
 };
 
-// transition from clip to clip
-struct a3_ClipTransition
-{
-	a3_ClipPool* targetClipPool;
-	a3ui32 targetClipIndex;
-	a3real playbackSpeed;
-};
 
 // allocate clip pool
 a3i32 a3clipPoolCreate(a3_ClipPool* clipPool_out, const a3ui32 count);
@@ -154,6 +158,7 @@ a3i32 a3clipDistributeDuration(a3_Clip* clip, const a3real newClipDuration);
 
 // initialize a clip transition
 a3i32 a3clipTransitionInit(a3_ClipTransition* transition_out, const a3_ClipPool* targetClipPool, const a3ui32 targetClipIndex, const a3real playbackSpeed);
+a3i32 a3clipTransitionCopy(a3_ClipTransition* transition_out, const a3_ClipTransition* transition_in);
 
 //-----------------------------------------------------------------------------
 

@@ -96,7 +96,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN$(PlatformArchitecture);_WINDOWS;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_USRDLL;ANIMAL3DDEMOPLUGIN_EXPORTS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ANIMAL3D_SDK)include\json\include\;$(ANIMAL3D_SDK)include\;$(ANIMAL3D_SDK)source\$(ProjectName)\;$(ANIMAL3D_SDK)thirdparty\include\;$(DEV_SDK_DIR)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ANIMAL3D_SDK)include\;$(ANIMAL3D_SDK)source\$(ProjectName)\;$(ANIMAL3D_SDK)thirdparty\include\;$(DEV_SDK_DIR)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
       <SDLCheck>
@@ -195,6 +195,11 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Starter\a3_DemoMode0_Starter-idle-update.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Starter\a3_DemoMode0_Starter-load.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Starter\a3_DemoMode0_Starter-unload.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_Animation\a3_DemoMode1_Animation-idle-input.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_Animation\a3_DemoMode1_Animation-idle-render.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_Animation\a3_DemoMode1_Animation-idle-update.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_Animation\a3_DemoMode1_Animation-load.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_Animation\a3_DemoMode1_Animation-unload.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-input.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-render.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-update.c" />
@@ -214,6 +219,7 @@
     <ClCompile Include="_src_win\main_dll.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_Animation.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Starter.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoMacros.h" />
@@ -231,6 +237,7 @@
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\_a3_dylib_config_export.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\resource\animdata\clip.json" />
     <None Include="..\..\..\resource\glsl\4x\fs\00-common\drawLambert_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\00-common\drawPhong_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\00-common\drawTexture_fs4x.glsl" />

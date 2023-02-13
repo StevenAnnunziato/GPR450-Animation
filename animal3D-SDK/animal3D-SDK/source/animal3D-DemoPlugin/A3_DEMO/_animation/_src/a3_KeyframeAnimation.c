@@ -51,7 +51,7 @@ a3i32 a3keyframePoolCreate(a3_KeyframePool* keyframePool_out, const a3ui32 count
 	// initialize all to default values
 	for (a3ui32 i = 0; i < count; i++)
 	{
-		a3keyframeInit(&keyframePool_out->keyframe[i], 0.0f, 0);
+		a3keyframeInit(&keyframePool_out->keyframe[i], 0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 	return 0;
@@ -65,11 +65,13 @@ a3i32 a3keyframePoolRelease(a3_KeyframePool* keyframePool)
 }
 
 // initialize keyframe
-a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x)
+a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3real value_x, const a3real value_y, const a3real value_z)
 {
 	keyframe_out->duration = duration;
 	keyframe_out->inverseDuration = 1.0f / duration;
-	keyframe_out->data = value_x;
+	keyframe_out->val_x = value_x;
+	keyframe_out->val_y = value_y;
+	keyframe_out->val_z = value_z;
 	return 0;
 }
 
@@ -116,8 +118,9 @@ a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_na
 	a3clipCalculateDuration(clip_out);
 
 	// set clip transitions
-	clip_out->forwardTransition = (a3_ClipTransition*)forwardTransition;
-	clip_out->backwardTransition = (a3_ClipTransition*)backwardTransition;
+	a3clipTransitionCopy(&clip_out->forwardTransition, forwardTransition);
+	a3clipTransitionCopy(&clip_out->backwardTransition, backwardTransition);
+
 
 	return 0;
 }
@@ -128,7 +131,7 @@ a3i32 a3clipGetIndexInPool(const a3_ClipPool* clipPool, const a3byte clipName[a3
 	// linear search for the given clipName
 	for (a3ui32 i = 0; i < clipPool->count; i++)
 	{
-		if (clipPool->clip[i].name == clipName) // TODO: fix
+		if (strcmp(clipPool->clip[i].name, clipName) == 0)
 			return i;
 	}
 
@@ -143,6 +146,11 @@ a3i32 a3clipTransitionInit(a3_ClipTransition* transition_out, const a3_ClipPool*
 	transition_out->playbackSpeed = playbackSpeed;
 
 	return 0;
+}
+
+a3i32 a3clipTransitionCopy(a3_ClipTransition* transition_out, const a3_ClipTransition* transition_in)
+{
+	return a3clipTransitionInit(transition_out, transition_in->targetClipPool, transition_in->targetClipIndex, transition_in->playbackSpeed);
 }
 
 //-----------------------------------------------------------------------------

@@ -28,7 +28,7 @@ extern "C"
 
 //-----------------------------------------------------------------------------
 
-void a3_InitClipPoolFromFile(const a3byte fileName[a3keyframeAnimation_nameLenMax], a3_ClipPool* out_pool, a3ui32* out_size);
+void a3_InitClipPoolFromFile(const a3byte fileName[a3keyframeAnimation_nameLenMax], a3_ClipPool* out_pool, a3ui32* out_size, const a3_KeyframePool* keypool);
 
 
 #ifdef __cplusplus

@@ -96,7 +96,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_A3VSLAUNCHPATHSTR=$(a3vslaunchpath.Replace('\','\\'));_A3SLNPATHSTR="$(SolutionPath.Replace('\','\\'))";_A3SDKDIRSTR="$(ANIMAL3D_SDK.Replace('\','\\')).";_A3CFGDIRSTR="\\$(PlatformTarget)\\$(PlatformToolset)\\$(Configuration)\\.";WIN$(PlatformArchitecture);_WINDOWS;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ANIMAL3D_SDK)source\$(ProjectName)\;$(ANIMAL3D_SDK)include\animal3D\a3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\michael.bowen\Desktop\Animation Programming\sp23-animation-programming\animal3D-SDK\animal3D-SDK\include\nlohmann;$(ANIMAL3D_SDK)source\$(ProjectName)\;$(ANIMAL3D_SDK)include\animal3D\a3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
       <SDLCheck>

@@ -1,3 +1,4 @@
+#include "a3_KeyframeAnimationController.h"
 /*
 	Copyright 2011-2020 Daniel S. Buckstein
 
@@ -53,13 +54,29 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 			clipCtrl->keyframeIndex++;
 
 			// case 3: the whole clip is done
-			if (clipCtrl->keyframeIndex >= currentClip.keyframeCount)
+			if (clipCtrl->keyframeIndex > currentClip.lastKeyframeIndex)
 			{
 				// Terminus - refer to the current clip's forward transition
 				// re-init clip controller data
-				clipCtrl->clipPool = currentClip.forwardTransition->targetClipPool;
-				clipCtrl->clipIndex = currentClip.forwardTransition->targetClipIndex;
-				clipCtrl->playbackSpeed = currentClip.forwardTransition->playbackSpeed;
+				clipCtrl->clipPool = currentClip.forwardTransition.targetClipPool;
+				clipCtrl->clipIndex = currentClip.forwardTransition.targetClipIndex;
+				clipCtrl->playbackSpeed = currentClip.forwardTransition.playbackSpeed;
+
+				//resove terminus
+				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+
+				// forward -> forward
+				if (clipCtrl->playbackSpeed > 0) {
+					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+
+				}
+				else { // forward -> backward
+					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
+					clipCtrl->keyframeTime = currentKeyframe.duration - clipCtrl->keyframeTime;
+
+				}
+				
 			}
 
 			currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
@@ -73,13 +90,29 @@ inline a3i32 a3clipControllerUpdate(a3_ClipController* clipCtrl, const a3real dt
 		while (clipCtrl->keyframeTime < 0)
 		{
 			// case 6: the whole clip is done
-			if (clipCtrl->keyframeIndex == 0)
+			if (clipCtrl->keyframeIndex == currentClip.firstKeyframeIndex)
 			{
 				// Terminus - refer to the current clip's backward transition
 				// re-init clip controller data
-				clipCtrl->clipPool = currentClip.backwardTransition->targetClipPool;
-				clipCtrl->clipIndex = currentClip.backwardTransition->targetClipIndex;
-				clipCtrl->playbackSpeed = currentClip.backwardTransition->playbackSpeed;
+				clipCtrl->clipPool = currentClip.backwardTransition.targetClipPool;
+				clipCtrl->clipIndex = currentClip.backwardTransition.targetClipIndex;
+				clipCtrl->playbackSpeed = currentClip.backwardTransition.playbackSpeed;
+
+				//resove terminus
+				currentClip = clipCtrl->clipPool->clip[clipCtrl->clipIndex];
+				currentKeyframe = currentClip.keyframePool->keyframe[clipCtrl->keyframeIndex];
+
+				// backward -> forward
+				if (clipCtrl->playbackSpeed > 0) {
+					clipCtrl->keyframeIndex = currentClip.firstKeyframeIndex;
+					clipCtrl->keyframeTime *= -1;
+
+				}
+				else { // backward -> backward
+					clipCtrl->keyframeIndex = currentClip.lastKeyframeIndex;
+
+				}
+				
 			}
 			else
 			{
@@ -125,6 +158,11 @@ inline a3i32 a3clipControllerSetClip(a3_ClipController* clipCtrl, const a3_ClipP
 	clipCtrl->keyframeParameter = 0.0f;
 
 	return 0;
+}
+
+inline a3real lerp(a3real a, a3real b, a3real u)
+{
+	return a + (b - a) * u;
 }
 
 

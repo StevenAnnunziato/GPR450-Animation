@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 
-	a3_DemoMode0_Starter_initialize.c
+	a3_DemoMode0_Starter-load.c
 	Demo mode implementations: starter scene.
 
 	********************************************
@@ -175,23 +175,21 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 	a3keyframePoolCreate(&demoMode->keyPool, 5);
 
 	// init keyframes
-	a3keyframeInit(&demoMode->keyPool.keyframe[0], 1.1f, 1);
-	a3keyframeInit(&demoMode->keyPool.keyframe[1], 1.2f, 2);
-	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 3);
-	a3keyframeInit(&demoMode->keyPool.keyframe[3], 1.4f, 4);
-	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 5);
+	a3keyframeInit(&demoMode->keyPool.keyframe[0], 1.1f, 0.0f, 0.0f, 0.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[1], 1.2f, 2.0f, 2.0f, 2.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 4.0f, 4.0f, 4.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[3], 1.4f, 6.0f, 6.0f, 6.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 8.0f, 8.0f, 8.0f);
 
 	// create clip pool
 	a3ui32* clipPoolSize = 0;
-	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize);
-	if (&demoMode->clipPool == NULL) return;
-
-	// create clip
-	a3clipInit(&demoMode->clipPool.clip[0], "Starter clip", &(demoMode->keyPool), 0, 4, NULL, NULL);
+	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize, &demoMode->keyPool);
+	if (&demoMode->clipPool == NULL) 
+		return;
 
 	// create clip controller
 	a3clipControllerInit(&demoMode->clipController, "I love animal3D <3", &demoMode->clipPool, 0);
-	demoMode->clipController.playbackSpeed = -1.0f;
+	demoMode->clipController.playbackSpeed = 1;
 
 }
 

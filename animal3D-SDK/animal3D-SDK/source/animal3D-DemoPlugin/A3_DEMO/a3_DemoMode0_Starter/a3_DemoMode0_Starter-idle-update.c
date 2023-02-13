@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	a3_DemoMode0_Starter_idle-update.c
+	a3_DemoMode0_Starter-idle-update.c
 	Demo mode implementations: starter scene.
 
 	********************************************
@@ -71,7 +71,7 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 
 	a3demo_update_defaultAnimation(demoState, dt, demoMode->obj_box, 6, 2);
 
-	// apply scales to starter objects
+	// apply scales to objects
 	for (i = 0; i < starterMaxCount_sceneObject; ++i)
 		a3demo_applyScale_internal(demoMode->object_scene + i, scaleMat.m);
 
@@ -86,9 +86,97 @@ void a3starter_update(a3_DemoState* demoState, a3_DemoMode0_Starter* demoMode, a
 			demoMode->object_scene[i].modelMat.m, a3mat4_identity.m);
 	}
 
+	// update clip controller, tick keyframes etc
 	a3clipControllerUpdate(&demoMode->clipController, (a3real)dt);
 
-	printf("anim %i", demoMode->keyPool.keyframe[demoMode->clipController.keyframeIndex].data);
+	// apply animation controller values to scene objects
+	a3_Clip* currentClip = &demoMode->clipPool.clip[demoMode->clipController.clipIndex];
+	a3ui32 currentKeyframeIndex = demoMode->clipController.keyframeIndex;
+	a3_Keyframe* currentKeyframe = &currentClip->keyframePool->keyframe[currentKeyframeIndex];
+
+	a3ui32 nextKeyframeIndex = currentKeyframeIndex;
+	a3_Clip* nextClip = currentClip;
+
+	if (demoMode->clipController.playbackSpeed > 0)
+	{
+		nextKeyframeIndex++;
+		//moving forward
+		if (nextKeyframeIndex > currentClip->lastKeyframeIndex) 
+		{
+			//reached the end of the clip
+
+			//set the next clip
+			nextClip = &currentClip->forwardTransition.targetClipPool->clip[currentClip->forwardTransition.targetClipIndex];
+
+			// if the next speed is positive...
+			if (currentClip->forwardTransition.playbackSpeed > 0) 
+			{
+				//next clip
+				nextKeyframeIndex = nextClip->firstKeyframeIndex;
+			}
+			// if the next speed is negative...
+			else if (currentClip->forwardTransition.playbackSpeed < 0)
+			{
+				nextKeyframeIndex = nextClip->lastKeyframeIndex;
+			}
+			else 
+			{
+				nextKeyframeIndex = nextClip->lastKeyframeIndex;
+			}
+		}
+	}
+	else if(demoMode->clipController.playbackSpeed < 0)
+	{
+		currentKeyframeIndex--;
+		//moving backward
+		if (currentKeyframeIndex < currentClip->firstKeyframeIndex)
+		{
+			//reached the end of the clip
+
+			//set the next clip
+			nextClip = &currentClip->backwardTransition.targetClipPool->clip[currentClip->backwardTransition.targetClipIndex];
+
+			// if the next speed is positive...
+			if (currentClip->backwardTransition.playbackSpeed > 0)
+			{
+				//next clip
+				currentKeyframeIndex = nextClip->firstKeyframeIndex;
+			}
+			// if the next speed is negative...
+			else if (currentClip->backwardTransition.playbackSpeed < 0)
+			{
+				currentKeyframeIndex = nextClip->lastKeyframeIndex;
+			}
+			else
+			{
+				currentKeyframeIndex = nextClip->lastKeyframeIndex;
+			}
+		}
+	}
+	else 
+	{
+		//Paused
+	}
+
+	a3real y0 = currentClip->keyframePool->keyframe[currentKeyframeIndex].val_y;
+	a3real z0 = currentClip->keyframePool->keyframe[currentKeyframeIndex].val_z;
+	a3real x0 = currentClip->keyframePool->keyframe[currentKeyframeIndex].val_x;
+
+	a3real y1 = nextClip->keyframePool->keyframe[nextKeyframeIndex].val_y;
+	a3real z1 = nextClip->keyframePool->keyframe[nextKeyframeIndex].val_z;
+	a3real x1 = nextClip->keyframePool->keyframe[nextKeyframeIndex].val_x;
+
+	// set the torus's position
+	demoMode->obj_torus->position.x = lerp(x0, x1, demoMode->clipController.keyframeParameter);
+	demoMode->obj_torus->position.y = lerp(y0, y1, demoMode->clipController.keyframeParameter);
+	demoMode->obj_torus->position.z = lerp(z0, z1, demoMode->clipController.keyframeParameter);
+
+	//demoMode->obj_torus->position.x = x0;
+	//demoMode->obj_torus->position.y = y0;
+	//demoMode->obj_torus->position.z = z0;
+
+	// print debug info of which frame we're on
+	printf("keyframe index %i\n", demoMode->clipController.keyframeIndex);
 }
 
 
