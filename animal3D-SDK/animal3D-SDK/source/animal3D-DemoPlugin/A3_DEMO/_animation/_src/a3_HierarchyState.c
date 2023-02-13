@@ -41,19 +41,21 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 
 		// allocate everything (one malloc)
 		//??? = (...)malloc(sz);
-		poseGroup_out->hierarchicalPoses = malloc(sizeof(a3_HierarchyPose) * poseCount);
+		poseGroup_out = malloc(sizeof(a3_HierarchyPoseGroup) + sizeof(a3_SpatialPose) * poseCount + sizeof(a3_HierarchyPose) * poseCount);
 
-		// set pointers
 		poseGroup_out->hierarchy = hierarchy;
+		poseGroup_out->spatialPosePool = (a3_SpatialPose*)(&poseGroup_out + sizeof(a3_HierarchyPoseGroup));
+		poseGroup_out->hierarchicalPoses = (a3_HierarchyPose*)(&poseGroup_out + sizeof(a3_HierarchyPoseGroup) + sizeof(a3_SpatialPose) * poseCount);
+		poseGroup_out->poseCount = poseCount;
+		
 
-		// reset all data
-		for (a3ui32 i = 0; i < poseCount; ++i) 
-		{
-			
+		//doesn't do anything because spatial pose data isn't loaded
+		for (a3ui32 i = 0; i < poseCount; ++i) {
+			poseGroup_out->hierarchicalPoses[i].spatialPose = &poseGroup_out->spatialPosePool[i];
 		}
 
 		// done
-		return 1;
+		return 0;
 	}
 	return -1;
 }
@@ -66,9 +68,7 @@ a3i32 a3hierarchyPoseGroupRelease(a3_HierarchyPoseGroup *poseGroup)
 	{
 		// release everything (one free)
 		//free(???);
-
-		// reset pointers
-		poseGroup->hierarchy = 0;
+		free(poseGroup);
 
 		// done
 		return 1;
