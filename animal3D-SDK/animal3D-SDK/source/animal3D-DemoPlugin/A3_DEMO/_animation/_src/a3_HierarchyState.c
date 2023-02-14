@@ -67,7 +67,10 @@ a3i32 a3hierarchyPoseGroupRelease(a3_HierarchyPoseGroup *poseGroup)
 	{
 		// release everything (one free)
 		//free(???);
-		free(poseGroup);
+		free(poseGroup->spatialPosePool);
+
+		// reset pointers
+		poseGroup->spatialPosePool = 0;
 
 		// done
 		return 1;

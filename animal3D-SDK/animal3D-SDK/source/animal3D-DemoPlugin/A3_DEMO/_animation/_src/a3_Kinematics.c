@@ -40,22 +40,18 @@ a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState *hierarchyState, c
 		//		- else
 		//			- copy local matrix to object matrix
 
-		a3mat4 parentMatrix = hierarchyState->localSpacePose.spatialPose->transform;
+		a3mat4* parentMatrix = &hierarchyState->localSpacePose.spatialPose->transform;
 		// for all nodes starting at first index
-		for (int i = firstIndex; i < firstIndex + nodeCount; i++)
+		for (a3ui32 i = firstIndex; i < firstIndex + nodeCount; i++)
 		{
 			// if the node is not the root...
 			if (hierarchyState->hierarchy->nodes[i].parentIndex != -1)
 			{
-				// set this node's object matrix to be dependent on its parent
-				a3_HierarchyNode myNode = hierarchyState->hierarchy->nodes[i];
+				// object matrix = parent object matrix * local matrix
+				a3real4x4Product(&hierarchyState->objectSpacePose.spatialPose->transform.mm, parentMatrix->m,
+					&hierarchyState->localSpacePose.spatialPose->transform.mm);
 
-				// broken for now
-				// TODO: find matrix multiplication methods
-				hierarchyState->objectSpacePose.spatialPose->transform =
-					hierarchyState->localSpacePose.spatialPose->transform * parentMatrix;
-
-				parentMatrix = hierarchyState->objectSpacePose.spatialPose->transform;
+				parentMatrix = &hierarchyState->objectSpacePose.spatialPose->transform;
 			}
 			else // is the root
 			{
