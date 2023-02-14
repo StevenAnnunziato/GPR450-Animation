@@ -495,7 +495,8 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 				const a3i32 flag[1] = { demoState->displayTangentBases * 3 + demoState->displayWireframe * 4 };
 				const a3f32 size[1] = { 0.0625f };
 
-				currentDemoProgram = demoState->prog_drawTangentBasis;
+				//currentDemoProgram = demoState->prog_drawTangentBasis;
+				currentDemoProgram = demoState->prog_drawColorUnif; //**hax
 				a3shaderProgramActivate(currentDemoProgram->program);
 
 				// projection matrix
@@ -510,7 +511,45 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 				a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uFlag, 1, flag);
 
 				// draw skeleton joint bases
+				//***hax
+				{
+					a3ui32 i, n;//n= number of joints
+					
+					// n = demostate->somehierarchy->numberofnodes
 
+					a3mat4 
+						tmpLMVP,	//full joint stack 
+						tmpL,		//bone matrix for a joint
+						tmpS,
+						tmpFK;		//shared scale
+					
+					a3vertexDrawableActivate(demoState->draw_node);
+
+					//init tmpS here: just a scale matrix
+					a3real4x4SetScale(tmpS.m, 0.05f);
+
+					for (i = 0; i < n; ++i) {
+						//tmpL: grab result of FK
+						a3_SpatialPose* pose = demoMode->hierarchyState_skel->samplePose.spatialPose;
+
+						//scale
+						a3real4x4SetScale(tmpFK.m, pose->scaleX, pose->scaleY, pose->scaleZ);
+						//rotate
+						a3real4x4SetRotateXYZ(tmpFK.m, pose->eulerX, pose->eulerY, pose->eulerZ);
+						//translate
+						a3real4x4set()
+						
+						//a3real4x4SetReal4x4
+						// demoMode->hierarchyPoseGroup_skel->hierarchicalPoses->spatialPose.
+						// multiply by tmpS on left
+						a3real4x4Product(tmpL.m, tmpFK.m, tmpS.m);//tmpL = FK * tmpS
+						a3real4x4Product(tmpLMVP.m, viewProjectionMat.m, tmpL.m);
+
+						a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, tmpLMVP.mm);
+
+						a3vertexDrawableRenderActive();
+					}
+				}
 			}
 
 			// display color target with scene overlays

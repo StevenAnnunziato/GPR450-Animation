@@ -81,6 +81,19 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			activeCamera->projectionMat.m, activeCameraObject->modelMat.m, activeCameraObject->modelMatInv.m,
 			demoMode->object_scene[i].modelMat.m, a3mat4_identity.m);
 	}
+
+	//1. Interp
+	//should be zero for this assignment
+
+	//2. Combine with base
+	// loop through all nodes
+	//	concat child[RST] = parent[RST] with offest[RST]
+
+	//3. Convert to mat
+
+	//4. Fk
+
+	//5. draw
 }
 
 

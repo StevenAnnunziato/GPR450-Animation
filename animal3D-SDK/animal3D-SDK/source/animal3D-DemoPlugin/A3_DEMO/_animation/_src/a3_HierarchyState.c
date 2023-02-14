@@ -41,17 +41,16 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 
 		// allocate everything (one malloc)
 		//??? = (...)malloc(sz);
-		poseGroup_out = malloc(sizeof(a3_HierarchyPoseGroup) + sizeof(a3_SpatialPose) * poseCount + sizeof(a3_HierarchyPose) * poseCount);
+		poseGroup_out->spatialPosePool = malloc(sizeof(a3_SpatialPose) * poseCount * hierarchy->numNodes + sizeof(a3_HierarchyPose) * poseCount);
 
 		poseGroup_out->hierarchy = hierarchy;
-		poseGroup_out->spatialPosePool = (a3_SpatialPose*)(&poseGroup_out + sizeof(a3_HierarchyPoseGroup));
-		poseGroup_out->hierarchicalPoses = (a3_HierarchyPose*)(&poseGroup_out + sizeof(a3_HierarchyPoseGroup) + sizeof(a3_SpatialPose) * poseCount);
+		poseGroup_out->hierarchicalPoses = (a3_HierarchyPose*)((a3_SpatialPose*)(poseGroup_out->spatialPosePool) + poseCount * hierarchy->numNodes);
 		poseGroup_out->poseCount = poseCount;
 		
 
 		//doesn't do anything because spatial pose data isn't loaded
-		for (a3ui32 i = 0; i < poseCount; ++i) {
-			poseGroup_out->hierarchicalPoses[i].spatialPose = &poseGroup_out->spatialPosePool[i];
+		for (a3ui32 j = 0, i = 0; i < poseCount && j < poseCount * hierarchy->numNodes; ++i, j+= hierarchy->numNodes) {
+			poseGroup_out->hierarchicalPoses[i].spatialPose = &poseGroup_out->spatialPosePool[j];
 		}
 
 		// done
@@ -96,18 +95,16 @@ a3i32 a3hierarchyStateCreate(a3_HierarchyState *state_out, const a3_Hierarchy *h
 	if (state_out && hierarchy && !state_out->hierarchy && hierarchy->nodes)
 	{
 		// determine memory requirements
-
 		// allocate everything (one malloc)
-		//??? = (...)malloc(sz);
-		state_out = malloc(sizeof(a3_HierarchyState));
-
-		// set pointers
-		state_out->hierarchy = hierarchy;
+		// ??? = (...)malloc(sz);
+		state_out->samplePose = malloc(sizeof(a3_HierarchyPose) * state_out->NUM_OF_POSE_STATES * hierarchy->numNodes);
+		state_out->localSpacePose = (a3_HierarchyPose*)state_out->samplePose + 1 * hierarchy->numNodes;
+		state_out->objectSpacePose = (a3_HierarchyPose*)state_out->samplePose + 2 * hierarchy->numNodes;
 
 		// reset all data
-		a3hierarchyPoseInit(&state_out->samplePose, NULL);
-		a3hierarchyPoseInit(&state_out->localSpacePose, NULL);
-		a3hierarchyPoseInit(&state_out->objectSpacePose, NULL);
+		a3hierarchyPoseInit(state_out->samplePose, NULL);
+		a3hierarchyPoseInit(state_out->localSpacePose, NULL);
+		a3hierarchyPoseInit(state_out->objectSpacePose, NULL);
 
 		// done
 		return 0;
