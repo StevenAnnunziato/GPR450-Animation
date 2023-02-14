@@ -51,5 +51,13 @@ a3i32 a3spatialPoseConcat(a3_SpatialPose* spatialPose_out, const a3_SpatialPose*
 	spatialPose_out->eulerY = lhs->eulerY + rhs->eulerY;
 	spatialPose_out->eulerZ = lhs->eulerZ + rhs->eulerZ;
 
+	spatialPose_out->translationX = lhs->translationX + rhs->translationX;
+	spatialPose_out->translationY = lhs->translationY + rhs->translationY;
+	spatialPose_out->translationZ = lhs->translationZ + rhs->translationZ;
+
+	spatialPose_out->scaleX = lhs->scaleX * rhs->scaleX;
+	spatialPose_out->scaleY = lhs->scaleY * rhs->scaleY;
+	spatialPose_out->scaleZ = lhs->scaleZ * rhs->scaleZ;
+
 	return -1;
 }
