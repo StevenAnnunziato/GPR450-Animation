@@ -78,7 +78,6 @@ struct a3_HierarchyPoseGroup
 	a3ui32 poseCount;
 };
 
-
 // hierarchy state structure
 struct a3_HierarchyState
 {
@@ -87,13 +86,13 @@ struct a3_HierarchyState
 
 	// hierarchical pose representing each node's animated pose at the current time
 	// pointer?
-	a3_HierarchyPose samplePose;
+	a3_HierarchyPose* samplePose; // A or T pose
 
 	// hierarchical pose representing each node's transformation relative to its parent's space
-	a3_HierarchyPose localSpacePose;
+	a3_HierarchyPose* localSpacePose;
 
 	// hierarchical pose representing each node's transformation relative to the root's parent space
-	a3_HierarchyPose objectSpacePose;
+	a3_HierarchyPose* objectSpacePose;
 };
 	
 

@@ -50,7 +50,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 	a3_FileStream fileStream[1] = { 0 };
 	const a3byte* const geometryStream = "./data/anim_data_gpro_base.dat";
-
+	
 	// stream animation assets
 	if (demoState->streaming && a3fileStreamOpenRead(fileStream, geometryStream))
 	{
@@ -329,6 +329,11 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 	hierarchyState = demoMode->hierarchyState_skel;
 	hierarchyState->hierarchy = 0;
 	a3hierarchyStateCreate(hierarchyState, hierarchy);
+
+	// init HierarchyPoses
+	demoMode->hierarchyState_skel->samplePose->spatialPose = &hierarchyPoseGroup->spatialPosePool[0];
+	demoMode->hierarchyState_skel->localSpacePose->spatialPose = &hierarchyPoseGroup->spatialPosePool[0];
+	demoMode->hierarchyState_skel->objectSpacePose->spatialPose = &hierarchyPoseGroup->spatialPosePool[0];
 }
 
 
