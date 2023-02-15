@@ -529,7 +529,12 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 					// tmpL: grab result of FK
 					// -> multiply by tmpS on the right
 					//	tmpL = FK for this joint * tmpS
-					a3real4x4Product(tmpL.m, demoMode->hierarchyState_skel->objectSpacePose->spatialPose[i].transform.m, tmpS.m);
+					a3_SpatialPose pose = demoMode->hierarchyState_skel->objectSpacePose->spatialPose[i];
+					a3_SpatialPose localPose = demoMode->hierarchyState_skel->localSpacePose->spatialPose[i];
+					a3real4x4Product(tmpL.m, pose.transform.m, tmpS.m);
+					a3real4x4SetScale(localPose.transform.m, 1.0f);
+
+					
 
 					// tmpLMVP: full stack
 					a3real4x4Product(tmpLMVP.m, viewProjectionMat.m, tmpL.m);
