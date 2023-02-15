@@ -48,9 +48,15 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 		poseGroup_out->poseCount = poseCount;
 		
 
+		for (a3ui32 i = 0; i < poseCount * hierarchy->numNodes; ++i) 
+		{
+			a3spatialPoseInit(&poseGroup_out->spatialPosePool[i], a3mat4_identity);
+		}
+
 		//doesn't do anything because spatial pose data isn't loaded
 		for (a3ui32 j = 0, i = 0; i < poseCount && j < poseCount * hierarchy->numNodes; ++i, j+= hierarchy->numNodes) {
 			poseGroup_out->hierarchicalPoses[i].spatialPose = &poseGroup_out->spatialPosePool[j];
+
 		}
 
 		// done
@@ -125,7 +131,7 @@ a3i32 a3hierarchyStateRelease(a3_HierarchyState *state)
 	{
 		// release everything (one free)
 		//free(???);
-		free(state);
+		free(state->samplePose);
 
 		// reset pointers
 		//state->hierarchy = 0;
