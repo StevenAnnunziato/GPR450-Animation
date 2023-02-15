@@ -34,6 +34,7 @@
 
 #include "../_a3_demo_utilities/a3_DemoRenderUtils.h"
 
+#include "../source/animal3D-DemoPlugin/A3_DEMO/_animation/a3_Kinematics.h"
 
 // OpenGL
 #ifdef _WIN32
@@ -526,7 +527,8 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 					// tmpL: grab result of FK
 					// -> multiply by tmpS on the right
 					//	tmpL = FK for this joint * tmpS
-					// a3real4x4Product(tmpL.m, ???, tmpS.m);
+					a3kinematicsSolveForward(demoMode->hierarchyState_skel);
+					a3real4x4Product(tmpL.m, demoMode->hierarchyState_skel->objectSpacePose->spatialPose->transform.m, tmpS.m);
 
 					// tmpLMVP: full stack
 					a3real4x4Product(tmpLMVP.m, viewProjectionMat.m, tmpL.m);

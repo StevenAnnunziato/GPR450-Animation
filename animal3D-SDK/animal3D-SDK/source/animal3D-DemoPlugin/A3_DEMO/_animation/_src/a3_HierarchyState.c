@@ -100,7 +100,7 @@ a3i32 a3hierarchyStateCreate(a3_HierarchyState *state_out, const a3_Hierarchy *h
 		// determine memory requirements
 		// allocate everything (one malloc)
 		// ??? = (...)malloc(sz);
-		state_out->samplePose = malloc(sizeof(a3_HierarchyPose) * state_out->NUM_OF_POSE_STATES * hierarchy->numNodes);
+		state_out->samplePose = malloc(sizeof(a3_HierarchyPose) * 3 * hierarchy->numNodes);
 		state_out->localSpacePose = (a3_HierarchyPose*)state_out->samplePose + 1 * hierarchy->numNodes;
 		state_out->objectSpacePose = (a3_HierarchyPose*)state_out->samplePose + 2 * hierarchy->numNodes;
 

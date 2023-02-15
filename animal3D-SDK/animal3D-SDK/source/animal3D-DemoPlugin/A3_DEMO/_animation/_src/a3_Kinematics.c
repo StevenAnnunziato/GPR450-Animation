@@ -28,7 +28,7 @@
 //-----------------------------------------------------------------------------
 
 // partial FK solver
-a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState *hierarchyState, const a3ui32 firstIndex, const a3ui32 nodeCount)
+a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState* hierarchyState, const a3ui32 firstIndex, const a3ui32 nodeCount)
 {
 	if (hierarchyState && hierarchyState->hierarchy && 
 		firstIndex < hierarchyState->hierarchy->numNodes && nodeCount)
@@ -40,7 +40,7 @@ a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState *hierarchyState, c
 		//		- else
 		//			- copy local matrix to object matrix
 
-		a3mat4* parentMatrix = &hierarchyState->localSpacePose.spatialPose->transform;
+		a3mat4* parentMatrix = &hierarchyState->localSpacePose->spatialPose->transform;
 		// for all nodes starting at first index
 		for (a3ui32 i = firstIndex; i < firstIndex + nodeCount; i++)
 		{
@@ -48,15 +48,15 @@ a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState *hierarchyState, c
 			if (hierarchyState->hierarchy->nodes[i].parentIndex != -1)
 			{
 				// object matrix = parent object matrix * local matrix
-				a3real4x4Product(&hierarchyState->objectSpacePose.spatialPose->transform.mm, parentMatrix->m,
-					&hierarchyState->localSpacePose.spatialPose->transform.mm);
+				a3real4x4Product(&hierarchyState->objectSpacePose->spatialPose->transform.mm, parentMatrix->m,
+					&hierarchyState->localSpacePose->spatialPose->transform.mm);
 
-				parentMatrix = &hierarchyState->objectSpacePose.spatialPose->transform;
+				parentMatrix = &hierarchyState->objectSpacePose->spatialPose->transform;
 			}
 			else // is the root
 			{
 				// copy local matrix to object matrix
-				hierarchyState->objectSpacePose.spatialPose->transform = hierarchyState->localSpacePose.spatialPose->transform;
+				hierarchyState->objectSpacePose->spatialPose->transform = hierarchyState->localSpacePose->spatialPose->transform;
 			}
 		}
 	}

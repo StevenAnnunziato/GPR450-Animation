@@ -85,7 +85,7 @@ struct a3_HierarchyState
 	// pointer to hierarcy
 	const a3_Hierarchy* hierarchy;
 
-	const a3ui8 NUM_OF_POSE_STATES = 3;
+	//const a3ui8 NUM_OF_POSE_STATES = 3;
 
 	// hierarchical pose representing each node's animated pose at the current time
 	// pointer?
