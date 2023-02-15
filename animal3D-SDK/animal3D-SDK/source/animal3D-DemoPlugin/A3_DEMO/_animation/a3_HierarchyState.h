@@ -78,14 +78,11 @@ struct a3_HierarchyPoseGroup
 	a3ui32 poseCount;
 };
 
-
 // hierarchy state structure
 struct a3_HierarchyState
 {
 	// pointer to hierarcy
 	const a3_Hierarchy* hierarchy;
-
-	//const a3ui8 NUM_OF_POSE_STATES = 3;
 
 	// hierarchical pose representing each node's animated pose at the current time
 	// pointer?

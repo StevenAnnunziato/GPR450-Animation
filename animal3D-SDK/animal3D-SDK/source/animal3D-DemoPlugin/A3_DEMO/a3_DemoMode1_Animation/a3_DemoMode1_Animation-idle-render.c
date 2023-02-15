@@ -35,7 +35,7 @@
 #include "../_a3_demo_utilities/a3_DemoRenderUtils.h"
 
 #include "../source/animal3D-DemoPlugin/A3_DEMO/_animation/a3_Kinematics.h"
-
+#include <stdio.h>
 // OpenGL
 #ifdef _WIN32
 #include <gl/glew.h>
@@ -490,7 +490,7 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 			{
 				a3demo_drawModelSolidColor(modelViewProjectionMat.m, viewProjectionMat.m, a3mat4_identity.m, demoState->prog_drawColorUnif, demoState->draw_grid, blue);
 			}
-		
+			
 			if (demoState->displayTangentBases || demoState->displayWireframe)
 			{
 				const a3i32 flag[1] = { demoState->displayTangentBases * 3 + demoState->displayWireframe * 4 };
@@ -519,16 +519,17 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 				// tmpS: shared scale
 				a3mat4 tmpLMVP, tmpL, tmpS;
 				a3real4x4SetScale(tmpS.m, 0.05f);
-
+				
 				a3vertexDrawableActivate(demoState->draw_node);
+
+				a3kinematicsSolveForward(demoMode->hierarchyState_skel);
 
 				for (i = 0; i < n; ++i)
 				{
 					// tmpL: grab result of FK
 					// -> multiply by tmpS on the right
 					//	tmpL = FK for this joint * tmpS
-					a3kinematicsSolveForward(demoMode->hierarchyState_skel);
-					a3real4x4Product(tmpL.m, demoMode->hierarchyState_skel->objectSpacePose->spatialPose->transform.m, tmpS.m);
+					a3real4x4Product(tmpL.m, demoMode->hierarchyState_skel->objectSpacePose->spatialPose[i].transform.m, tmpS.m);
 
 					// tmpLMVP: full stack
 					a3real4x4Product(tmpLMVP.m, viewProjectionMat.m, tmpL.m);

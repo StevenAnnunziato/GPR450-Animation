@@ -93,6 +93,8 @@ a3ui32 a3hierarchyPoseInit(a3_HierarchyPose* pose_inout, const a3_SpatialPose* s
 // initialize hierarchy state given an initialized hierarchy
 a3i32 a3hierarchyStateCreate(a3_HierarchyState *state_out, const a3_Hierarchy *hierarchy)
 {
+	const a3ui8 NUM_OF_POSE_STATES = 3;
+
 	// validate params and initialization states
 	//	(output is not yet initialized, hierarchy is initialized)
 	if (state_out && hierarchy && !state_out->hierarchy && hierarchy->nodes)
@@ -100,7 +102,7 @@ a3i32 a3hierarchyStateCreate(a3_HierarchyState *state_out, const a3_Hierarchy *h
 		// determine memory requirements
 		// allocate everything (one malloc)
 		// ??? = (...)malloc(sz);
-		state_out->samplePose = malloc(sizeof(a3_HierarchyPose) * 3 * hierarchy->numNodes);
+		state_out->samplePose = malloc(sizeof(a3_HierarchyPose) * NUM_OF_POSE_STATES * hierarchy->numNodes);
 		state_out->localSpacePose = (a3_HierarchyPose*)state_out->samplePose + 1 * hierarchy->numNodes;
 		state_out->objectSpacePose = (a3_HierarchyPose*)state_out->samplePose + 2 * hierarchy->numNodes;
 
