@@ -69,7 +69,7 @@ struct a3_HierarchyPoseGroup
 	a3_HierarchyPose* hierarchicalPoses;
 
 	//Channels
-	a3_SpatialPoseChannel* channel; // needs to be a list
+	a3_SpatialPoseChannel* channel;
 
 	//order
 	a3_SpatialPoseEulerOrder eulerOrder;

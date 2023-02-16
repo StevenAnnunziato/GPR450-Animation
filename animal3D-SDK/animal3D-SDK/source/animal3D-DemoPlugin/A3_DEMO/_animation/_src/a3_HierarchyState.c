@@ -53,10 +53,9 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 			a3spatialPoseInit(&poseGroup_out->spatialPosePool[i], a3mat4_identity);
 		}
 
-		//doesn't do anything because spatial pose data isn't loaded
+		// init spatial pose data
 		for (a3ui32 j = 0, i = 0; i < poseCount && j < poseCount * hierarchy->numNodes; ++i, j+= hierarchy->numNodes) {
 			poseGroup_out->hierarchicalPoses[i].spatialPose = &poseGroup_out->spatialPosePool[j];
-
 		}
 
 		// done
