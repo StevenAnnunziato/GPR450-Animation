@@ -522,7 +522,7 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 				
 				a3vertexDrawableActivate(demoState->draw_node);
 
-				a3kinematicsSolveForward(demoMode->hierarchyState_skel);
+				//a3kinematicsSolveForward(demoMode->hierarchyState_skel);
 
 				for (i = 0; i < n; ++i)
 				{
@@ -530,11 +530,9 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 					// -> multiply by tmpS on the right
 					//	tmpL = FK for this joint * tmpS
 					a3_SpatialPose pose = demoMode->hierarchyState_skel->objectSpacePose->spatialPose[i];
-					a3_SpatialPose localPose = demoMode->hierarchyState_skel->localSpacePose->spatialPose[i];
+					//a3_SpatialPose localPose = demoMode->hierarchyState_skel->localSpacePose->spatialPose[i];
 					a3real4x4Product(tmpL.m, pose.transform.m, tmpS.m);
-					a3real4x4SetScale(localPose.transform.m, 1.0f);
-
-					
+					//a3real4x4SetScale(localPose.transform.m, 1.0f);
 
 					// tmpLMVP: full stack
 					a3real4x4Product(tmpLMVP.m, viewProjectionMat.m, tmpL.m);

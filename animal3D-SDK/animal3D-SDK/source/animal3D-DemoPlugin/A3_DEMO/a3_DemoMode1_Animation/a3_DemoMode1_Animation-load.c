@@ -31,6 +31,7 @@
 #include "../a3_DemoMode1_Animation.h"
 
 #include "../a3_DemoState.h"
+#include "../source/animal3D-DemoPlugin/A3_DEMO/_animation/a3_Kinematics.h"
 
 
 //-----------------------------------------------------------------------------
@@ -335,6 +336,9 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 	demoMode->hierarchyState_skel->samplePose->spatialPose = &hierarchyPoseGroup->spatialPosePool[0];
 	demoMode->hierarchyState_skel->localSpacePose->spatialPose = &hierarchyPoseGroup->spatialPosePool[0];
 	demoMode->hierarchyState_skel->objectSpacePose->spatialPose = &hierarchyPoseGroup->spatialPosePool[0];
+	demoMode->hierarchyState_skel->hierarchy = hierarchy;
+
+	a3kinematicsSolveForward(demoMode->hierarchyState_skel);
 }
 
 
