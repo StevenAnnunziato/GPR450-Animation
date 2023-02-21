@@ -355,6 +355,7 @@ void a3animation_render(a3_DemoState const* demoState, a3_DemoMode1_Animation co
 void a3animation_input_keyCharPress(a3_DemoState const* demoState, a3_DemoMode1_Animation* demoMode, a3i32 const asciiKey, a3i32 const state);
 void a3animation_input_keyCharHold(a3_DemoState const* demoState, a3_DemoMode1_Animation* demoMode, a3i32 const asciiKey, a3i32 const state);
 
+
 void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode)
 {
 	// initialize callbacks
