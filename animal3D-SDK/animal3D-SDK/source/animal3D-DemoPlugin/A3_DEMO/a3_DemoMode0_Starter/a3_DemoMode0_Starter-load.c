@@ -31,6 +31,9 @@
 #include "../a3_DemoMode0_Starter.h"
 
 #include "../a3_DemoState.h"
+#include <stdio.h>
+
+#include "A3_DEMO/_a3_demo_utilities/a3_JsonFileParser.h"
 
 
 //-----------------------------------------------------------------------------
@@ -67,7 +70,6 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 
 	a3_DemoSceneObject* currentSceneObject;
 	a3_DemoProjector* projector;
-
 
 	// camera's starting orientation depends on "vertical" axis
 	// we want the exact same view in either case
@@ -165,6 +167,30 @@ void a3starter_load(a3_DemoState const* demoState, a3_DemoMode0_Starter* demoMod
 
 	demoMode->targetCount[starter_passScene] = starter_target_scene_max;
 	demoMode->targetCount[starter_passComposite] = 1;
+
+	// testing keyframes, clips, etc
+	printf("\nStarting animation test.\n");
+
+	// create keyframe pool
+	a3keyframePoolCreate(&demoMode->keyPool, 5);
+
+	// init keyframes
+	a3keyframeInit(&demoMode->keyPool.keyframe[0], 1.1f, 0.0f, 0.0f, 0.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[1], 1.2f, 2.0f, 2.0f, 2.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[2], 1.3f, 4.0f, 4.0f, 4.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[3], 1.4f, 6.0f, 6.0f, 6.0f);
+	a3keyframeInit(&demoMode->keyPool.keyframe[4], 1.5f, 8.0f, 8.0f, 8.0f);
+
+	// create clip pool
+	a3ui32* clipPoolSize = 0;
+	a3_InitClipPoolFromFile("clip.json", &demoMode->clipPool, clipPoolSize, &demoMode->keyPool);
+	if (&demoMode->clipPool == NULL) 
+		return;
+
+	// create clip controller
+	a3clipControllerInit(&demoMode->clipController, "I love animal3D <3", &demoMode->clipPool, 0);
+	demoMode->clipController.playbackSpeed = 1;
+
 }
 
 

@@ -27,6 +27,39 @@
 
 //-----------------------------------------------------------------------------
 
+// general init
+a3i32 a3spatialPoseInit(a3_SpatialPose* spatialPose, const a3mat4 transform_mat)
+{
+	if (spatialPose)
+	{
+		spatialPose->transform = transform_mat;
+		a3spatialPoseSetScale(spatialPose, 1.0f, 1.0f, 1.0f);
+		a3spatialPoseSetRotation(spatialPose, 0.0f, 0.0f, 0.0f);
+		a3spatialPoseSetTranslation(spatialPose, 0.0f, 0.0f, 0.0f);
+		
+		return 0;
+	}
 
+	return -1;
+}
 
 //-----------------------------------------------------------------------------
+
+a3i32 a3spatialPoseConcat(a3_SpatialPose* spatialPose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
+{
+	// TODO: set transform matrix
+	// TODO: check flags
+	spatialPose_out->eulerX = lhs->eulerX + rhs->eulerX; // validate sum within range
+	spatialPose_out->eulerY = lhs->eulerY + rhs->eulerY;
+	spatialPose_out->eulerZ = lhs->eulerZ + rhs->eulerZ;
+
+	spatialPose_out->translationX = lhs->translationX + rhs->translationX;
+	spatialPose_out->translationY = lhs->translationY + rhs->translationY;
+	spatialPose_out->translationZ = lhs->translationZ + rhs->translationZ;
+
+	spatialPose_out->scaleX = lhs->scaleX * rhs->scaleX;
+	spatialPose_out->scaleY = lhs->scaleY * rhs->scaleY;
+	spatialPose_out->scaleZ = lhs->scaleZ * rhs->scaleZ;
+
+	return -1;
+}

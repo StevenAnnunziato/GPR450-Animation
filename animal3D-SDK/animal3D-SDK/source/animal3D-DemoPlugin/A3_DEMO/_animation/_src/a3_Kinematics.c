@@ -28,7 +28,7 @@
 //-----------------------------------------------------------------------------
 
 // partial FK solver
-a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState *hierarchyState, const a3ui32 firstIndex, const a3ui32 nodeCount)
+a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState* hierarchyState, const a3ui32 firstIndex, const a3ui32 nodeCount)
 {
 	if (hierarchyState && hierarchyState->hierarchy && 
 		firstIndex < hierarchyState->hierarchy->numNodes && nodeCount)
@@ -39,6 +39,26 @@ a3i32 a3kinematicsSolveForwardPartial(const a3_HierarchyState *hierarchyState, c
 		//			- object matrix = parent object matrix * local matrix
 		//		- else
 		//			- copy local matrix to object matrix
+
+		// for all nodes starting at first index
+		for (a3ui32 i = firstIndex; i < firstIndex + nodeCount; i++)
+		{
+			// if the node is not the root...
+			if (hierarchyState->hierarchy->nodes[i].parentIndex != -1)
+			{ 
+				a3ui32 parentIndex = hierarchyState->hierarchy->nodes[i].parentIndex;
+				a3mat4* parentMatrix = &hierarchyState->objectSpacePose->spatialPose[parentIndex].transform;
+				
+				// object matrix = parent object matrix * local matrix
+				a3real4x4Product(hierarchyState->objectSpacePose->spatialPose[i].transform.m, parentMatrix->m,
+					hierarchyState->localSpacePose->spatialPose[i].transform.m);
+			}
+			else // is the root
+			{
+				// copy local matrix to object matrix
+				hierarchyState->objectSpacePose->spatialPose[i].transform = hierarchyState->localSpacePose->spatialPose[i].transform;
+			}
+		}
 	}
 	return -1;
 }

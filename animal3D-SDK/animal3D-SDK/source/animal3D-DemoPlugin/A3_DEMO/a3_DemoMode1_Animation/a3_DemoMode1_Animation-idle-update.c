@@ -200,6 +200,18 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		a3bufferRefill(demoState->ubo_transformBlend, 0, t_skin_size, demoMode->t_skin);
 		a3bufferRefillOffset(demoState->ubo_transformBlend, 0, t_skin_size, dq_skin_size, demoMode->dq_skin);
 	}
+	//1. Interp
+	//should be zero for this assignment
+
+	//2. Combine with base
+	// loop through all nodes
+	//	concat child[RST] = parent[RST] with offest[RST]
+
+	//3. Convert to mat
+
+	//4. Fk
+
+	//5. draw
 }
 
 

@@ -35,7 +35,11 @@ inline a3i32 a3spatialPoseSetRotation(a3_SpatialPose* spatialPose, const a3f32 r
 {
 	if (spatialPose)
 	{
-
+		spatialPose->eulerX = rx_degrees;
+		spatialPose->eulerY = ry_degrees;
+		spatialPose->eulerZ = rz_degrees;
+		a3real4x4SetRotateXYZ(spatialPose->transform.m, rx_degrees, ry_degrees, rz_degrees); // TODO: move to a3spatialPoseConvert
+		return 0;
 	}
 	return -1;
 }
@@ -45,7 +49,11 @@ inline a3i32 a3spatialPoseSetScale(a3_SpatialPose* spatialPose, const a3f32 sx, 
 {
 	if (spatialPose)
 	{
-
+		spatialPose->scaleX = sx;
+		spatialPose->scaleY = sy;
+		spatialPose->scaleZ = sz;
+		a3real4x4SetScale(spatialPose->transform.m, sx); // TODO: move to a3spatialPoseConvert
+		return 0;
 	}
 	return -1;
 }
@@ -55,7 +63,14 @@ inline a3i32 a3spatialPoseSetTranslation(a3_SpatialPose* spatialPose, const a3f3
 {
 	if (spatialPose)
 	{
+		spatialPose->translationX = tx;
+		spatialPose->translationY = ty;
+		spatialPose->translationZ = tz;
+		spatialPose->transform.m30 = tx;  // TODO: move to a3spatialPoseConvert
+		spatialPose->transform.m31 = ty;  // TODO: move to a3spatialPoseConvert
+		spatialPose->transform.m32 = tz;  // TODO: move to a3spatialPoseConvert
 
+		return 0;
 	}
 	return -1;
 }
@@ -78,7 +93,8 @@ inline a3i32 a3spatialPoseConvert(a3mat4* mat_out, const a3_SpatialPose* spatial
 {
 	if (mat_out && spatialPose_in)
 	{
-
+		// matrix methods go here
+		// TODO: check for flags
 	}
 	return -1;
 }

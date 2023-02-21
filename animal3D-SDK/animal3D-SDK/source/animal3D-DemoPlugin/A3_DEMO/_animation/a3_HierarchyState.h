@@ -51,6 +51,7 @@ typedef struct a3_HierarchyState		a3_HierarchyState;
 // makes algorithms easier to keep this as a separate data type
 struct a3_HierarchyPose
 {
+	// Pointer to a specific hierarchies pose
 	a3_SpatialPose* spatialPose;
 };
 
@@ -61,16 +62,37 @@ struct a3_HierarchyPoseGroup
 	// pointer to hierarchy
 	const a3_Hierarchy* hierarchy;
 
-	// number of hierarchical poses
+	// all spacial poses in continuous memory
+	a3_SpatialPose* spatialPosePool;
+
+	// pointer to hierarchy poses for a specific hierarchy
+	a3_HierarchyPose* hierarchicalPoses;
+
+	//Channels
+	a3_SpatialPoseChannel* channel;
+
+	//order
+	a3_SpatialPoseEulerOrder eulerOrder;
+
+	// number of poses
 	a3ui32 poseCount;
 };
-
 
 // hierarchy state structure
 struct a3_HierarchyState
 {
 	// pointer to hierarcy
 	const a3_Hierarchy* hierarchy;
+
+	// hierarchical pose representing each node's animated pose at the current time
+	// pointer?
+	a3_HierarchyPose* samplePose; // A or T pose
+
+	// hierarchical pose representing each node's transformation relative to its parent's space
+	a3_HierarchyPose* localSpacePose;
+
+	// hierarchical pose representing each node's transformation relative to the root's parent space
+	a3_HierarchyPose* objectSpacePose;
 };
 	
 
@@ -90,6 +112,9 @@ a3i32 a3hierarchyPoseGroupGetNodePoseOffsetIndex(const a3_HierarchyPoseGroup *po
 
 
 //-----------------------------------------------------------------------------
+
+// init hierarchy pose
+a3ui32 a3hierarchyPoseInit(a3_HierarchyPose* pose_inout, const a3_SpatialPose* spatialPoseHead);
 
 // reset full hierarchy pose
 a3i32 a3hierarchyPoseReset(const a3_HierarchyPose* pose_inout, const a3ui32 nodeCount);

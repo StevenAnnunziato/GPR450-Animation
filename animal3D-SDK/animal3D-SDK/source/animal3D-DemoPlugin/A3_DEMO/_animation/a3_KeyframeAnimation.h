@@ -35,13 +35,14 @@
 #ifdef __cplusplus
 extern "C"
 {
+	struct a3_ClipTransition;
 #else	// !__cplusplus
 typedef struct a3_Keyframe					a3_Keyframe;
 typedef struct a3_KeyframePool				a3_KeyframePool;
 typedef struct a3_Clip						a3_Clip;
 typedef struct a3_ClipPool					a3_ClipPool;
+typedef struct a3_ClipTransition			a3_ClipTransition;
 #endif	// __cplusplus
-
 
 //-----------------------------------------------------------------------------
 
@@ -58,6 +59,15 @@ struct a3_Keyframe
 {
 	// index in keyframe pool
 	a3ui32 index;
+
+	// duration of keyframe
+	a3real duration;
+	a3real inverseDuration;
+
+	// data to store in the keyframe
+	a3real val_x;
+	a3real val_y;
+	a3real val_z;
 };
 
 // pool of keyframe descriptors
@@ -70,7 +80,6 @@ struct a3_KeyframePool
 	a3ui32 count;
 };
 
-
 // allocate keyframe pool
 a3i32 a3keyframePoolCreate(a3_KeyframePool* keyframePool_out, const a3ui32 count);
 
@@ -78,10 +87,19 @@ a3i32 a3keyframePoolCreate(a3_KeyframePool* keyframePool_out, const a3ui32 count
 a3i32 a3keyframePoolRelease(a3_KeyframePool* keyframePool);
 
 // initialize keyframe
-a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3ui32 value_x);
+a3i32 a3keyframeInit(a3_Keyframe* keyframe_out, const a3real duration, const a3real value_x, const a3real value_y, const a3real value_z);
 
 
 //-----------------------------------------------------------------------------
+
+struct a3_ClipPool;
+
+struct a3_ClipTransition
+{
+	a3_ClipPool* targetClipPool;
+	a3ui32 targetClipIndex;
+	a3real playbackSpeed;
+};
 
 // description of single clip
 // metaphor: timeline
@@ -92,7 +110,22 @@ struct a3_Clip
 
 	// index in clip pool
 	a3ui32 index;
+
+	// duration of clip - sum of all keyframe durations
+	a3real duration;
+	a3real inverseDuration;
+
+	// keyframe info
+	a3ui32 keyframeCount;
+	a3ui32 firstKeyframeIndex;
+	a3ui32 lastKeyframeIndex;
+	a3_KeyframePool* keyframePool;
+
+	// transition info
+	a3_ClipTransition forwardTransition;
+	a3_ClipTransition backwardTransition;
 };
+
 
 // group of clips
 struct a3_ClipPool
@@ -112,7 +145,7 @@ a3i32 a3clipPoolCreate(a3_ClipPool* clipPool_out, const a3ui32 count);
 a3i32 a3clipPoolRelease(a3_ClipPool* clipPool);
 
 // initialize clip with first and last indices
-a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_nameLenMax], const a3_KeyframePool* keyframePool, const a3ui32 firstKeyframeIndex, const a3ui32 finalKeyframeIndex);
+a3i32 a3clipInit(a3_Clip* clip_out, const a3byte clipName[a3keyframeAnimation_nameLenMax], const a3_KeyframePool* keyframePool, const a3ui32 firstKeyframeIndex, const a3ui32 finalKeyframeIndex, const a3_ClipTransition* forwardTransition, const a3_ClipTransition* backwardTransition);
 
 // get clip index from pool
 a3i32 a3clipGetIndexInPool(const a3_ClipPool* clipPool, const a3byte clipName[a3keyframeAnimation_nameLenMax]);
@@ -123,6 +156,9 @@ a3i32 a3clipCalculateDuration(a3_Clip* clip);
 // calculate keyframes' durations by distributing clip's duration
 a3i32 a3clipDistributeDuration(a3_Clip* clip, const a3real newClipDuration);
 
+// initialize a clip transition
+a3i32 a3clipTransitionInit(a3_ClipTransition* transition_out, const a3_ClipPool* targetClipPool, const a3ui32 targetClipIndex, const a3real playbackSpeed);
+a3i32 a3clipTransitionCopy(a3_ClipTransition* transition_out, const a3_ClipTransition* transition_in);
 
 //-----------------------------------------------------------------------------
 

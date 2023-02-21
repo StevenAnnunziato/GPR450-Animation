@@ -33,7 +33,10 @@
 //-----------------------------------------------------------------------------
 
 #include "_a3_demo_utilities/a3_DemoSceneObject.h"
+#include <A3_DEMO/_animation/a3_KeyframeAnimationController.h>
 
+// for testing keyframes
+//#include "_animation/a3_KeyframeAnimationController.h"
 
 //-----------------------------------------------------------------------------
 
@@ -127,6 +130,11 @@ typedef enum a3_DemoMode0_Starter_TargetName				a3_DemoMode0_Starter_TargetName;
 		a3_DemoMode0_Starter_PipelineName pipeline;
 		a3_DemoMode0_Starter_PassName pass;
 		a3_DemoMode0_Starter_TargetName targetIndex[starter_pass_max], targetCount[starter_pass_max];
+
+		// extra data to test keyframes etc
+		a3_ClipController clipController;
+		a3_ClipPool clipPool;
+		a3_KeyframePool keyPool;
 
 		// objects
 		union {
