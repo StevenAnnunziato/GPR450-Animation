@@ -144,12 +144,18 @@ a3i32 a3hierarchyStateRelease(a3_HierarchyState *state)
 
 //-----------------------------------------------------------------------------
 
+a3ret a3hierarchyLoad(a3_Hierarchy* hierarchy_out, const a3_FileStream* fileStream);
+
 // load HTR file, read and store complete pose group and hierarchy
 a3i32 a3hierarchyPoseGroupLoadHTR(a3_HierarchyPoseGroup* poseGroup_out, a3_Hierarchy* hierarchy_out, const a3byte* resourceFilePath)
 {
 	if (poseGroup_out && !poseGroup_out->poseCount && hierarchy_out && !hierarchy_out->numNodes && resourceFilePath && *resourceFilePath)
 	{
-
+		a3_FileStream fileStream[1] = { 0 };
+		if (a3fileStreamOpenRead(fileStream, resourceFilePath))
+		{
+			a3fileStreamReadObject(fileStream, hierarchy_out, (a3_FileStreamReadFunc)a3hierarchyLoad);
+		}
 	}
 	return -1;
 }
@@ -166,3 +172,9 @@ a3i32 a3hierarchyPoseGroupLoadBVH(a3_HierarchyPoseGroup* poseGroup_out, a3_Hiera
 
 
 //-----------------------------------------------------------------------------
+
+a3ret a3hierarchyLoad(a3_Hierarchy* hierarchy_out, const a3_FileStream* fileStream)
+{
+	//for(a3ui32 i = 0; i < )
+	return -1;
+}
