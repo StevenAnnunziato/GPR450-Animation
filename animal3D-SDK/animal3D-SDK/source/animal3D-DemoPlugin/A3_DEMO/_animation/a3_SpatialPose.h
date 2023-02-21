@@ -73,7 +73,7 @@ enum a3_SpatialPoseChannel
 	a3poseChannel_orient_yz = a3poseChannel_orient_y | a3poseChannel_orient_z,
 	a3poseChannel_orient_zx = a3poseChannel_orient_z | a3poseChannel_orient_x,
 	a3poseChannel_orient_xyz = a3poseChannel_orient_xy | a3poseChannel_orient_z,
-
+	
 	// scale
 	a3poseChannel_scale_x = 0x0010,
 	a3poseChannel_scale_y = 0x0020,
@@ -100,6 +100,21 @@ enum a3_SpatialPoseChannel
 struct a3_SpatialPose
 {
 	a3mat4 transform;
+
+	// Euler angle orientation data in degrees
+	a3real eulerX;
+	a3real eulerY;
+	a3real eulerZ;
+
+	// scale data
+	a3real scaleX;
+	a3real scaleY;
+	a3real scaleZ;
+
+	// translation data
+	a3real translationX;
+	a3real translationY;
+	a3real translationZ;
 };
 
 
@@ -114,6 +129,8 @@ a3i32 a3spatialPoseSetScale(a3_SpatialPose* spatialPose, const a3f32 sx, const a
 // translation
 a3i32 a3spatialPoseSetTranslation(a3_SpatialPose* spatialPose, const a3f32 tx, const a3f32 ty, const a3f32 tz);
 
+// general init
+a3i32 a3spatialPoseInit(a3_SpatialPose* spatialPose, const a3mat4 transform_mat);
 
 //-----------------------------------------------------------------------------
 
@@ -125,6 +142,8 @@ a3i32 a3spatialPoseConvert(a3mat4* mat_out, const a3_SpatialPose* spatialPose_in
 
 // copy operation for single node pose
 a3i32 a3spatialPoseCopy(a3_SpatialPose* spatialPose_out, const a3_SpatialPose* spatialPose_in);
+
+a3i32 a3spatialPoseConcat(a3_SpatialPose* spatialPose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs);
 
 
 //-----------------------------------------------------------------------------

@@ -41,14 +41,25 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 
 		// allocate everything (one malloc)
 		//??? = (...)malloc(sz);
+		poseGroup_out->spatialPosePool = malloc(sizeof(a3_SpatialPose) * poseCount * hierarchy->numNodes + sizeof(a3_HierarchyPose) * poseCount);
 
-		// set pointers
 		poseGroup_out->hierarchy = hierarchy;
+		poseGroup_out->hierarchicalPoses = (a3_HierarchyPose*)((a3_SpatialPose*)(poseGroup_out->spatialPosePool) + poseCount * hierarchy->numNodes);
+		poseGroup_out->poseCount = poseCount;
+		
 
-		// reset all data
+		for (a3ui32 i = 0; i < poseCount * hierarchy->numNodes; ++i) 
+		{
+			a3spatialPoseInit(&poseGroup_out->spatialPosePool[i], a3mat4_identity);
+		}
+
+		// init spatial pose data
+		for (a3ui32 j = 0, i = 0; i < poseCount && j < poseCount * hierarchy->numNodes; ++i, j+= hierarchy->numNodes) {
+			poseGroup_out->hierarchicalPoses[i].spatialPose = &poseGroup_out->spatialPosePool[j];
+		}
 
 		// done
-		return 1;
+		return 0;
 	}
 	return -1;
 }
@@ -61,9 +72,10 @@ a3i32 a3hierarchyPoseGroupRelease(a3_HierarchyPoseGroup *poseGroup)
 	{
 		// release everything (one free)
 		//free(???);
+		free(poseGroup->spatialPosePool);
 
 		// reset pointers
-		poseGroup->hierarchy = 0;
+		poseGroup->spatialPosePool = 0;
 
 		// done
 		return 1;
@@ -74,25 +86,38 @@ a3i32 a3hierarchyPoseGroupRelease(a3_HierarchyPoseGroup *poseGroup)
 
 //-----------------------------------------------------------------------------
 
+// init hierarchy pose
+a3ui32 a3hierarchyPoseInit(a3_HierarchyPose* pose_inout, const a3_SpatialPose* spatialPoseHead)
+{
+	pose_inout->spatialPose = (a3_SpatialPose*)spatialPoseHead;
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 // initialize hierarchy state given an initialized hierarchy
 a3i32 a3hierarchyStateCreate(a3_HierarchyState *state_out, const a3_Hierarchy *hierarchy)
 {
+	const a3ui8 NUM_OF_POSE_STATES = 3;
+
 	// validate params and initialization states
 	//	(output is not yet initialized, hierarchy is initialized)
 	if (state_out && hierarchy && !state_out->hierarchy && hierarchy->nodes)
 	{
 		// determine memory requirements
-
 		// allocate everything (one malloc)
-		//??? = (...)malloc(sz);
-
-		// set pointers
-		state_out->hierarchy = hierarchy;
+		// ??? = (...)malloc(sz);
+		state_out->samplePose = malloc(sizeof(a3_HierarchyPose) * NUM_OF_POSE_STATES * hierarchy->numNodes);
+		state_out->localSpacePose = (a3_HierarchyPose*)state_out->samplePose + 1 * hierarchy->numNodes;
+		state_out->objectSpacePose = (a3_HierarchyPose*)state_out->samplePose + 2 * hierarchy->numNodes;
 
 		// reset all data
+		a3hierarchyPoseInit(state_out->samplePose, NULL);
+		a3hierarchyPoseInit(state_out->localSpacePose, NULL);
+		a3hierarchyPoseInit(state_out->objectSpacePose, NULL);
 
 		// done
-		return 1;
+		return 0;
 	}
 	return -1;
 }
@@ -105,9 +130,10 @@ a3i32 a3hierarchyStateRelease(a3_HierarchyState *state)
 	{
 		// release everything (one free)
 		//free(???);
+		free(state->samplePose);
 
 		// reset pointers
-		state->hierarchy = 0;
+		//state->hierarchy = 0;
 
 		// done
 		return 1;
