@@ -13,16 +13,27 @@ rig_object = bpy.context.view_layer.objects.active
 start_frame = bpy.context.scene.frame_start
 end_frame = bpy.context.scene.frame_end
 num_frames = end_frame - start_frame + 1
+frame_rate = bpy
 
 # Open the HTR file for writing
 with open(export_path, "wb") as f:
 
     # Write the header information
-    f.write(struct.pack("16s", b"FileVersion 1.0"))
-    f.write(struct.pack("i", 0))
-    f.write(struct.pack("i", 1))
-    f.write(struct.pack("i", num_frames))
-    f.write(struct.pack("f", 1.0 / bpy.context.scene.render.fps))
+    f.write("[Header]\n")
+    f.write("# KeyWord<space>Value<CR>")
+    f.write("FileType htr\n")
+    f.write("DataType HTRS\n")
+    f.write("FileVersion 1.0\n")
+    f.write("NumSegments " + len(rig_object.data.bones) + "\n")
+    f.write("NumFrames " + num_frames + "\n")
+    f.write("DataFrameRate " + bpy.context.scene.render.fps + "\n")
+    f.write("EulerRotationOrder ZYX\n")
+    f.write("CalibrationUnits m\n")
+    f.write("RotationUnits Degrees\n")
+    f.write("GlobalAxisofGravity Z\n")
+    f.write("BoneLengthAxis Z\n")
+    f.write("BoneLengthAxis Z\n")
+    f.write("ScaleFactor 1.00\n")
 
     # Write the bone hierarchy information
     for bone in rig_object.pose.bones:
