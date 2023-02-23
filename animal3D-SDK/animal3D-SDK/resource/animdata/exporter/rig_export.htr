@@ -1,0 +1,50 @@
+[Header]
+# KeyWord<space>Value<CR>FileType htr
+DataType HTRS
+FileVersion 1.0
+NumSegments 32
+NumFrames 250
+DataFrameRate 24
+EulerRotationOrder ZYX
+CalibrationUnits m
+RotationUnits Degrees
+GlobalAxisofGravity Z
+BoneLengthAxis Z
+BoneLengthAxis Z
+ScaleFactor 1.00
+[SegmentNames&Hierarchy]
+# ObjectName<tab>ParentObjectName<CR>
+pelvisGLOBAL
+spine01pelvis
+spine02spine01
+spine03spine02
+neckspine03
+headneck
+Collar_leftspine03
+shoulder_up_leftCollar_left
+bicep_up_leftshoulder_up_left
+forearm_up_leftbicep_up_left
+hand_up_leftforearm_up_left
+shoulder_down_leftCollar_left
+bicep_down_leftshoulder_down_left
+forearm_down_leftbicep_down_left
+hand_down_leftforearm_down_left
+Collar_rightspine03
+shoulder_up_rightCollar_right
+bicep_up_rightshoulder_up_right
+forearm_up_rightbicep_up_right
+hand_up_rightforearm_up_right
+shoulder_down_rightCollar_right
+bicep_down_rightshoulder_down_right
+forearm_down_rightbicep_down_right
+hand_down_rightforearm_down_right
+hip_leftGLOBAL
+thigh_lefthip_left
+shin_leftthigh_left
+foot_leftshin_left
+hip_rightGLOBAL
+thigh_righthip_right
+shin_rightthigh_right
+foot_rightshin_right
+[BasePosition]
+# ObjectName<tab>Tx<tab>Ty<tab>Tz<tab>Rx<tab>Ry<tab>Rz<tab>BoneLength<CR>
