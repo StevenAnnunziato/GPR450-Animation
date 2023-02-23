@@ -61,13 +61,13 @@ with open(export_path, "wb") as f:
         loc = bone_matrix.to_translation()
         rot = bone_matrix.to_quaternion().to_axis_angle()
         scale = bone_matrix.to_scale()
-        f.write("\t" + str(loc.x) +
-                "\t" + str(loc.y) +
-                "\t" + str(loc.z))
-        f.write("\t" + str(rot.x) +
-                "\t" + str(rot.y)+
-                "\t" + str(rot.z))
-        f.write("\t" + str(scale.x))
+        f.write("\t" + str('%.6f' % loc.x) +
+                "\t" + str('%.6f' % loc.y) +
+                "\t" + str('%.6f' % loc.z))
+        f.write("\t" + str('%.6f' % rot.x) +
+                "\t" + str('%.6f' % rot.y)+
+                "\t" + str('%.6f' % rot.z))
+        f.write("\t" + str('%.6f' % scale.x))
 
     # Write the animation data for each frame
     for i in range(start_frame, end_frame + 1):
@@ -80,13 +80,13 @@ with open(export_path, "wb") as f:
             loc = bone_matrix.to_translation()
             rot = bone_matrix.to_quaternion().to_axis_angle()
             scale = bone_matrix.to_scale()
-            f.write("\n" + str(i) + 
-                    "\t" + str(loc.x) +
-                    "\t" + str(loc.y)+
-                    "\t" + str(loc.z))
-            f.write("\t" + str(rot.x) +
-                    "\t" + str(rot.y)+
-                    "\t" + str(rot.z))
-            f.write("\t" + str(scale.x))
+            f.write("\n" + str('%.6f' % i) + 
+                    "\t" + str('%.6f' % loc.x) +
+                    "\t" + str('%.6f' % loc.y)+
+                    "\t" + str('%.6f' % loc.z))
+            f.write("\t" + str('%.6f' % rot.x) +
+                    "\t" + str('%.6f' % rot.y)+
+                    "\t" + str('%.6f' % rot.z))
+            f.write("\t" + str('%.6f' % scale.x))
             
     f.write("\n[EndOfFile]")
