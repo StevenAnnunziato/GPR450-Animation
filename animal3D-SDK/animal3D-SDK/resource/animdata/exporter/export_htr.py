@@ -24,13 +24,35 @@ with open(export_path, "wb") as f:
     f.write(struct.pack("i", num_frames))
     f.write(struct.pack("f", 1.0 / bpy.context.scene.render.fps))
 
+
+    # Header information
+    f.write("[SegmentNames&Hierarchy]\n")
+    f.write("# ObjectName<tab>ParentObjectName<CR>\n")
+    
     # Write the bone hierarchy information
     for bone in rig_object.pose.bones:
-        f.write(struct.pack("16s", bone.name.encode("ascii")))
+        f.write(bone.name.encode("ascii")) # Bone
         if bone.parent:
-            f.write(struct.pack("16s", bone.parent.name.encode("ascii")))
+            f.write( bone.parent.name.encode("ascii\n")) # Parent
         else:
-            f.write(struct.pack("16s", b""))
+            f.write(b"Main\n") # Root
+
+    f.write("[BasePosition]\n")
+    f.write("# ObjectName<tab>Tx<tab>Ty<tab>Tz<tab>Rx<tab>Ry<tab>Rz<tab>BoneLength<CR>\n")
+
+    # Write base pose
+    for bone in rig_object.pose.bones:
+        f.write("\n" + bone.name.encode("ascii")) # Bone
+        bone_matrix = rig_object.convert_space( bone,
+                                                bone.matrix, 
+                                                from_space="POSE", 
+                                                to_space="LOCAL")
+        loc = bone_matrix.to_translation()
+        rot = bone_matrix.to_quaternion().to_axis_angle();
+        scale = bone_matrix.to_scale()
+        f.write("\t" +loc.x +"\t"+loc.y+"\t" +"\t"+ loc.z))
+        f.write("\t" +rot.x +"\t"+rot.y+"\t" +"\t"+ rot.z))
+        f.write("\t" +scale.x))
 
     # Write the animation data for each frame
     for i in range(start_frame, end_frame + 1):
@@ -41,8 +63,10 @@ with open(export_path, "wb") as f:
                                                     from_space="POSE", 
                                                     to_space="LOCAL")
             loc = bone_matrix.to_translation()
-            rot = bone_matrix.to_quaternion()
+            rot = bone_matrix.to_quaternion().to_axis_angle();
             scale = bone_matrix.to_scale()
-            f.write(struct.pack("fff", loc.x, loc.y, loc.z))
-            f.write(struct.pack("ffff", rot.w, rot.x, rot.y, rot.z))
-            f.write(struct.pack("fff", scale.x, scale.y, scale.z))
+            f.write("\n"+i + "\t" +loc.x +"\t"+loc.y+"\t" +"\t"+ loc.z))
+            f.write("\t" +rot.x +"\t"+rot.y+"\t" +"\t"+ rot.z))
+            f.write("\t" +scale.x))
+            
+    f.write("\n[EndOfFile]")
