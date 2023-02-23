@@ -72,10 +72,15 @@ with open(export_path, "w") as f:
         f.write("\t" + str('%.6f' % scale.x))
         f.write("\n")
 
+
     # Write the animation data for each frame
-    for i in range(start_frame, end_frame + 1):
-        bpy.context.scene.frame_set(i)
-        for bone in rig_object.pose.bones:
+    for bone in rig_object.pose.bones:
+        f.write("[main]\n")
+        f.write("# Tx<tab>Ty<tab>Tz<tab>Rx<tab>Ry<tab>Rz<tab>BoneScaleFactor<CR>\n")
+        for i in range(start_frame, end_frame + 1):
+                bpy.context.scene.frame_set(i)
+                
+
             bone_matrix = rig_object.convert_space( pose_bone=bone,
                                                     matrix=bone.matrix, 
                                                     from_space="POSE", 
@@ -83,7 +88,7 @@ with open(export_path, "w") as f:
             loc = bone_matrix.to_translation()
             rot = bone_matrix.to_euler()
             scale = bone_matrix.to_scale()
-            f.write("\n" + str('%.6f' % i) + 
+            f.write(str(i) + 
                     "\t" + str('%.6f' % loc.x) +
                     "\t" + str('%.6f' % loc.y)+
                     "\t" + str('%.6f' % loc.z))
