@@ -1,5 +1,7 @@
 import bpy
 import struct
+import math
+from mathutils import Euler
 
 # Define the file path and name for the exported HTR file
 file_path = "C:/Users/steven.annunziato/Desktop/Repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
@@ -42,7 +44,7 @@ with open(export_path, "w") as f:
     
     # Write the bone hierarchy information
     for bone in rig_object.pose.bones:
-        f.write(bone.name) # Bone
+        f.write(bone.name + "\t") # Bone
         if bone.parent:
             f.write(bone.parent.name + "\n") # Parent
         else:
@@ -53,13 +55,13 @@ with open(export_path, "w") as f:
 
     # Write base pose
     for bone in rig_object.pose.bones:
-        f.write("\n" + bone.name.encode("ascii")) # Bone
-        bone_matrix = rig_object.convert_space( bone,
-                                                bone.matrix, 
+        f.write(bone.name) # Bone
+        bone_matrix = rig_object.convert_space( pose_bone=bone,
+                                                matrix=bone.matrix, 
                                                 from_space="POSE", 
                                                 to_space="LOCAL")
         loc = bone_matrix.to_translation()
-        rot = bone_matrix.to_quaternion().to_axis_angle()
+        rot = bone_matrix.to_euler()
         scale = bone_matrix.to_scale()
         f.write("\t" + str(loc.x) +
                 "\t" + str(loc.y) +
@@ -68,17 +70,18 @@ with open(export_path, "w") as f:
                 "\t" + str(rot.y)+
                 "\t" + str(rot.z))
         f.write("\t" + str(scale.x))
+        f.write("\n")
 
     # Write the animation data for each frame
     for i in range(start_frame, end_frame + 1):
         bpy.context.scene.frame_set(i)
         for bone in rig_object.pose.bones:
-            bone_matrix = rig_object.convert_space( bone,
-                                                    bone.matrix, 
+            bone_matrix = rig_object.convert_space( pose_bone=bone,
+                                                    matrix=bone.matrix, 
                                                     from_space="POSE", 
                                                     to_space="LOCAL")
             loc = bone_matrix.to_translation()
-            rot = bone_matrix.to_quaternion().to_axis_angle()
+            rot = bone_matrix.to_euler()
             scale = bone_matrix.to_scale()
             f.write("\n" + str(i) + 
                     "\t" + str(loc.x) +
@@ -88,5 +91,6 @@ with open(export_path, "w") as f:
                     "\t" + str(rot.y)+
                     "\t" + str(rot.z))
             f.write("\t" + str(scale.x))
+            f.write("\n")
             
     f.write("\n[EndOfFile]")
