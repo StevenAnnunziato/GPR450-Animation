@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import bpy
 import struct
 import math
@@ -30,7 +31,7 @@ with open(export_path, "w") as f:
     f.write("NumSegments " + str(len(rig_object.data.bones)) + "\n")
     f.write("NumFrames " + str(num_frames) + "\n")
     f.write("DataFrameRate " + str(bpy.context.scene.render.fps) + "\n")
-    f.write("EulerRotationOrder ZYX\n")
+    f.write("EulerRotationOrder XYZ\n")
     f.write("CalibrationUnits m\n")
     f.write("RotationUnits Degrees\n")
     f.write("GlobalAxisofGravity Z\n")
@@ -57,12 +58,15 @@ with open(export_path, "w") as f:
     # NOTE:
     # this assumes the base pose is frame 1
     bpy.context.scene.frame_set(1)
+    parent_bone = NULL
     for bone in rig_object.pose.bones:
         f.write(bone.name) # Bone
         bone_matrix = rig_object.convert_space( pose_bone=bone,
                                                 matrix=bone.matrix, 
                                                 from_space="POSE", 
-                                                to_space="POSE")
+                                                to_space="GLOBAL")
+        
+
         loc = bone_matrix.to_translation()
         rot = bone_matrix.to_euler()
         scale = bone_matrix.to_scale()
