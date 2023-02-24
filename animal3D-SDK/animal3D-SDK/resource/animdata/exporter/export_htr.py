@@ -64,7 +64,7 @@ with open(export_path, "w") as f:
         bone_matrix = rig_object.convert_space( pose_bone=bone,
                                                 matrix=bone.matrix, 
                                                 from_space="POSE", 
-                                                to_space="GLOBAL")
+                                                to_space="POSE")
         
 
         loc = bone_matrix.to_translation()
