@@ -54,32 +54,34 @@ with open(export_path, "w") as f:
     f.write("# ObjectName<tab>Tx<tab>Ty<tab>Tz<tab>Rx<tab>Ry<tab>Rz<tab>BoneLength<CR>\n")
 
     # Write base pose
+    # NOTE:
+    # this assumes the base pose is frame 1
+    bpy.context.scene.frame_set(1)
     for bone in rig_object.pose.bones:
         f.write(bone.name) # Bone
         bone_matrix = rig_object.convert_space( pose_bone=bone,
                                                 matrix=bone.matrix, 
                                                 from_space="POSE", 
-                                                to_space="LOCAL")
+                                                to_space="POSE")
         loc = bone_matrix.to_translation()
         rot = bone_matrix.to_euler()
         scale = bone_matrix.to_scale()
         f.write("\t" + str('%.6f' % loc.x) +
                 "\t" + str('%.6f' % loc.y) +
                 "\t" + str('%.6f' % loc.z))
-        f.write("\t" + str('%.6f' % rot.x) +
-                "\t" + str('%.6f' % rot.y)+
-                "\t" + str('%.6f' % rot.z))
+        f.write("\t" + str('%.6f' % (rot.x * 180 / math.pi)) +
+                "\t" + str('%.6f' % (rot.y * 180 / math.pi)) +
+                "\t" + str('%.6f' % (rot.z * 180 / math.pi)))
         f.write("\t" + str('%.6f' % scale.x))
         f.write("\n")
 
 
     # Write the animation data for each frame
     for bone in rig_object.pose.bones:
-        f.write("[main]\n")
+        f.write("[" + bone.name + "]\n")
         f.write("# Tx<tab>Ty<tab>Tz<tab>Rx<tab>Ry<tab>Rz<tab>BoneScaleFactor<CR>\n")
         for i in range(start_frame, end_frame + 1):
-                bpy.context.scene.frame_set(i)
-                
+            bpy.context.scene.frame_set(i)
 
             bone_matrix = rig_object.convert_space( pose_bone=bone,
                                                     matrix=bone.matrix, 
@@ -92,9 +94,9 @@ with open(export_path, "w") as f:
                     "\t" + str('%.6f' % loc.x) +
                     "\t" + str('%.6f' % loc.y)+
                     "\t" + str('%.6f' % loc.z))
-            f.write("\t" + str('%.6f' % rot.x) +
-                    "\t" + str('%.6f' % rot.y)+
-                    "\t" + str('%.6f' % rot.z))
+            f.write("\t" + str('%.6f' % (rot.x * 180 / math.pi)) +
+                    "\t" + str('%.6f' % (rot.y * 180 / math.pi)) +
+                    "\t" + str('%.6f' % (rot.z * 180 / math.pi)))
             f.write("\t" + str('%.6f' % scale.x))
             f.write("\n")
             
