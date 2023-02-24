@@ -36,7 +36,6 @@ with open(export_path, "w") as f:
     f.write("RotationUnits Degrees\n")
     f.write("GlobalAxisofGravity Z\n")
     f.write("BoneLengthAxis Z\n")
-    f.write("BoneLengthAxis Z\n")
     f.write("ScaleFactor 1.00\n")
 
     # Header information
