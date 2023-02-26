@@ -5,8 +5,8 @@ import math
 from mathutils import Euler
 
 # Define the file path and name for the exported HTR file
-#file_path = "E:/~School/SP23/Animation Programming/repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
-file_path = "F:/Repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
+file_path = "E:/~School/SP23/Animation Programming/repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
+#file_path = "F:/Repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
 file_name = "rig_export_simple.htr"
 export_path = file_path + file_name
 
@@ -53,7 +53,7 @@ with open(export_path, "w") as f:
         if bone.parent:
             f.write(bone.parent.name + "\n") # Parent
         else:
-            f.write("GLOBAL\n") # Root
+            f.write("GLOBAL\n") # Rootd
 
     f.write("[BasePosition]\n")
     f.write("# ObjectName<tab>Tx<tab>Ty<tab>Tz<tab>Rx<tab>Ry<tab>Rz<tab>BoneLength<CR>\n")
@@ -90,13 +90,20 @@ with open(export_path, "w") as f:
         for i in range(start_frame, end_frame + 1):
             bpy.context.scene.frame_set(i)
 
-            bone_matrix = rig_object.convert_space( pose_bone=bone,
-                                                    matrix=bone.matrix, 
-                                                    from_space="POSE", 
-                                                    to_space="LOCAL")
-            loc = bone_matrix.to_translation()
-            rot = bone_matrix.to_euler()
-            scale = bone_matrix.to_scale();
+            # Get Offset
+            #bone_matrix = rig_object.convert_space( pose_bone=bone, matrix=bone.matrix, from_space="POSE", to_space="LOCAL")
+            # convert to refrance frame of parent                                        
+            #if bone.parent:
+                #bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.matrix_basis), from_space='POSE', to_space='LOCAL')
+                
+            if bone.parent:
+                bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.matrix), from_space='POSE', to_space='LOCAL')
+            else:
+                bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.matrix_basis), from_space='LOCAL', to_space='POSE')
+                
+            loc = bone.matrix_basis.to_translation()
+            rot = bone.matrix_basis.to_euler()
+            scale = bone.matrix_basis.to_scale();
             f.write(str(i) + 
                     "\t" + str('%.6f' % loc.x) +
                     "\t" + str('%.6f' % loc.y)+
