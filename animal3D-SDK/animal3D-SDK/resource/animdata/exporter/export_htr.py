@@ -5,7 +5,7 @@ import math
 from mathutils import Euler
 
 # Define the file path and name for the exported HTR file
-file_path = "C:/Users/steven.annunziato/Desktop/Repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
+file_path = "E:/~School/SP23/Animation Programming/repos/GPR450-Animation/animal3D-SDK/animal3D-SDK/resource/animdata/exporter/"
 file_name = "rig_export.htr"
 export_path = file_path + file_name
 
@@ -36,6 +36,7 @@ with open(export_path, "w") as f:
     f.write("RotationUnits Degrees\n")
     f.write("GlobalAxisofGravity Z\n")
     f.write("BoneLengthAxis Z\n")
+    f.write("BoneLengthAxis Z\n")
     f.write("ScaleFactor 1.00\n")
 
     # Header information
@@ -57,25 +58,24 @@ with open(export_path, "w") as f:
     # NOTE:
     # this assumes the base pose is frame 1
     bpy.context.scene.frame_set(1)
-    parent_bone = NULL
+    parent_bone = None
     for bone in rig_object.pose.bones:
         f.write(bone.name) # Bone
-        bone_matrix = rig_object.convert_space( pose_bone=bone,
-                                                matrix=bone.matrix, 
-                                                from_space="POSE", 
-                                                to_space="POSE")
         
-
+        if bone.parent:
+            bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.parent.matrix), from_space='POSE', to_space='LOCAL')
+        else:
+            bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.matrix_basis), from_space='LOCAL', to_space='POSE')
+        
         loc = bone_matrix.to_translation()
         rot = bone_matrix.to_euler()
-        scale = bone_matrix.to_scale()
         f.write("\t" + str('%.6f' % loc.x) +
                 "\t" + str('%.6f' % loc.y) +
                 "\t" + str('%.6f' % loc.z))
         f.write("\t" + str('%.6f' % (rot.x * 180 / math.pi)) +
                 "\t" + str('%.6f' % (rot.y * 180 / math.pi)) +
                 "\t" + str('%.6f' % (rot.z * 180 / math.pi)))
-        f.write("\t" + str('%.6f' % scale.x))
+        f.write("\t" + str('%.6f' % bone.length))
         f.write("\n")
 
 
@@ -92,7 +92,6 @@ with open(export_path, "w") as f:
                                                     to_space="LOCAL")
             loc = bone_matrix.to_translation()
             rot = bone_matrix.to_euler()
-            scale = bone_matrix.to_scale()
             f.write(str(i) + 
                     "\t" + str('%.6f' % loc.x) +
                     "\t" + str('%.6f' % loc.y)+
@@ -100,7 +99,7 @@ with open(export_path, "w") as f:
             f.write("\t" + str('%.6f' % (rot.x * 180 / math.pi)) +
                     "\t" + str('%.6f' % (rot.y * 180 / math.pi)) +
                     "\t" + str('%.6f' % (rot.z * 180 / math.pi)))
-            f.write("\t" + str('%.6f' % scale.x))
+            f.write("\t" + str('%.6f' % bone.length))
             f.write("\n")
             
     f.write("\n[EndOfFile]")
