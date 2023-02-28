@@ -1,5 +1,6 @@
 [Header]
-# KeyWord<space>Value<CR>FileType htr
+# KeyWord<space>Value<CR>
+FileType htr
 DataType HTRS
 FileVersion 1.0
 NumSegments 3
