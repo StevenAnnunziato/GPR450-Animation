@@ -10,7 +10,7 @@ CalibrationUnits m
 RotationUnits Degrees
 GlobalAxisofGravity Z
 BoneLengthAxis Z
-ScaleFactor 1.00
+ScaleFactor 1.0
 [SegmentNames&Hierarchy]
 # ObjectName<tab>ParentObjectName<CR>
 pelvis	GLOBAL
@@ -2063,5 +2063,4 @@ foot_right	-0.000000	2.782514	0.000000	0.241543	-0.154340	77.422202	3.370008
 58	0.000000	0.000000	0.000000	0.000000	-0.000000	0.000000	1.000000
 59	0.000000	0.000000	0.000000	0.000000	-0.000000	0.000000	1.000000
 60	0.000000	0.000000	0.000000	0.000000	-0.000000	0.000000	1.000000
-
 [EndOfFile]
