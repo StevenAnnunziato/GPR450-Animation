@@ -28,7 +28,7 @@ with open(export_path, "w") as f:
 
     # Write the header information
     f.write("[Header]\n")
-    f.write("# KeyWord<space>Value<CR>")
+    f.write("# KeyWord<space>Value<CR>\n")
 
     f.write("FileType htr\n")
     f.write("DataType HTRS\n")
@@ -70,7 +70,7 @@ with open(export_path, "w") as f:
         if bone.parent:
             bone_matrix = rig_object.convert_space(pose_bone=bone.parent, matrix=(bone.matrix), from_space='POSE', to_space='LOCAL')    # bone matrix                   object -> local, relative to parent
         else: #root
-            bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.matrix_basis), from_space='LOCAL', to_space='POSE')     # basis matrix, or ofset        local -> object
+            bone_matrix = rig_object.convert_space(pose_bone=bone, matrix=(bone.matrix_basis), from_space='LOCAL', to_space='POSE')     # basis matrix, or offset        local -> object
         
         # write location and rotation as Eulers
         loc = bone_matrix.to_translation()
