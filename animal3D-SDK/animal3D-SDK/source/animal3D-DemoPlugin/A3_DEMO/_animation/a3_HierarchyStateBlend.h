@@ -45,7 +45,7 @@ extern "C"
 a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPose* pose_out);
 
 a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec3 eulers, const a3vec3 scale, const a3vec3 translation);
-a3_SpatialPose* a3spatialPoseCopy(const a3_SpatialPose* pose_in);
+a3_SpatialPose* a3spatialPoseConstant(const a3_SpatialPose* pose_in);
 a3_SpatialPose* a3spatialPoseInvert(const a3_SpatialPose* pose_in);
 a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs);
 a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3real blendParam);
@@ -68,10 +68,10 @@ a3_SpatialPose* a3spatialPoseBicubicBlend(		  a3_SpatialPose* pose_out, const a3
 //-----------------------------------------------------------------------------
 
 // data-based reset/identity
-a3_SpatialPose a3spatialPoseDOpIdentity();
+//a3_SpatialPose a3spatialPoseDOpIdentity();
 
 // data-based LERP
-a3_SpatialPose a3spatialPoseDOpLERP(a3_SpatialPose const pose0, a3_SpatialPose const pose1, a3real const u);
+//a3_SpatialPose a3spatialPoseDOpLERP(a3_SpatialPose const pose0, a3_SpatialPose const pose1, a3real const u);
 
 
 //-----------------------------------------------------------------------------
@@ -80,13 +80,13 @@ a3_SpatialPose a3spatialPoseDOpLERP(a3_SpatialPose const pose0, a3_SpatialPose c
 a3_HierarchyPose* a3hierarchyPoseOpIdentity(a3_HierarchyPose* pose_out);
 
 a3_HierarchyPose* a3hierarchyPoseConstruct(a3_HierarchyPose* pose_out, const a3vec3 eulers, const a3vec3 scale, const a3vec3 translation);
-a3_HierarchyPose* a3hierarchyPoseCopy(const a3_HierarchyPose* pose_in);
+a3_HierarchyPose* a3hierarchyPoseConstant(const a3_HierarchyPose* pose_in);
 a3_HierarchyPose* a3hierarchyPoseInvert(const a3_HierarchyPose* pose_in);
 a3_HierarchyPose* a3hierarchyPoseMerge(a3_HierarchyPose* pose_out, const a3_HierarchyPose* lhs, const a3_HierarchyPose* rhs);
 a3_HierarchyPose* a3hierarchyPoseNearest(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3real blendParam);
 
 // pointer-based LERP operation for single hierarchy pose
-a3_HierarchyPose* a3spatialPoseOpLERP(a3_HierarchyPose* pose_out, a3_HierarchyPose const* pose0, a3_HierarchyPose const* pose1, a3real const u);
+a3_HierarchyPose* a3hierarchyPoseOpLERP(a3_HierarchyPose* pose_out, a3_HierarchyPose const* pose0, a3_HierarchyPose const* pose1, a3real const u);
 
 a3_HierarchyPose* a3hierarchyPoseCubicBlend(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_pre, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3_HierarchyPose* pose_post, const a3real blendParam);
 a3_HierarchyPose* a3hierarchyPoseDeconcat(a3_HierarchyPose* pose_out, const a3_HierarchyPose* lhs, const a3_HierarchyPose* rhs);
