@@ -29,6 +29,7 @@
 #include "a3_HierarchyState.h"
 
 #include "a3_Kinematics.h"
+#include <math.h>
 
 
 #ifdef __cplusplus
@@ -38,6 +39,11 @@ extern "C"
 
 #endif	// __cplusplus
 	
+typedef a3_SpatialPose* (*a3_spatialPoseOp) (
+	a3_SpatialPose* pose_out,
+	a3_SpatialPose const* pose_in[],
+	a3real const param_in[]
+);
 
 //-----------------------------------------------------------------------------
 
@@ -102,6 +108,7 @@ a3_HierarchyPose* a3hierarchyPoseBicubicBlend(a3_HierarchyPose* pose_out, const 
 
 //-----------------------------------------------------------------------------
 
+a3ui32 a3real4Pow(a3real* v_out, const a3real* v, const a3real p);
 
 #ifdef __cplusplus
 }

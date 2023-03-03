@@ -35,7 +35,10 @@
 inline a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPose* pose_out)
 {
 	pose_out->transform = a3mat4_identity;
-	// ...
+	pose_out->orientation = a3vec4_one;
+	pose_out->angles = a3vec4_zero;
+	pose_out->scale = a3vec4_one;
+	pose_out->translation = a3vec4_zero;
 
 	// done
 	return pose_out;
@@ -69,14 +72,131 @@ inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPose* pose_out, const a3_S
 // pointer-based LERP operation for single spatial pose
 inline a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPose* pose_out, a3_SpatialPose const* pose0, a3_SpatialPose const* pose1, a3real const u)
 {
+	if (pose_out && pose0 && pose1)
+	{
+		a3real3Lerp(pose_out->angles.v, pose0->angles.v, pose1->angles.v, u);
 
-	// done
-	return pose_out;
+		a3real3Lerp(pose_out->scale.v, pose0->scale.v, pose1->scale.v, u);
+
+		a3real3Lerp(pose_out->translation.v, pose0->translation.v, pose1->translation.v, u);
+
+		// done
+		return pose_out;
+	}
+
+	return 0;
+	
 }
 
 inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_pre, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3_SpatialPose* pose_post, const a3real blendParam)
 {
-	return 0;
+	// construct a matrix with all the control inputs
+	/*a3mat4 rotationControlMat;
+	rotationControlMat.v0 = pose_pre->angles;
+	rotationControlMat.v1 = pose0->angles;
+	rotationControlMat.v2 = pose1->angles;
+	rotationControlMat.v3 = pose_post->angles;
+	a3mat4 translationControlMat;
+	translationControlMat.v0 = pose_pre->translation;
+	translationControlMat.v1 = pose0->translation;
+	translationControlMat.v2 = pose1->translation;
+	translationControlMat.v3 = pose_post->translation;
+	a3mat4 scaleControlMat;
+	scaleControlMat.v0 = pose_pre->scale;
+	scaleControlMat.v1 = pose0->scale;
+	scaleControlMat.v2 = pose1->scale;
+	scaleControlMat.v3 = pose_post->scale;
+
+	// construct the catmull-rom kernel matrix
+	const a3mat4 kernel;// = a3mat4(0.0, +2.0, 0.0, 0.0,
+						//		   -1.0, 0.0, +1.0, 0.0,
+						//		   +2.0, -5.0, +4.0, -1.0,
+						//		   -1.0, +3.0, -3.0, +1.0);
+	a3real4x4Set(&kernel, 0.0, +2.0, 0.0, 0.0, -1.0, 0.0, +1.0, 0.0, +2.0, -5.0, +4.0, -1.0, -1.0, +3.0, -3.0, +1.0);
+
+	// find blend parameter for each set of points
+	float t0 = 0.5;
+	float t1 = t0 * blendParam;
+	float t2 = t1 * blendParam;
+	float t3 = t2 * blendParam;
+	
+	//pose_out->rotation = (controlMat * (kernel * vec4(t0, t1, t2, t3)));
+	// put times in an array
+	a3mat4 kernelTime;
+	a3real timeVec[] = {t0, t1, t2, t3};
+	a3real4Real4x4ProductR(kernelTime.m, kernel.m, timeVec);
+
+	// finalize pose out
+	a3real outArray[4];
+	a3real4Real4x4ProductR(outArray, rotationControlMat.m, kernelTime.m);
+	pose_out->angles.x = outArray[0]; pose_out->angles.y = outArray[1]; pose_out->angles.z = outArray[2];
+	a3real4Real4x4ProductR(outArray, translationControlMat.m, kernelTime.m);
+	pose_out->translation.x = outArray[0]; pose_out->translation.y = outArray[1]; pose_out->translation.z = outArray[2];
+	a3real4Real4x4ProductR(outArray, scaleControlMat.m, kernelTime.m);
+	pose_out->scale.x = outArray[0]; pose_out->scale.y = outArray[1]; pose_out->scale.z = outArray[2];*/
+
+	// make blend params
+	const a3real t = blendParam;
+	const a3real t2 = t * t;
+	const a3real t3 = t2 * t;
+
+	// make scalars
+	a3real s1 = -t + 2.0f * t2 - t3;
+	a3real s2 = 2.0f - 5.0f * t2 + 3.0f * t3;
+	a3real s3 = t + 4.0f * t2 - 3.0f * t3;
+	a3real s4 = -t2 + t3;
+
+	// temp arrays
+	a3real sum[4];
+	a3real out1[4];
+
+	// rotation
+	a3real4ProductS(out1, pose_pre->angles.v, s1);
+	a3real4Add(sum, out1);
+	a3real4ProductS(out1, pose0->angles.v, s2);
+	a3real4Add(sum, out1);
+	a3real4ProductS(out1, pose1->angles.v, s3);
+	a3real4Add(sum, out1);
+	a3real4ProductS(out1, pose_post->angles.v, s4);
+	a3real4Add(sum, out1);
+	a3real4ProductS(sum, sum, 0.5f);
+
+	pose_out->angles.v[0] = sum[0];
+	pose_out->angles.v[1] = sum[1];
+	pose_out->angles.v[2] = sum[2];
+
+	// translation
+	a3real4ProductS(out1, pose_pre->translation.v, s1);
+	a3real4Add(sum, out1);
+	a3real4ProductS(out1, pose0->translation.v, s2);
+	a3real4Add(sum, out1);
+	a3real4ProductS(out1, pose1->translation.v, s3);
+	a3real4Add(sum, out1);
+	a3real4ProductS(out1, pose_post->translation.v, s4);
+	a3real4Add(sum, out1);
+	a3real4ProductS(sum, sum, 0.5f);
+
+	pose_out->translation.v[0] = sum[0];
+	pose_out->translation.v[1] = sum[1];
+	pose_out->translation.v[2] = sum[2];
+
+	// scale
+	s1, s2, s3, s4 *= 0.5f;
+	a3real4Pow(out1, pose_pre->scale.v, s1);
+	a3real4MulComp(sum, out1);
+	a3real4Pow(out1, pose0->scale.v, s2);
+	a3real4MulComp(sum, out1);
+	a3real4Pow(out1, pose1->scale.v, s3);
+	a3real4MulComp(sum, out1);
+	a3real4Pow(out1, pose_post->scale.v, s4);
+	a3real4MulComp(sum, out1);
+	a3real4Pow(sum, sum, 0.5f);
+
+	pose_out->scale.v[0] = sum[0];
+	pose_out->scale.v[1] = sum[1];
+	pose_out->scale.v[2] = sum[2];
+
+	return pose_out;
 }
 
 inline a3_SpatialPose* a3spatialPoseDeconcat(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
@@ -205,6 +325,15 @@ inline a3_HierarchyPose* a3hierarchyPoseBilinearBlend(a3_HierarchyPose* pose_out
 
 inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(a3_HierarchyPose* pose_out, const a3real blendTotal, const a3_HierarchyPose* pose_A0, const a3_HierarchyPose* pose_A1, const a3_HierarchyPose* pose_A2, const a3_HierarchyPose* pose_A3, const a3real blendA, const a3_HierarchyPose* pose_B0, const a3_HierarchyPose* pose_B1, const a3_HierarchyPose* pose_B2, const a3_HierarchyPose* pose_B3, const a3real blendB, const a3_HierarchyPose* pose_C0, const a3_HierarchyPose* pose_C1, const a3_HierarchyPose* pose_C2, const a3_HierarchyPose* pose_C3, const a3real blendC, const a3_HierarchyPose* pose_D0, const a3_HierarchyPose* pose_D1, const a3_HierarchyPose* pose_D2, const a3_HierarchyPose* pose_D3, const a3real blendD)
 {
+	return 0;
+}
+
+inline a3ui32 a3real4Pow(a3real* v_out, const a3real* v, const a3real p)
+{
+	v_out[0] = (a3real)pow(v[0], p);
+	v_out[1] = (a3real)pow(v[1], p);
+	v_out[2] = (a3real)pow(v[2], p);
+	v_out[3] = (a3real)pow(v[3], p);
 	return 0;
 }
 
