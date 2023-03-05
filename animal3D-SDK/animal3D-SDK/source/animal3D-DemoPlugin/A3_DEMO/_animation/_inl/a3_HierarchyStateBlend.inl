@@ -539,7 +539,7 @@ inline a3_HierarchyPose* a3hierarchyPoseDeconcat(a3_HierarchyPose* pose_out, a3u
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseDeconcat(pose_out->pose + i, lhs->pose + i, rhs->pose + i);
+			a3spatialPoseSplit(pose_out->pose + i, lhs->pose + i, rhs->pose + i);
 		return pose_out;
 	}
 	return 0;
