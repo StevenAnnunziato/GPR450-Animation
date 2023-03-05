@@ -448,7 +448,7 @@ inline a3_HierarchyPose* a3hierarchyPoseOpIdentity(a3_HierarchyPose* pose_inout,
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseConstruct(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3vec3 eulers, const a3vec3 scale, const a3vec3 translation)
+inline a3_HierarchyPose* a3hierarchyPoseConstruct(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translation)
 {
 	if (pose_out && nodeCount)
 	{
