@@ -80,19 +80,21 @@ inline a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPose* pose_out, const a3_
 
 inline a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in)
 {
-	if (pose_out && pose_in)
+	if (pose_out && pose_in && pose_in->scale.x > 0.0f
+							&& pose_in->scale.y > 0.0f
+							&& pose_in->scale.z > 0.0f)
 	{
-		pose_out->angles.x = pose_out->angles.x - pose_in->angles.x;
-		pose_out->angles.y = pose_out->angles.y - pose_in->angles.y;
-		pose_out->angles.z = pose_out->angles.z - pose_in->angles.z;
+		pose_out->angles.x = -pose_in->angles.x;
+		pose_out->angles.y = -pose_in->angles.y;
+		pose_out->angles.z = -pose_in->angles.z;
 
-		pose_out->translation.x = pose_out->translation.x - pose_in->translation.x;
-		pose_out->translation.y = pose_out->translation.y - pose_in->translation.y;
-		pose_out->translation.z = pose_out->translation.z - pose_in->translation.z;
+		pose_out->translation.x = -pose_in->translation.x;
+		pose_out->translation.y = -pose_in->translation.y;
+		pose_out->translation.z = -pose_in->translation.z;
 
-		pose_out->scale.x = pose_out->scale.x / pose_in->scale.x;
-		pose_out->scale.y = pose_out->scale.y / pose_in->scale.y;
-		pose_out->scale.z = pose_out->scale.z / pose_in->scale.z;
+		pose_out->scale.x = 1.0f / pose_in->scale.x;
+		pose_out->scale.y = 1.0f / pose_in->scale.y;
+		pose_out->scale.z = 1.0f / pose_in->scale.z;
 
 		return pose_out;
 	}
@@ -278,7 +280,9 @@ inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPose* pose_out, const a
 
 inline a3_SpatialPose* a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
 {
-	if (pose_out && lhs && rhs)
+	if (pose_out && lhs && rhs && rhs->scale.x > 0.0f
+							   && rhs->scale.y > 0.0f
+							   && rhs->scale.z > 0.0f)
 	{
 		pose_out->angles.x = lhs->angles.x - rhs->angles.x;
 		pose_out->angles.y = lhs->angles.y - rhs->angles.y;
