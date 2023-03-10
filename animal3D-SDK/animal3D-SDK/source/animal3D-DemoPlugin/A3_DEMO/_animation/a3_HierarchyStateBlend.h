@@ -95,7 +95,7 @@ a3_HierarchyPose* a3hierarchyPoseNearest(a3_HierarchyPose* pose_out, a3ui32 node
 a3_HierarchyPose* a3hierarchyPoseOpLERP(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose0, a3_HierarchyPose const* pose1, a3real const u);
 
 a3_HierarchyPose* a3hierarchyPoseCubicBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose_pre, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3_HierarchyPose* pose_post, const a3real blendParam);
-a3_HierarchyPose* a3hierarchyPoseDeconcat(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* lhs, const a3_HierarchyPose* rhs);
+//a3_HierarchyPose* a3hierarchyPoseDeconcat(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* lhs, const a3_HierarchyPose* rhs);
 a3_HierarchyPose* a3hierarchyPoseScale(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose_in, const a3real blendParam);
 a3_HierarchyPose* a3hierarchyPoseTriangularBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3_HierarchyPose* pose2, const a3real u0, const a3real u1);
 a3_HierarchyPose* a3hierarchyPoseBinearestBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* init0, const a3_HierarchyPose* init1, const a3_HierarchyPose* final1, const a3_HierarchyPose* final2, const a3real u, const a3real u0, const a3real u1);
