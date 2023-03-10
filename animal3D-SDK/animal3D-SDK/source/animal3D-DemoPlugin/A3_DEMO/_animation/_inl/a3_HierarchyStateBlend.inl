@@ -416,6 +416,26 @@ inline a3_SpatialPose* a3spatialPoseBicubicBlend(a3_SpatialPose* pose_out, const
 	return 0;
 }
 
+inline a3_SpatialPose* a3spatialPoseSmoothstep(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3real u)
+{
+	return nullptr;
+}
+
+inline a3_SpatialPose* a3spatialPoseDescale(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in, const a3real u)
+{
+	return nullptr;
+}
+
+inline a3_SpatialPose* a3spatialPoseConvert(a3_SpatialPose* pose_inout)
+{
+	return nullptr;
+}
+
+inline a3_SpatialPose* a3spatialPoseRestore(a3_SpatialPose* pose_inout)
+{
+	return nullptr;
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -615,6 +635,39 @@ inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(a3_HierarchyPose* pose_out,
 	}
 	return 0;
 }
+
+inline a3_HierarchyPose* a3hierarchyPoseSmoothstep(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3real u)
+{
+	return nullptr;
+}
+
+inline a3_HierarchyPose* a3hierarchyPoseDescale(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_in, const a3real u)
+{
+	return nullptr;
+}
+
+inline a3_HierarchyPose* a3hierarchyPoseConvert(a3_HierarchyPose* pose_inout)
+{
+	return nullptr;
+}
+
+inline a3_HierarchyPose* a3hierarchyPoseRestore(a3_HierarchyPose* pose_inout)
+{
+	return nullptr;
+}
+
+inline a3_HierarchyPose* a3hierachyPoseDoFK(const a3_Hierarchy* hierarchy, a3_HierarchyPose* hierarchyPose_object, const a3_HierarchyPose* hierarchyPose_local)
+{
+	return nullptr;
+}
+
+inline a3_HierarchyPose* a3hierachyPoseDoIK(const a3_Hierarchy* hierarchy, const a3_HierarchyPose* hierarchyPose_object, a3_HierarchyPose* hierarchyPose_local)
+{
+	return nullptr;
+}
+
+// additional helper functions
+//-----------------------------------------------------------------------------
 
 inline a3ui32 a3real4Pow(a3real* v_out, const a3real* v, const a3real p)
 {

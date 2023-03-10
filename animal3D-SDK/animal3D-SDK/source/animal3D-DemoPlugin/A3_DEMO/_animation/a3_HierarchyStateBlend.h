@@ -71,6 +71,11 @@ a3_SpatialPose* a3spatialPoseBicubicBlend(		  a3_SpatialPose* pose_out, const a3
 											const a3_SpatialPose* pose_C0, const a3_SpatialPose* pose_C1, const a3_SpatialPose* pose_C2, const a3_SpatialPose* pose_C3, const a3real blendC,
 											const a3_SpatialPose* pose_D0, const a3_SpatialPose* pose_D1, const a3_SpatialPose* pose_D2, const a3_SpatialPose* pose_D3, const a3real blendD);
 
+a3_SpatialPose* a3spatialPoseSmoothstep(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3real u);
+a3_SpatialPose* a3spatialPoseDescale(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in, const a3real u);
+a3_SpatialPose* a3spatialPoseConvert(a3_SpatialPose* pose_inout);
+a3_SpatialPose* a3spatialPoseRestore(a3_SpatialPose* pose_inout);
+
 //-----------------------------------------------------------------------------
 
 // data-based reset/identity
@@ -105,6 +110,21 @@ a3_HierarchyPose* a3hierarchyPoseBicubicBlend(a3_HierarchyPose* pose_out, a3ui32
 	const a3_HierarchyPose* pose_B0, const a3_HierarchyPose* pose_B1, const a3_HierarchyPose* pose_B2, const a3_HierarchyPose* pose_B3, const a3real blendB,
 	const a3_HierarchyPose* pose_C0, const a3_HierarchyPose* pose_C1, const a3_HierarchyPose* pose_C2, const a3_HierarchyPose* pose_C3, const a3real blendC,
 	const a3_HierarchyPose* pose_D0, const a3_HierarchyPose* pose_D1, const a3_HierarchyPose* pose_D2, const a3_HierarchyPose* pose_D3, const a3real blendD);
+
+a3_HierarchyPose* a3hierarchyPoseSmoothstep(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3real u);
+a3_HierarchyPose* a3hierarchyPoseDescale(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_in, const a3real u);
+a3_HierarchyPose* a3hierarchyPoseConvert(a3_HierarchyPose* pose_inout);
+a3_HierarchyPose* a3hierarchyPoseRestore(a3_HierarchyPose* pose_inout);
+// a3hierarchyPoseDoFK:
+// 1. a3_Hierarchy to contextualize the operation
+// 2. the pose to output to in the target object space
+// 3. the local input pose to convert
+a3_HierarchyPose* a3hierachyPoseDoFK(const a3_Hierarchy* hierarchy, a3_HierarchyPose* hierarchyPose_object, const a3_HierarchyPose* hierarchyPose_local);
+// a3hierarchyPoseDoIK:
+// 1. a3_Hierarchy to contextualize the operation
+// 2. the input object-space pose
+// 3. the local pose which will be used as output
+a3_HierarchyPose* a3hierachyPoseDoIK(const a3_Hierarchy* hierarchy, const a3_HierarchyPose* hierarchyPose_object, a3_HierarchyPose* hierarchyPose_local);
 
 //-----------------------------------------------------------------------------
 
