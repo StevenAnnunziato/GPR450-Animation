@@ -760,6 +760,21 @@ inline a3ui32 a3scaleNode(a3_BlendTreeNode* node_out, const a3_Clip* clip, const
 	return 0;
 }
 
+inline a3ui32 a3maskNode(a3_BlendTreeNode* node_out, a3_HierarchyPose* in_pose, const a3ui32 nodeCount, const a3_SpatialPose* maskBones, const a3ui32 numMaskBones)
+{
+	// loop through each a3_SpatialPose in maskBones
+	for (size_t i = 0; i < numMaskBones; i++)
+	{
+		// set the pose to identity
+		a3spatialPoseReset(in_pose->pose + i);
+	}
+
+	// store the out pose
+	a3hierarchyPoseCopy(node_out->outPose, in_pose, nodeCount);
+
+	return 0;
+}
+
 // additional helper functions
 //-----------------------------------------------------------------------------
 
