@@ -154,20 +154,31 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		a3clipControllerUpdate(demoMode->clipCtrlB, dt);
 
 		// STEP
+
+		//a3_HierarchyPoseOp* ops = (a3_HierarchyPoseOp[2]){ a3hierarchyPoseCopy , a3hierarchyPoseLerp };
+		//ops[0] = a3hierarchyPoseCopy;
+		//ops[1] = a3hierarchyPoseLerp;
+
 		a3hierarchyPoseCopy(activeHS->animPose,
+			demoMode->hierarchy_skel->numNodes,
 			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex,
-			demoMode->hierarchy_skel->numNodes);
+			(a3real*)NULL);
 
 		a3_HierarchyState* tmpHS = demoMode->hierarchyState_skel + 2;
 
 		a3hierarchyPoseCopy(tmpHS->animPose,
+			demoMode->hierarchy_skel->numNodes,
 			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlB->keyframeIndex,
-			demoMode->hierarchy_skel->numNodes);
+			NULL);
 
 		a3hierarchyPoseLerp(activeHS->animPose,
-			tmpHS->animPose,
-			activeHS->animPose,
-			(a3f32)0.9f, demoMode->hierarchy_skel->numNodes);
+			demoMode->hierarchy_skel->numNodes,
+			(a3_HierarchyPose * []) {
+			tmpHS->animPose, activeHS->animPose
+		},
+			(a3real[]) {
+			0.9f
+		});
 
 		// LERP
 
@@ -186,9 +197,12 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 
 		// FK pipeline
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
+			demoMode->hierarchy_skel->numNodes,
+			(a3_HierarchyPose* []) {
 			baseHS->localSpace, // holds base pose
-			activeHS->animPose, // holds current sample pose
-			demoMode->hierarchy_skel->numNodes);
+				activeHS->animPose
+		}, // holds current sample pose
+			NULL);
 		a3hierarchyPoseConvert(activeHS->localSpace,
 			demoMode->hierarchy_skel->numNodes,
 			demoMode->hierarchyPoseGroup_skel->channel,

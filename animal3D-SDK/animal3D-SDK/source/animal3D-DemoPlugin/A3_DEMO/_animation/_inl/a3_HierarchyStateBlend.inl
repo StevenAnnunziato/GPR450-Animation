@@ -441,20 +441,31 @@ inline a3_SpatialPose a3spatialPoseDOpLERP(a3_SpatialPose const pose0, a3_Spatia
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for hierarchical pose
-inline a3_HierarchyPose* a3hierarchyPoseOpIdentity(a3_HierarchyPose* pose_inout, a3ui32 nodeCount)
+inline a3_HierarchyPose* a3hierarchyPoseOpIdentity(
+	a3_HierarchyPose* pose_out, 
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[], 
+	a3real const param_in[])
 {
-	if (pose_inout && nodeCount)
+	if (pose_out && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseOpIdentity(pose_inout->pose + i);
-		return pose_inout;
+			a3spatialPoseOpIdentity(pose_out->pose + i);
+		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseConstruct(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translate)
+inline a3_HierarchyPose* a3hierarchyPoseConstruct(
+	a3_HierarchyPose*		pose_out,
+	a3ui32					nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const			param_in[])
 {
+	const a3vec4	eulers = (a3vec4){param_in[0],param_in[1],param_in[2],param_in[3] }, 
+					scale = (a3vec4){ param_in[4],param_in[5],param_in[6],param_in[7] }, 
+					translate = (a3vec4){ param_in[8],param_in[9],param_in[10],param_in[11] };
 	if (pose_out && nodeCount)
 	{
 		a3index i;
@@ -465,32 +476,47 @@ inline a3_HierarchyPose* a3hierarchyPoseConstruct(a3_HierarchyPose* pose_out, a3
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseConstant(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_in, a3ui32 nodeCount)
+inline a3_HierarchyPose* a3hierarchyPoseConstant(
+	a3_HierarchyPose*		pose_out,
+	a3ui32					nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const			param_in[])
 {
-	if (pose_out && pose_in && nodeCount)
+	if (pose_out && pose_in[0] && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseConstant(pose_out->pose + i, pose_in->pose + i);
+			a3spatialPoseConstant(pose_out->pose + i, pose_in[0]->pose + i);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseInvert(a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_in, a3ui32 nodeCount)
+inline a3_HierarchyPose* a3hierarchyPoseInvert(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
-	if (pose_out && pose_in && nodeCount)
+	if (pose_out && pose_in[0] && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseInvert(pose_out->pose + i, pose_in->pose + i);
+			a3spatialPoseInvert(pose_out->pose + i, pose_in[0]->pose + i);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseMerge(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* lhs, const a3_HierarchyPose* rhs)
+inline a3_HierarchyPose* a3hierarchyPoseMerge(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* lhs = pose_in[0];
+	const a3_HierarchyPose* rhs = pose_in[1];
+
 	if (pose_out && lhs && rhs && nodeCount)
 	{
 		a3index i;
@@ -501,8 +527,16 @@ inline a3_HierarchyPose* a3hierarchyPoseMerge(a3_HierarchyPose* pose_out, a3ui32
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseNearest(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3real blendParam)
+inline a3_HierarchyPose* a3hierarchyPoseNearest(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* pose0 = pose_in[0];
+	const a3_HierarchyPose* pose1 = pose_in[1];
+	const a3real blendParam = param_in[0];
+
 	if (pose_out && pose0 && pose1 && nodeCount)
 	{
 		a3index i;
@@ -514,21 +548,38 @@ inline a3_HierarchyPose* a3hierarchyPoseNearest(a3_HierarchyPose* pose_out, a3ui
 }
 
 // pointer-based LERP operation for hierarchical pose
-inline a3_HierarchyPose* a3hierarchyPoseOpLERP(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose0, a3_HierarchyPose const* pose1, a3real const u)
+inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* pose0 = pose_in[0];
+	const a3_HierarchyPose* pose1 = pose_in[1];
+	const a3real blendParam = param_in[0];
 	if (pose_out && pose0 && pose1 && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseLerp(pose_out->pose + i, pose0->pose + i, pose1->pose + i, u);
+			a3spatialPoseLerp(pose_out->pose + i, pose0->pose + i, pose1->pose + i, blendParam);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseCubicBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose_pre, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3_HierarchyPose* pose_post, const a3real blendParam)
+inline a3_HierarchyPose* a3hierarchyPoseCubicBlend(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
-	if (pose_out && pose0 && pose1 && pose_pre  && pose_post && nodeCount)
+	const a3_HierarchyPose* pose_pre =		pose_in[0];
+	const a3_HierarchyPose* pose0 =			pose_in[1];
+	const a3_HierarchyPose* pose1 =			pose_in[2];
+	const a3_HierarchyPose* pose_post =		pose_in[3];
+	const a3real blendParam = param_in[0];
+
+	if (pose_out && pose0 && pose1 && pose_pre && pose_post && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
@@ -538,8 +589,15 @@ inline a3_HierarchyPose* a3hierarchyPoseCubicBlend(a3_HierarchyPose* pose_out, a
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseSplit(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* lhs, const a3_HierarchyPose* rhs)
+inline a3_HierarchyPose* a3hierarchyPoseSplit(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* lhs = pose_in[0];
+	const a3_HierarchyPose* rhs = pose_in[1];
+
 	if (pose_out && lhs && rhs && nodeCount)
 	{
 		a3index i;
@@ -550,56 +608,122 @@ inline a3_HierarchyPose* a3hierarchyPoseSplit(a3_HierarchyPose* pose_out, a3ui32
 	return pose_out;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseScale(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose_in, const a3real blendParam)
+inline a3_HierarchyPose* a3hierarchyPoseScale(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
-	if (pose_out && pose_in && nodeCount)
+	const a3real blendParam = param_in[0];
+
+	if (pose_out && pose_in[0] && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseScale(pose_out->pose + i, pose_in->pose + i, blendParam);
+			a3spatialPoseScale(pose_out->pose + i, pose_in[0]->pose + i, blendParam);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseTriangularBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* pose0, const a3_HierarchyPose* pose1, const a3_HierarchyPose* pose2, const a3real u0, const a3real u1)
+inline a3_HierarchyPose* a3hierarchyPoseTriangularBlend(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* pose0 = pose_in[0];
+	const a3_HierarchyPose* pose1 = pose_in[1];
+	const a3_HierarchyPose* pose2 = pose_in[2];
+	const a3real blendParam0 = param_in[0];
+	const a3real blendParam1 = param_in[1];
+
 	if (pose_out && pose0 && pose1 && pose2 && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseTriangularBlend(pose_out->pose + i, pose0->pose + i, pose1->pose + i, pose2->pose + i, u0, u1);
+			a3spatialPoseTriangularBlend(pose_out->pose + i, pose0->pose + i, pose1->pose + i, pose2->pose + i, blendParam0, blendParam1);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseBinearestBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* init0, const a3_HierarchyPose* init1, const a3_HierarchyPose* final1, const a3_HierarchyPose* final2, const a3real u, const a3real u0, const a3real u1)
+inline a3_HierarchyPose* a3hierarchyPoseBinearestBlend(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* init0 = pose_in[0];
+	const a3_HierarchyPose* init1 = pose_in[1];
+	const a3_HierarchyPose* final1 = pose_in[2];
+	const a3_HierarchyPose* final2 = pose_in[3];
+	const a3real blendParam0 = param_in[0];
+	const a3real blendParam1 = param_in[1];
+	const a3real blendParam2 = param_in[2];
+
 	if (pose_out && init0 && init1 && final1 && final2 && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseBinearestBlend(pose_out->pose + i, init0->pose + i, init1->pose + i, final1->pose + i, final2->pose + i, u, u0, u1);
+			a3spatialPoseBinearestBlend(pose_out->pose + i, init0->pose + i, init1->pose + i, final1->pose + i, final2->pose + i, blendParam0, blendParam1, blendParam2);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseBilinearBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3_HierarchyPose* init0, const a3_HierarchyPose* init1, const a3_HierarchyPose* final0, const a3_HierarchyPose* final1, const a3real u, const a3real u0, const a3real u1)
+inline a3_HierarchyPose* a3hierarchyPoseBilinearBlend(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3_HierarchyPose* init0 = pose_in[0];
+	const a3_HierarchyPose* init1 = pose_in[1];
+	const a3_HierarchyPose* final0 = pose_in[2];
+	const a3_HierarchyPose* final1 = pose_in[3];
+	const a3real blendParam0 = param_in[0];
+	const a3real blendParam1 = param_in[1];
+	const a3real blendParam2 = param_in[2];
+
 	if (pose_out && init0 && init1 && final0 && final1 && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseBilinearBlend(pose_out->pose + i, init0->pose + i, init1->pose + i, final0->pose + i, final1->pose + i, u, u0, u1);
+			a3spatialPoseBilinearBlend(pose_out->pose + i, init0->pose + i, init1->pose + i, final0->pose + i, final1->pose + i, blendParam0, blendParam1, blendParam2);
 		return pose_out;
 	}
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(a3_HierarchyPose* pose_out, a3ui32 nodeCount, const a3real blendTotal, const a3_HierarchyPose* pose_A0, const a3_HierarchyPose* pose_A1, const a3_HierarchyPose* pose_A2, const a3_HierarchyPose* pose_A3, const a3real blendA, const a3_HierarchyPose* pose_B0, const a3_HierarchyPose* pose_B1, const a3_HierarchyPose* pose_B2, const a3_HierarchyPose* pose_B3, const a3real blendB, const a3_HierarchyPose* pose_C0, const a3_HierarchyPose* pose_C1, const a3_HierarchyPose* pose_C2, const a3_HierarchyPose* pose_C3, const a3real blendC, const a3_HierarchyPose* pose_D0, const a3_HierarchyPose* pose_D1, const a3_HierarchyPose* pose_D2, const a3_HierarchyPose* pose_D3, const a3real blendD)
+inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[])
 {
+	const a3real	blendTotal	= param_in[0],
+					blendA		= param_in[1], 
+					blendB		= param_in[2], 
+					blendC		= param_in[3],
+					blendD		= param_in[4];
+
+	a3_HierarchyPose	const* pose_A0 = pose_in[0];
+	a3_HierarchyPose	const* pose_A1 = pose_in[1];
+	a3_HierarchyPose	const* pose_A2 = pose_in[2];
+	a3_HierarchyPose	const* pose_A3 = pose_in[3];
+	a3_HierarchyPose	const* pose_B0 = pose_in[4];
+	a3_HierarchyPose	const* pose_B1 = pose_in[5];
+	a3_HierarchyPose	const* pose_B2 = pose_in[6];
+	a3_HierarchyPose	const* pose_B3 = pose_in[7];
+	a3_HierarchyPose	const* pose_C0 = pose_in[8];
+	a3_HierarchyPose	const* pose_C1 = pose_in[9];
+	a3_HierarchyPose	const* pose_C2 = pose_in[10];
+	a3_HierarchyPose	const* pose_C3 = pose_in[11];
+	a3_HierarchyPose	const* pose_D0 = pose_in[12];
+	a3_HierarchyPose	const* pose_D1 = pose_in[13];
+	a3_HierarchyPose	const* pose_D2 = pose_in[14];
+	a3_HierarchyPose	const* pose_D3 = pose_in[15];
 	if (pose_out && nodeCount	&& pose_A0 && pose_A1 && pose_A2 && pose_A3 && blendA
 								&& pose_B0 && pose_B1 && pose_B2 && pose_B3 && blendB
 								&& pose_C0 && pose_C1 && pose_C2 && pose_C3 && blendC

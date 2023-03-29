@@ -342,10 +342,12 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		// edit assets as needed
 		// mixamo assets have the wrong base pose; use first key as base and subtract from all
 		p = 1;
-		a3hierarchyPoseCopy(hierarchyPoseGroup->hpose, hierarchyPoseGroup->hpose + p, hierarchy->numNodes);
+		a3hierarchyPoseCopy(hierarchyPoseGroup->hpose, hierarchy->numNodes, (a3_HierarchyPose[1]) { hierarchyPoseGroup->hpose + p }, (a3real*)NULL);
 		for (; p < hierarchyPoseGroup->hposeCount; ++p)
-			a3hierarchyPoseDeconcat(hierarchyPoseGroup->hpose + p, hierarchyPoseGroup->hpose + p,
-				hierarchyPoseGroup->hpose, hierarchy->numNodes);
+			a3hierarchyPoseDeconcat(hierarchyPoseGroup->hpose + p, hierarchy->numNodes, (a3_HierarchyPose[2]) {
+			hierarchyPoseGroup->hpose + p,
+				hierarchyPoseGroup->hpose
+		}, (a3real*)NULL);
 
 		// furthermore, end joints were removed, so they have no animation data; initialize it as identity
 		for (j = a3hierarchyGetNodeIndex(hierarchy, "HeadTop_End"), p = 1;
@@ -397,7 +399,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 	hierarchyState = demoMode->hierarchyState_skel;
 	hierarchyState->hierarchy = 0;
 	a3hierarchyStateCreate(hierarchyState, hierarchy);
-	a3hierarchyPoseCopy(hierarchyState->localSpace, hierarchyPoseGroup->hpose, hierarchy->numNodes);
+	a3hierarchyPoseCopy(hierarchyState->localSpace, hierarchy->numNodes, hierarchyPoseGroup->hpose, NULL);
 	a3hierarchyPoseConvert(hierarchyState->localSpace, hierarchy->numNodes, hierarchyPoseGroup->channel, hierarchyPoseGroup->order);
 	a3kinematicsSolveForward(hierarchyState);
 	a3hierarchyPoseRestore(hierarchyState->objectSpace, hierarchy->numNodes, hierarchyPoseGroup->channel, hierarchyPoseGroup->order);
@@ -470,6 +472,11 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 				demoMode->clipPool->keyframe + sampleIndexFinal[j] - 1);
 			a3clipCalculateDuration(demoMode->clipPool, j, fps);
 		}
+
+		//a3_spatialPoseOp identity = *a3spatialPoseOpIdentity;
+		//a3_spatialPoseOp construct = *a3spatialPoseConstruct;
+		//identity(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, NULL);
+		//construct(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, (a3real[4]) { 5.0f, 2.0f, 3.0f, 4.0f });
 
 		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot");
 		a3clipControllerInit(demoMode->clipCtrl, "xbot_ctrl", demoMode->clipPool, j, rate, fps);

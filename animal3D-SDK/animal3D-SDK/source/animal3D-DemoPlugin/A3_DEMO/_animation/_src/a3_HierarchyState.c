@@ -58,7 +58,7 @@ a3i32 a3hierarchyPoseGroupCreate(a3_HierarchyPoseGroup *poseGroup_out, const a3_
 			poseGroup_out->hpose[i].pose = poseGroup_out->hpose[i - 1].pose + nodeCount;
 
 		// reset all data
-		a3hierarchyPoseReset(poseGroup_out->hpose, sposeCount);
+		a3hierarchyPoseReset(poseGroup_out->hpose, sposeCount, NULL, NULL);
 		memset(poseGroup_out->channel, a3poseChannel_none, channelSpace);
 		memset(poseGroup_out->order, a3poseEulerOrder_xyz, orderSpace);
 		poseGroup_out->hierarchy = hierarchy;
@@ -191,7 +191,7 @@ a3i32 a3hierarchyStateCreate(a3_HierarchyState *state_out, const a3_Hierarchy *h
 			state_out->hpose[i].pose = state_out->hpose[i - 1].pose + nodeCount;
 
 		// reset all data
-		a3hierarchyPoseReset(state_out->hpose, sposeCount);
+		a3hierarchyPoseReset(state_out->hpose, sposeCount, NULL, NULL);
 
 		// done
 		return 1;
