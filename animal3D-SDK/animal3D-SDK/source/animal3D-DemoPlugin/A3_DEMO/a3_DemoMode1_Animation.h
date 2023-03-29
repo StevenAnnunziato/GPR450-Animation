@@ -163,9 +163,9 @@ typedef enum a3_DemoMode1_Animation_InputMode				a3_DemoMode1_Animation_InputMod
 		a3_ClipPool clipPool[1];
 
 		// skeletal animation
-		a3_Hierarchy hierarchy_skel[1];
-		a3_HierarchyState hierarchyState_skel[3];
-		a3_HierarchyPoseGroup hierarchyPoseGroup_skel[1];
+		a3_Hierarchy hierarchy_skel[1];						// hierarchy to represent skeleton
+		a3_HierarchyState hierarchyState_skel[3];			// collection of skeletons used in blending calculations, including base pose
+		a3_HierarchyPoseGroup hierarchyPoseGroup_skel[1];	// holds all poses at every key frame for a clip
 		a3mat4 mvp_joint[128], mvp_bone[128], t_skin[128];
 		a3dualquat dq_skin[128];
 

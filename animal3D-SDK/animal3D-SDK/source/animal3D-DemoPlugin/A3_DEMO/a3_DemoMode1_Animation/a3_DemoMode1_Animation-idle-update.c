@@ -153,13 +153,13 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		a3clipControllerUpdate(demoMode->clipCtrlA, dt);
 		a3clipControllerUpdate(demoMode->clipCtrlB, dt);
 
-		// STEP
+		// STEP 
 		a3hierarchyPoseCopy(activeHS->animPose,
-			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex,
+			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex, // get deltas of a pose in frame keyframeIndex
 			demoMode->hierarchy_skel->numNodes);
 
+		// get data from a different clip and stash it in hierarchyState_skel + 2
 		a3_HierarchyState* tmpHS = demoMode->hierarchyState_skel + 2;
-
 		a3hierarchyPoseCopy(tmpHS->animPose,
 			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlB->keyframeIndex,
 			demoMode->hierarchy_skel->numNodes);
@@ -168,21 +168,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			tmpHS->animPose,
 			activeHS->animPose,
 			(a3f32)0.9f, demoMode->hierarchy_skel->numNodes);
-
-		// LERP
-
-
-		//a3hierarchyPoseLerp(activeHS->animPose,
-		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipPool->keyframe[clipCtrlA->keyframeIndex].sampleIndex0,
-		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipPool->keyframe[clipCtrlA->keyframeIndex].sampleIndex1,
-		//	(a3f32)clipCtrlA->keyframeParam, demoMode->hierarchy_skel->numNodes);
-
-		//a3hierarchyPoseLerp(tmpHS->animPose,
-		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipPool->keyframe[clipCtrlB->keyframeIndex].sampleIndex0,
-		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipPool->keyframe[clipCtrlB->keyframeIndex].sampleIndex1,
-		//	(a3f32)clipCtrlB->keyframeParam, demoMode->hierarchy_skel->numNodes);
-
-
 
 		// FK pipeline
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate

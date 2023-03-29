@@ -22,11 +22,21 @@
 	Hierarchy blend operations.
 */
 
+#pragma once
+
 #ifndef __ANIMAL3D_HIERARCHYSTATEBLEND_H
 #define __ANIMAL3D_HIERARCHYSTATEBLEND_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#else	// !__cplusplus
+typedef struct a3_BlendTreeNode				a3_BlendTreeNode;
+typedef struct a3_BlendTree					a3_BlendTree;
+#endif	// __cplusplus
 
-#include "a3_HierarchyState.h"
+//#include "a3_HierarchyState.h"
+#include "a3_KeyframeAnimationController.h"
 
 #include "a3_Kinematics.h"
 #include <math.h>
@@ -107,7 +117,47 @@ a3_HierarchyPose* a3hierarchyPoseBicubicBlend(a3_HierarchyPose* pose_out, a3ui32
 	const a3_HierarchyPose* pose_C0, const a3_HierarchyPose* pose_C1, const a3_HierarchyPose* pose_C2, const a3_HierarchyPose* pose_C3, const a3real blendC,
 	const a3_HierarchyPose* pose_D0, const a3_HierarchyPose* pose_D1, const a3_HierarchyPose* pose_D2, const a3_HierarchyPose* pose_D3, const a3real blendD);
 
+// ----------------------------------------------------------------------------
+// blend tree operations and structures
 
+// blend tree node
+struct a3_BlendTreeNode
+{
+	// may need to add clips as input here
+
+	// function pointer to my particular operation
+	a3_spatialPoseOp poseOp;
+
+	// store the hierarchy pose after poseOp is completed
+	a3_HierarchyPose outPose;
+};
+
+struct a3_BlendTree
+{
+	// pose 0 is the base pose
+	// all further poses are used for intermediate blending
+	// TODO: the number of poses in here will be determined at runtime based on how many nodes the animator uses
+	a3_HierarchyPose* poses;
+
+	// keyframe animation controllers to update each animation used for blending
+	a3_ClipController* animControllers;
+
+	// hierarchy of nodes defined by the animator
+	// root is the final output pose
+	a3_BlendTreeNode* nodes;
+};
+
+// lerp node: takes in two clips and first performs key-pose interpolation on each clip using the clip time,
+// then performs a spatial pose LERP on the resulting poses
+a3ui32 a3lerpNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2, const a3real u);
+
+// add node: takes in two clips and first performs key-pose interpolation on each clip using the clip time,
+// then performs a spatial pose ADD on the resulting poses
+a3ui32 a3addNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2);
+
+// scale node: takes in one clip and first performs key-pose interpolation on eit using the clip time,
+// then performs a spatial pose SCALE on the resulting pose
+a3ui32 a3scaleNode(a3_BlendTreeNode* node_out, const a3_Clip* clip, const a3real scaleValue);
 
 //-----------------------------------------------------------------------------
 
