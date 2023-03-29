@@ -742,6 +742,23 @@ inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(
 }
 
 
+// blend nodes
+// -----------------------------------------------------------------------------
+
+inline a3ui32 a3lerpNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2, const a3real u)
+{
+	return 0;
+}
+
+inline a3ui32 a3addNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2)
+{
+	return 0;
+}
+
+inline a3ui32 a3scaleNode(a3_BlendTreeNode* node_out, const a3_Clip* clip, const a3real scaleValue)
+{
+	return 0;
+}
 
 // additional helper functions
 //-----------------------------------------------------------------------------

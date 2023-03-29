@@ -21,7 +21,6 @@
 	a3_HierarchyState.h
 	Hierarchy transformation state.
 */
-
 #ifndef __ANIMAL3D_HIERARCHYSTATE_H
 #define __ANIMAL3D_HIERARCHYSTATE_H
 
