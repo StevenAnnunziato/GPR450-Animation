@@ -29,6 +29,7 @@
 //-----------------------------------------------------------------------------
 
 #include "../a3_DemoMode1_Animation.h"
+#include "../animal3D-DemoPlugin/A3_DEMO/_animation/a3_HierarchyState.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
@@ -155,30 +156,27 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 
 		// STEP
 
-		//a3_HierarchyPoseOp* ops = (a3_HierarchyPoseOp[2]){ a3hierarchyPoseCopy , a3hierarchyPoseLerp };
-		//ops[0] = a3hierarchyPoseCopy;
-		//ops[1] = a3hierarchyPoseLerp;
+		a3_HierarchyPoseOp ptr = a3hierarchyPoseConcat;
 
 		a3hierarchyPoseCopy(activeHS->animPose,
-			demoMode->hierarchy_skel->numNodes,
 			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex,
-			(a3real*)NULL);
+			demoMode->hierarchy_skel->numNodes);
 
 		a3_HierarchyState* tmpHS = demoMode->hierarchyState_skel + 2;
 
 		a3hierarchyPoseCopy(tmpHS->animPose,
-			demoMode->hierarchy_skel->numNodes,
 			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlB->keyframeIndex,
-			NULL);
+			demoMode->hierarchy_skel->numNodes);
 
-		a3hierarchyPoseLerp(activeHS->animPose,
+		ptr(
+			activeHS->animPose,
 			demoMode->hierarchy_skel->numNodes,
-			(a3_HierarchyPose * []) {
-			tmpHS->animPose, activeHS->animPose
-		},
+			(a3_HierarchyPose*[2]) {
+				tmpHS->animPose, activeHS->animPose
+			},
 			(a3real[]) {
 			0.9f
-		});
+			});
 
 		// LERP
 

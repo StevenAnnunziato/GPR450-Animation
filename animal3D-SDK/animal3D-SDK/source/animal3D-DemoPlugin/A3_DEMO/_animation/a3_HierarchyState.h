@@ -160,11 +160,9 @@ a3i32 a3hierarchyPoseRestore(const a3_HierarchyPose* pose_inout, const a3ui32 no
 /// <param name="pose_in"></param>
 /// <param name="nodeCount"></param>
 /// <returns></returns>
-a3i32 a3hierarchyPoseCopy(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[]);
+// copy full hierarchy pose
+a3i32 a3hierarchyPoseCopy(const a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_in, const a3ui32 nodeCount);
+
 
 /// <summary>
 ///  concat full hierarchy pose
@@ -174,7 +172,7 @@ a3i32 a3hierarchyPoseCopy(
 /// <param name="pose_rhs"></param>
 /// <param name="nodeCount"></param>
 /// <returns></returns>
-a3i32 a3hierarchyPoseConcat(
+a3_HierarchyPose* a3hierarchyPoseConcat(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
 	a3_HierarchyPose const* pose_in[],
@@ -188,11 +186,9 @@ a3i32 a3hierarchyPoseConcat(
 /// <param name="pose_rhs"></param>
 /// <param name="nodeCount"></param>
 /// <returns></returns>
-a3i32 a3hierarchyPoseDeconcat(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[]);
+// deconcat full hierarchy pose
+a3i32 a3hierarchyPoseDeconcat(const a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_lhs, const a3_HierarchyPose* pose_rhs, const a3ui32 nodeCount);
+
 
 /// <summary>
 ///  lerp full hierarchy pose
@@ -203,7 +199,7 @@ a3i32 a3hierarchyPoseDeconcat(
 /// <param name="u"></param>
 /// <param name="nodeCount"></param>
 /// <returns></returns>
-a3i32 a3hierarchyPoseLerp(
+a3_HierarchyPose* a3hierarchyPoseLerp(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
 	a3_HierarchyPose const* pose_in[],

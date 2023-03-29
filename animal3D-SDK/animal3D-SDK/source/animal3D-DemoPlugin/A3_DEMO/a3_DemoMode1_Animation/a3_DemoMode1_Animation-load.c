@@ -342,12 +342,10 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		// edit assets as needed
 		// mixamo assets have the wrong base pose; use first key as base and subtract from all
 		p = 1;
-		a3hierarchyPoseCopy(hierarchyPoseGroup->hpose, hierarchy->numNodes, (a3_HierarchyPose[1]) { hierarchyPoseGroup->hpose + p }, (a3real*)NULL);
+		a3hierarchyPoseCopy(hierarchyPoseGroup->hpose, hierarchyPoseGroup->hpose + p, hierarchy->numNodes);
 		for (; p < hierarchyPoseGroup->hposeCount; ++p)
-			a3hierarchyPoseDeconcat(hierarchyPoseGroup->hpose + p, hierarchy->numNodes, (a3_HierarchyPose[2]) {
-			hierarchyPoseGroup->hpose + p,
-				hierarchyPoseGroup->hpose
-		}, (a3real*)NULL);
+			a3hierarchyPoseDeconcat(hierarchyPoseGroup->hpose + p, hierarchyPoseGroup->hpose + p,
+				hierarchyPoseGroup->hpose, hierarchy->numNodes);
 
 		// furthermore, end joints were removed, so they have no animation data; initialize it as identity
 		for (j = a3hierarchyGetNodeIndex(hierarchy, "HeadTop_End"), p = 1;
@@ -399,7 +397,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 	hierarchyState = demoMode->hierarchyState_skel;
 	hierarchyState->hierarchy = 0;
 	a3hierarchyStateCreate(hierarchyState, hierarchy);
-	a3hierarchyPoseCopy(hierarchyState->localSpace, hierarchy->numNodes, hierarchyPoseGroup->hpose, NULL);
+	a3hierarchyPoseCopy(hierarchyState->localSpace, hierarchyPoseGroup->hpose, hierarchy->numNodes);
 	a3hierarchyPoseConvert(hierarchyState->localSpace, hierarchy->numNodes, hierarchyPoseGroup->channel, hierarchyPoseGroup->order);
 	a3kinematicsSolveForward(hierarchyState);
 	a3hierarchyPoseRestore(hierarchyState->objectSpace, hierarchy->numNodes, hierarchyPoseGroup->channel, hierarchyPoseGroup->order);

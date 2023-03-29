@@ -96,24 +96,20 @@ inline a3i32 a3hierarchyPoseRestore(const a3_HierarchyPose* pose_inout, const a3
 }
 
 // copy full hierarchy pose
-inline a3i32 a3hierarchyPoseCopy(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[] )
+inline a3i32 a3hierarchyPoseCopy(const a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_in, const a3ui32 nodeCount)
 {
-	if (pose_out && pose_in[0] && nodeCount)
+	if (pose_out && pose_in && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseCopy(pose_out->pose + i, pose_in[0]->pose + i);
+			a3spatialPoseCopy(pose_out->pose + i, pose_in->pose + i);
 		return i;
 	}
 	return -1;
 }
 
 // concat full hierarchy pose
-inline a3i32 a3hierarchyPoseConcat(
+inline a3_HierarchyPose* a3hierarchyPoseConcat(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
 	a3_HierarchyPose const* pose_in[],
@@ -126,20 +122,14 @@ inline a3i32 a3hierarchyPoseConcat(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseConcat(pose_out->pose + i, pose_lhs->pose + i, pose_rhs->pose + i);
-		return i;
+		return pose_out;
 	}
-	return -1;
+	return 0;
 }
 
 // deconcat full hierarchy pose
-inline a3i32 a3hierarchyPoseDeconcat(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3i32 a3hierarchyPoseDeconcat(const a3_HierarchyPose* pose_out, const a3_HierarchyPose* pose_lhs, const a3_HierarchyPose* pose_rhs, const a3ui32 nodeCount)
 {
-	const a3_HierarchyPose* pose_lhs = pose_in[0];
-	const a3_HierarchyPose* pose_rhs = pose_in[1];
 	if (pose_out && pose_lhs && pose_rhs && nodeCount)
 	{
 		a3index i;
@@ -151,7 +141,7 @@ inline a3i32 a3hierarchyPoseDeconcat(
 }
 
 // lerp full hierarchy pose
-inline a3i32 a3hierarchyPoseLerp(
+inline a3_HierarchyPose* a3hierarchyPoseLerp(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
 	a3_HierarchyPose const* pose_in[],
@@ -165,9 +155,9 @@ inline a3i32 a3hierarchyPoseLerp(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseLerp(pose_out->pose + i, pose_0->pose + i, pose_1->pose + i, u);
-		return i;
+		return pose_out;
 	}
-	return -1;
+	return 0;
 }
 
 
