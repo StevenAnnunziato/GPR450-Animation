@@ -144,6 +144,12 @@ a3i32 a3hierarchyPoseReset(
 	a3_HierarchyPose const* pose_in[],
 	a3real const param_in[]);
 
+a3i32 a3hierarchyPoseClipResolve(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in[],
+	a3real const param_in[]);
+
 
 // convert full hierarchy pose to hierarchy transforms
 a3i32 a3hierarchyPoseConvert(const a3_HierarchyPose* pose_inout, const a3ui32 nodeCount, const a3_SpatialPoseChannel* channel, const a3_SpatialPoseEulerOrder* order);
