@@ -162,7 +162,7 @@ typedef enum a3_DemoMode1_Animation_InputMode				a3_DemoMode1_Animation_InputMod
 
 
 		// animation controllers
-		a3_ClipController clipCtrl[1], clipCtrlA[1], clipCtrlB[1];
+		//a3_ClipController clipCtrl[1], clipCtrlA[1], clipCtrlB[1];
 		a3_ClipPool clipPool[1];
 
 		// skeletal animation
@@ -171,6 +171,9 @@ typedef enum a3_DemoMode1_Animation_InputMode				a3_DemoMode1_Animation_InputMod
 		a3_HierarchyPoseGroup hierarchyPoseGroup_skel[1];	// holds all poses at every key frame for a clip
 		a3mat4 mvp_joint[128], mvp_bone[128], t_skin[128];
 		a3dualquat dq_skin[128];
+
+		// blend trees
+		a3_BlendTree blendTree[1];
 
 		// control modes
 		a3_DemoMode1_Animation_ControlTarget ctrl_target;

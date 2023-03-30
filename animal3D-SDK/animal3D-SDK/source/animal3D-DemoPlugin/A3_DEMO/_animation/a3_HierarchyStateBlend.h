@@ -330,17 +330,25 @@ a3_HierarchyPose* a3hierarchyPoseBicubicBlend(
 
 // ----------------------------------------------------------------------------
 // blend tree operations and structures
+struct a3_BlendTreeNode;
 
 // blend tree node
 struct a3_BlendTreeNode
-{
-	// may need to add clips as input here
-
+{	
 	// function pointer to my particular operation
 	a3_HierarchyPoseOp poseOp;
+	a3real opParams[32];
 
 	// store the hierarchy pose after poseOp is completed
+	// this is the most important part of the blend node
 	a3_HierarchyPose* outPose;
+
+	// child blend nodes in the tree which this node relies on for input
+	a3_BlendTreeNode* inputNodes[16];
+	a3ui32 numInputs;
+
+	// clip controller for nodes with no additional input
+	a3_ClipController* myClipController;
 };
 
 struct a3_BlendTree
@@ -351,11 +359,13 @@ struct a3_BlendTree
 	a3_HierarchyPose* poses;
 
 	// keyframe animation controllers to update each animation used for blending
-	a3_ClipController* animControllers;
+	a3_ClipController* clipControllers;
+	a3ui32 clipCount;
 
 	// hierarchy of nodes defined by the animator
 	// root is the final output pose
 	a3_BlendTreeNode* nodes;
+	a3ui32 nodeCount;
 };
 
 // lerp node: takes in two clips and first performs key-pose interpolation on each clip using the clip time,

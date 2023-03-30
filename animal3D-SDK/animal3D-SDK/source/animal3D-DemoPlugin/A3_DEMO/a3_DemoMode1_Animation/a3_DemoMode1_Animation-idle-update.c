@@ -70,7 +70,38 @@ inline a3real4x2r a3demo_mat2dquat_safe(a3real4x2 Q, a3real4x4 const m)
 
 //-----------------------------------------------------------------------------
 
+a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 nodeCount)
+{
+	// create an array of all input poses
+	a3_HierarchyPose* inPoses = malloc(sizeof(a3_HierarchyPose*) * numOfInputs);
+	
+	// if we rely on any additional inputs...
+	if (node->numInputs > 0)
+	{
+		// for each input pose that still needs to be solved...
+		for (a3ui32 i = 0; i < numOfInputs; i++)
+		{
+			// recurse solve the tree 
+			a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, nodeCount); //calc children blend nodes
+			a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, nodeCount); // copy children blend into temp data to be operated on
 
+		}
+	}
+	else // if we don't rely on inputs and just need to sample a clip...
+	{
+		// nothing to do here - stop recursing
+	}
+
+	//operate on all inputs
+	if (node->poseOp != 0)
+		node->poseOp(node->outPose, nodeCount, &inPoses, node->opParams);
+	else
+		a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
+
+	free(inPoses);
+
+	return node->outPose;
+}
 
 //-----------------------------------------------------------------------------
 // UPDATE
@@ -145,45 +176,69 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 	if (demoState->updateAnimation)
 	{
 		a3real const dtr = (a3real)dt;
-		a3_ClipController* clipCtrl = demoMode->clipCtrl;
-		a3_ClipController* clipCtrlA = demoMode->clipCtrlA;
-		a3_ClipController* clipCtrlB = demoMode->clipCtrlB;
+		a3_ClipController* clipCtrl = &demoMode->blendTree->clipControllers[0];
+		a3_ClipController* clipCtrlA = &demoMode->blendTree->clipControllers[1];
+		a3_ClipController* clipCtrlB = &demoMode->blendTree->clipControllers[2];
 
-		// update controllers
-		a3clipControllerUpdate(demoMode->clipCtrl, dt);
-		a3clipControllerUpdate(demoMode->clipCtrlA, dt);
-		a3clipControllerUpdate(demoMode->clipCtrlB, dt);
+		// update clip controllers in the blend tree
+		for (a3ui32 i = 0; i < demoMode->blendTree->clipCount; i++)
+		{
+			a3clipControllerUpdate(&demoMode->blendTree->clipControllers[i], dt);
+		}
+
+		// first update the nodes which have no inputs and just sample from a clip
+		// for each node in the blend tree...
+		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; i++)
+		{
+			// if the node is a clip node...
+			if (demoMode->blendTree->nodes[i].numInputs <= 0)
+			{
+				// get the clip controller
+				// copy the pose from the clip controller to the node's out pose
+				a3hierarchyPoseCopy(demoMode->blendTree->nodes[i].outPose,
+										demoMode->hierarchyPoseGroup_skel->hpose + demoMode->blendTree->nodes[i].myClipController->keyframeIndex, // get deltas of a pose in frame keyframeIndex
+										demoMode->hierarchy_skel->numNodes);
+			}
+		}
+
+		// finally execute the nodes of the blend tree in order
+		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
+		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount);
+
+		//a3clipControllerUpdate(demoMode->clipCtrl, dt);
+		//a3clipControllerUpdate(demoMode->clipCtrlA, dt);
+		//a3clipControllerUpdate(demoMode->clipCtrlB, dt);
 
 		// STEP
 
-		a3_HierarchyPoseOp ptr = a3hierarchyPoseConcat;
+		//a3_HierarchyPoseOp ptr = a3hierarchyPoseConcat;
 
-		a3hierarchyPoseCopy(activeHS->animPose,
-			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex, // get deltas of a pose in frame keyframeIndex
-			demoMode->hierarchy_skel->numNodes);
+		//a3hierarchyPoseCopy(activeHS->animPose,
+		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex, // get deltas of a pose in frame keyframeIndex
+		//	demoMode->hierarchy_skel->numNodes);
 
-		// get data from a different clip and stash it in hierarchyState_skel + 2
-		a3_HierarchyState* tmpHS = demoMode->hierarchyState_skel + 2;
-		a3hierarchyPoseCopy(tmpHS->animPose,
-			demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlB->keyframeIndex,
-			demoMode->hierarchy_skel->numNodes);
+		//// get data from a different clip and stash it in hierarchyState_skel + 2
+		//a3_HierarchyState* tmpHS = demoMode->hierarchyState_skel + 2;
+		//a3hierarchyPoseCopy(tmpHS->animPose,
+		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlB->keyframeIndex,
+		//	demoMode->hierarchy_skel->numNodes);
 
-		ptr(
-			activeHS->animPose,
-			demoMode->hierarchy_skel->numNodes,
-			(a3_HierarchyPose*[2]) {
-				tmpHS->animPose, activeHS->animPose
-			},
-			(a3real[]) {
-			0.9f
-			});
+		//ptr(
+		//	activeHS->animPose,
+		//	demoMode->hierarchy_skel->numNodes,
+		//	(a3_HierarchyPose*[2]) {
+		//		tmpHS->animPose, activeHS->animPose
+		//	},
+		//	(a3real[]) {
+		//	0.9f
+		//	});
 
 		// FK pipeline
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
 			demoMode->hierarchy_skel->numNodes,
 			(a3_HierarchyPose* []) {
 			baseHS->localSpace, // holds base pose
-				activeHS->animPose
+				demoMode->blendTree->nodes[rootIndex].outPose // output from the tree recurse
 		}, // holds current sample pose
 			NULL);
 		a3hierarchyPoseConvert(activeHS->localSpace,
