@@ -81,10 +81,13 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 		// for each input pose that still needs to be solved...
 		for (a3ui32 i = 0; i < numOfInputs; i++)
 		{
-			// recurse solve the tree 
-			a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, nodeCount); //calc children blend nodes
-			a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, nodeCount); // copy children blend into temp data to be operated on
+			if (node->inputNodes[i]) {
+				// recurse solve the tree 
+				a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, nodeCount); //calc children blend nodes
+				a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, nodeCount); // copy children blend into temp data to be operated on
 
+			}
+			
 		}
 	}
 	else // if we don't rely on inputs and just need to sample a clip...
@@ -203,7 +206,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 
 		// finally execute the nodes of the blend tree in order
 		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount);
+		//a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount);
 
 		//a3clipControllerUpdate(demoMode->clipCtrl, dt);
 		//a3clipControllerUpdate(demoMode->clipCtrlA, dt);

@@ -477,14 +477,23 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		//construct(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, (a3real[4]) { 5.0f, 2.0f, 3.0f, 4.0f });
 
 		// set up nodes
-		demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes);
+		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes);
+
+		for (a3ui32 i = 1; i < demoMode->blendTree->nodeCount; ++i) {
+			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[i - 1].pose + hierarchyState->hierarchy->numNodes;
+
+		}
+
+		a3hierarchyPoseReset(demoMode->blendTree->poses, demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes, NULL, NULL);
+
 		// note: root is assumed to be node 0
 		demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseOpLERP; // root
-		demoMode->blendTree->nodes[0].outPose = &demoMode->blendTree->poses[0]; // root
 		demoMode->blendTree->nodes[1].poseOp = 0;
-		demoMode->blendTree->nodes[1].outPose = &demoMode->blendTree->poses[0] + hierarchyState->hierarchy->numNodes;
+		demoMode->blendTree->nodes[1].numInputs = 0;
+
 		demoMode->blendTree->nodes[2].poseOp = 0;
-		demoMode->blendTree->nodes[2].outPose = &demoMode->blendTree->poses[0] + hierarchyState->hierarchy->numNodes * 2;
+		demoMode->blendTree->nodes[2].numInputs = 0;
+
 
 		// set up connections
 		demoMode->blendTree->nodes[0].inputNodes[0] = &demoMode->blendTree->nodes[1];
@@ -535,17 +544,18 @@ void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* d
 
 	// initialize cameras not dependent on viewport
 
-	// set up blend tree memory
+		// set up blend tree memory
 	demoMode->blendTree->nodeCount = 3;
 	demoMode->blendTree->clipCount = 2;
-	demoMode->blendTree->nodes = malloc(sizeof(a3_BlendTreeNode) * demoMode->blendTree->nodeCount);
-
-	demoMode->blendTree->clipControllers = malloc(sizeof(a3_ClipController) * demoMode->blendTree->clipCount);
+	demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
+	//demoMode->blendTree->clipControllers = malloc(sizeof(a3_ClipController) * demoMode->blendTree->clipCount);
 
 	// animation
 	demoMode->sceneGraphState->hierarchy = demoMode->sceneGraph;
 	demoMode->hierarchyState_skel->hierarchy = demoMode->hierarchy_skel;
 	demoMode->hierarchyPoseGroup_skel->hierarchy = demoMode->hierarchy_skel;
+
+	//init clip controler
 	demoMode->blendTree->clipControllers[0].clipPool = demoMode->clipPool;
 	demoMode->blendTree->clipControllers[0].clip = demoMode->clipPool->clip + demoMode->blendTree->clipControllers[0].clipIndex;
 	demoMode->blendTree->clipControllers[0].keyframe = demoMode->clipPool->keyframe + demoMode->blendTree->clipControllers[0].keyframeIndex;

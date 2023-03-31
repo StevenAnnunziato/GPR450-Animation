@@ -359,12 +359,12 @@ struct a3_BlendTree
 	a3_HierarchyPose* poses;
 
 	// keyframe animation controllers to update each animation used for blending
-	a3_ClipController* clipControllers;
+	a3_ClipController clipControllers[3];
 	a3ui32 clipCount;
 
 	// hierarchy of nodes defined by the animator
 	// root is the final output pose
-	a3_BlendTreeNode* nodes;
+	a3_BlendTreeNode nodes[32];
 	a3ui32 nodeCount;
 };
 
