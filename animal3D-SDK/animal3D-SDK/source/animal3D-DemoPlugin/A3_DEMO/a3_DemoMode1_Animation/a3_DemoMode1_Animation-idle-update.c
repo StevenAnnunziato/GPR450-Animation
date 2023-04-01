@@ -73,8 +73,10 @@ inline a3real4x2r a3demo_mat2dquat_safe(a3real4x2 Q, a3real4x4 const m)
 a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 nodeCount)
 {
 	// create an array of all input poses
-	a3_HierarchyPose inPoses[8]; // 8 max inputs
+	a3_HierarchyPose inPoses[8];
+	a3_HierarchyPose* inPosePtr; // 8 max inputs
 	inPoses[0].pose = malloc(sizeof(a3_SpatialPose) * nodeCount * numOfInputs);
+	inPosePtr = inPoses;
 
 	// if we rely on any additional inputs...
 	if (node->numInputs > 0)
@@ -102,7 +104,7 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 
 	//operate on all inputs
 	if (node->poseOp != 0)
-		node->poseOp(node->outPose, nodeCount, &inPoses[0], node->opParams);
+		node->poseOp(node->outPose, nodeCount, &inPosePtr, node->opParams);
 	else // no operations on this node, so just copy the in pose into the out pose.
 		a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
 
