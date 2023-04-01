@@ -508,7 +508,6 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		// sample nodes
 		demoMode->blendTree->nodes[2].poseOp = 0;
 		demoMode->blendTree->nodes[2].numInputs = 0;
-		demoMode->blendTree->nodes[2].numMaskBones = 0;
 
 		demoMode->blendTree->nodes[3].poseOp = 0;
 		demoMode->blendTree->nodes[3].numInputs = 0;
@@ -516,16 +515,27 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		demoMode->blendTree->nodes[4].poseOp = 0;
 		demoMode->blendTree->nodes[4].numInputs = 0;
-		demoMode->blendTree->nodes[4].numMaskBones = 0;
 
 		// set up masks for nodes 4 and 1
+		a3ui32 maskindecies1[128] = { 0 };
+		demoMode->blendTree->nodes[1].numMaskBones = 1;
+
+		//a3ui32 maskindecies4[128] = {  };
+		demoMode->blendTree->nodes[4].numMaskBones = 56;
+
+
 		const a3ui32 maskNum = 6;
-		for (a3ui32 i = 0; i < demoMode->hierarchy_skel->numNodes; i++)
+		for (a3ui32 i = 0; i < 128; i++)
 		{
-			if (i < maskNum)
-				demoMode->blendTree->nodes[1].baskBoneIndices[i] = i;
-			else
+
+			demoMode->blendTree->nodes[1].baskBoneIndices[i] = maskindecies1[i];
+			
+			if (i < demoMode->blendTree->nodes[4].numMaskBones)
+			{
+				//demoMode->blendTree->nodes[4].baskBoneIndices[i] = maskindecies4[i];
 				demoMode->blendTree->nodes[4].baskBoneIndices[i] = i;
+
+			}
 		}
 		//demoMode->blendTree->nodes[4].baskBoneIndices[0]
 
@@ -539,14 +549,14 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[1].inputNodes[0] = &demoMode->blendTree->nodes[2];
 		demoMode->blendTree->nodes[1].inputNodes[1] = &demoMode->blendTree->nodes[3];
 		demoMode->blendTree->nodes[1].numInputs = 2;
-		demoMode->blendTree->nodes[1].opParams[0] = 0.5f;
+		demoMode->blendTree->nodes[1].opParams[0] = 1.0f;
 
 		// set up clip controllers
 		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_gangnam");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[0], "xbot_ctrl", demoMode->clipPool, j, rate, fps);
 		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_ymca");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[1], "xbot_ctrlA", demoMode->clipPool, j, rate, fps);
-		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_run_f");
+		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_walk_m");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[2], "xbot_ctrlB", demoMode->clipPool, j, rate, fps);
 
 		// link clip ctrls to nodes

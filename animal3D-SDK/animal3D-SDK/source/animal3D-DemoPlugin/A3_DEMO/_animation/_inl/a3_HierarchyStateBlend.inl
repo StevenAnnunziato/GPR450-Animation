@@ -751,7 +751,7 @@ inline a3ui32 a3maskNode(a3_BlendTreeNode* node_inout)
 	for (a3ui32 i = 0; i < node_inout->numMaskBones; i++)
 	{
 		// set the pose to identity
-		a3spatialPoseReset(node_inout->outPose->pose + i);
+		a3spatialPoseReset(node_inout->outPose->pose + node_inout->baskBoneIndices[i]);
 	}
 
 	return 0;
