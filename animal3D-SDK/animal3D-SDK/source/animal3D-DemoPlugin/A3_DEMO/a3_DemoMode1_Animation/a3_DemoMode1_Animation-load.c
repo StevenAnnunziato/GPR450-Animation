@@ -476,16 +476,20 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		//identity(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, NULL);
 		//construct(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, (a3real[4]) { 5.0f, 2.0f, 3.0f, 4.0f });
 
-		// set up nodes
+		// set up nodes to be use with outpose's
 		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes);
-		a3hierarchyPoseReset(&demoMode->blendTree->poses[0], demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes, NULL, NULL);
-
+		a3hierarchyPoseReset(&demoMode->blendTree->poses[0], demoMode->blendTree->nodeCount, NULL, NULL);
+		demoMode->blendTree->nodes[0].outPose = &demoMode->blendTree->poses[0];
 
 		for (a3ui32 i = 1; i < demoMode->blendTree->nodeCount; ++i) {
 			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[i - 1].pose + hierarchyState->hierarchy->numNodes;
-			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes, NULL, NULL);
+			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
+			demoMode->blendTree->nodes[i].outPose = &demoMode->blendTree->poses[i];
+
 
 		}
+
+
 
 
 		// note: root is assumed to be node 0
