@@ -179,9 +179,9 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 	if (demoState->updateAnimation)
 	{
 		a3real const dtr = (a3real)dt;
-		a3_ClipController* clipCtrl = &demoMode->blendTree->clipControllers[0];
-		a3_ClipController* clipCtrlA = &demoMode->blendTree->clipControllers[1];
-		a3_ClipController* clipCtrlB = &demoMode->blendTree->clipControllers[2];
+		//a3_ClipController* clipCtrl = &demoMode->blendTree->clipControllers[0];
+		//a3_ClipController* clipCtrlA = &demoMode->blendTree->clipControllers[1];
+		//a3_ClipController* clipCtrlB = &demoMode->blendTree->clipControllers[2];
 
 		// update clip controllers in the blend tree
 		for (a3ui32 i = 0; i < demoMode->blendTree->clipCount; i++)
@@ -206,7 +206,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 
 		// finally execute the nodes of the blend tree in order
 		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-		//a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount);
+		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount);
 
 		//a3clipControllerUpdate(demoMode->clipCtrl, dt);
 		//a3clipControllerUpdate(demoMode->clipCtrlA, dt);
