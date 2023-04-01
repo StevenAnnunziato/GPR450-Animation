@@ -478,13 +478,15 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		// set up nodes
 		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes);
+		a3hierarchyPoseReset(&demoMode->blendTree->poses[0], demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes, NULL, NULL);
+
 
 		for (a3ui32 i = 1; i < demoMode->blendTree->nodeCount; ++i) {
 			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[i - 1].pose + hierarchyState->hierarchy->numNodes;
+			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes, NULL, NULL);
 
 		}
 
-		a3hierarchyPoseReset(demoMode->blendTree->poses, demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes, NULL, NULL);
 
 		// note: root is assumed to be node 0
 		demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseOpLERP; // root
