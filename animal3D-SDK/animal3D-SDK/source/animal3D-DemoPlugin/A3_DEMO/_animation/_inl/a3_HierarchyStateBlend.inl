@@ -745,32 +745,14 @@ inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(
 // blend nodes
 // -----------------------------------------------------------------------------
 
-inline a3ui32 a3lerpNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2, const a3real u)
-{
-	return 0;
-}
-
-inline a3ui32 a3addNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2)
-{
-	return 0;
-}
-
-inline a3ui32 a3scaleNode(a3_BlendTreeNode* node_out, const a3_Clip* clip, const a3real scaleValue)
-{
-	return 0;
-}
-
-inline a3ui32 a3maskNode(a3_BlendTreeNode* node_out, a3_HierarchyPose* in_pose, const a3ui32 nodeCount, const a3_SpatialPose* maskBones, const a3ui32 numMaskBones)
+inline a3ui32 a3maskNode(a3_BlendTreeNode* node_inout)
 {
 	// loop through each a3_SpatialPose in maskBones
-	for (size_t i = 0; i < numMaskBones; i++)
+	for (a3ui32 i = 0; i < node_inout->numMaskBones; i++)
 	{
 		// set the pose to identity
-		a3spatialPoseReset(in_pose->pose + i);
+		a3spatialPoseReset(node_inout->outPose->pose + i);
 	}
-
-	// store the out pose
-	a3hierarchyPoseCopy(node_out->outPose, in_pose, nodeCount);
 
 	return 0;
 }

@@ -349,6 +349,10 @@ struct a3_BlendTreeNode
 
 	// clip controller for nodes with no additional input
 	a3_ClipController* myClipController;
+
+	// info for masking
+	a3ui32 baskBoneIndices[128]; // TODO: this should be a dynamic array
+	a3ui32 numMaskBones;
 };
 
 struct a3_BlendTree
@@ -368,21 +372,9 @@ struct a3_BlendTree
 	a3ui32 nodeCount;
 };
 
-// lerp node: takes in two clips and first performs key-pose interpolation on each clip using the clip time,
-// then performs a spatial pose LERP on the resulting poses
-a3ui32 a3lerpNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2, const a3real u);
-
-// add node: takes in two clips and first performs key-pose interpolation on each clip using the clip time,
-// then performs a spatial pose ADD on the resulting poses
-a3ui32 a3addNode(a3_BlendTreeNode* node_out, const a3_Clip* clip1, const a3_Clip* clip2);
-
-// scale node: takes in one clip and first performs key-pose interpolation on eit using the clip time,
-// then performs a spatial pose SCALE on the resulting pose
-a3ui32 a3scaleNode(a3_BlendTreeNode* node_out, const a3_Clip* clip, const a3real scaleValue);
-
 // mask node: takes in a hierarchy pose and an array of spatial poses, then
 // zeros out the deltas of the specified spatial poses.
-a3ui32 a3maskNode(a3_BlendTreeNode* node_out, a3_HierarchyPose* in_pose, const a3ui32 nodeCount, const a3_SpatialPose* maskBones, const a3ui32 numMaskBones);
+a3ui32 a3maskNode(a3_BlendTreeNode* node_inout);
 
 //-----------------------------------------------------------------------------
 

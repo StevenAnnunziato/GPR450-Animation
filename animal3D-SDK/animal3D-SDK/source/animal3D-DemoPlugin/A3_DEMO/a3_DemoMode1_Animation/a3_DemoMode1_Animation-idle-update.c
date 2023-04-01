@@ -112,6 +112,9 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 
 	free(inPoses[0].pose);
 
+	// mask the animation
+	a3maskNode(node);
+
 	return node->outPose;
 }
 
@@ -217,41 +220,19 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
 		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel->numNodes);
 
-		//a3clipControllerUpdate(demoMode->clipCtrl, dt);
-		//a3clipControllerUpdate(demoMode->clipCtrlA, dt);
-		//a3clipControllerUpdate(demoMode->clipCtrlB, dt);
-
-		// STEP
-
-		//a3_HierarchyPoseOp ptr = a3hierarchyPoseConcat;
-
-		//a3hierarchyPoseCopy(activeHS->animPose,
-		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlA->keyframeIndex, // get deltas of a pose in frame keyframeIndex
-		//	demoMode->hierarchy_skel->numNodes);
-
-		//// get data from a different clip and stash it in hierarchyState_skel + 2
-		//a3_HierarchyState* tmpHS = demoMode->hierarchyState_skel + 2;
-		//a3hierarchyPoseCopy(tmpHS->animPose,
-		//	demoMode->hierarchyPoseGroup_skel->hpose + demoMode->clipCtrlB->keyframeIndex,
-		//	demoMode->hierarchy_skel->numNodes);
-
-		//ptr(
-		//	activeHS->animPose,
-		//	demoMode->hierarchy_skel->numNodes,
-		//	(a3_HierarchyPose*[2]) {
-		//		tmpHS->animPose, activeHS->animPose
-		//	},
-		//	(a3real[]) {
-		//	0.9f
-		//	});
-
 		// FK pipeline
-		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
-			demoMode->hierarchy_skel->numNodes,
-			(a3_HierarchyPose* []) {
+		/*a3_HierarchyPose fkInputs[2] = (a3_HierarchyPose[]){
 			baseHS->localSpace, // holds base pose
 				demoMode->blendTree->nodes[rootIndex].outPose // output from the tree recurse
-		}, // holds current sample pose
+		};*/
+		a3_HierarchyPose fkInputs[2];
+		a3_HierarchyPose* fkInputPtr = fkInputs;
+		fkInputs[0] = *baseHS->localSpace;
+		fkInputs[1] = *demoMode->blendTree->nodes[rootIndex].outPose;
+		
+		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
+			demoMode->hierarchy_skel->numNodes,
+			fkInputPtr, // holds current sample pose
 			NULL);
 		a3hierarchyPoseConvert(activeHS->localSpace,
 			demoMode->hierarchy_skel->numNodes,
