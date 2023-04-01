@@ -86,6 +86,8 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 		{
 			// allocate space for the input poses
 			inPoses[i].pose = inPoses[0].pose + nodeCount * i;
+			a3hierarchyPoseReset(&inPoses[i], nodeCount, NULL, NULL);
+
 
 			// if there is an input node...
 			if (node->inputNodes[i]) {
@@ -104,9 +106,9 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 
 	//operate on all inputs
 	if (node->poseOp != 0)
-		node->poseOp(node->outPose, nodeCount, &inPosePtr, node->opParams);
+		node->poseOp(node->outPose, nodeCount, inPosePtr, node->opParams);
 	else // no operations on this node, so just copy the in pose into the out pose.
-		a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
+		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
 
 	free(inPoses[0].pose);
 

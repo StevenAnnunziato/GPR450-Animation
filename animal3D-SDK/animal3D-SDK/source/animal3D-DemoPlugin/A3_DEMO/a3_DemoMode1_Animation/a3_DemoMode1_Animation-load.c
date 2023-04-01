@@ -478,11 +478,11 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		// set up nodes to be use with outpose's
 		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes);
-		a3hierarchyPoseReset(&demoMode->blendTree->poses[0], demoMode->blendTree->nodeCount, NULL, NULL);
-		demoMode->blendTree->nodes[0].outPose = &demoMode->blendTree->poses[0];
+		//a3hierarchyPoseReset(&demoMode->blendTree->poses[0], demoMode->blendTree->nodeCount, NULL, NULL);
+		//demoMode->blendTree->nodes[0].outPose = &demoMode->blendTree->poses[0];
 
-		for (a3ui32 i = 1; i < demoMode->blendTree->nodeCount; ++i) {
-			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[i - 1].pose + hierarchyState->hierarchy->numNodes;
+		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
+			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
 			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
 			demoMode->blendTree->nodes[i].outPose = &demoMode->blendTree->poses[i];
 		}

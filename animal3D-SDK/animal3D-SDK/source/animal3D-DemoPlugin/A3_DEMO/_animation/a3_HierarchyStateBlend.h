@@ -91,7 +91,7 @@ a3_SpatialPose* a3spatialPoseBicubicBlend(		  a3_SpatialPose* pose_out, const a3
 typedef a3_HierarchyPose* (*a3_HierarchyPoseOp) (
 	a3_HierarchyPose* pose_out,
 	a3ui32 nodeCount,
-	a3_HierarchyPose const* pose_in[],
+	a3_HierarchyPose const* pose_in,
 	a3real const param_in[]
 	);
 
@@ -192,7 +192,7 @@ a3_HierarchyPose* a3hierarchyPoseNearest(
 a3_HierarchyPose* a3hierarchyPoseOpLERP(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
+	a3_HierarchyPose const* pose_in,
 	a3real const param_in[]);
 
 /// <summary>

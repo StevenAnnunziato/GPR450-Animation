@@ -551,11 +551,11 @@ inline a3_HierarchyPose* a3hierarchyPoseNearest(
 inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
+	a3_HierarchyPose const* pose_in,
 	a3real const param_in[])
 {
-	const a3_HierarchyPose* pose0 = pose_in[0];
-	const a3_HierarchyPose* pose1 = pose_in[1];
+	const a3_HierarchyPose* pose0 = &pose_in[0];
+	const a3_HierarchyPose* pose1 = &pose_in[1];
 	const a3real blendParam = param_in[0];
 	if (pose_out && pose0 && pose1 && nodeCount)
 	{
