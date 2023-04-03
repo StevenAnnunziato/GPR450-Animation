@@ -126,10 +126,7 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		if (a3XboxControlIsConnected(demoState->xcontrol))
 		{
 			// get directly from joysticks
-
 			if (a3XboxControlGetRightJoystick(demoState->xcontrol, demoMode->axis_r)) {
-				//demoMode->vel.x = (a3real)rightJoystick[0];
-				//demoMode->vel.y = (a3real)rightJoystick[1];
 			}
 			if (a3XboxControlGetRightJoystick(demoState->xcontrol, demoMode->axis_r)) {
 			}
@@ -139,12 +136,27 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 			// calculate normalized vectors given keyboard state
 			a3real da = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_D, a3key_A);
 			a3real ws = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_W, a3key_S);
-			// normalize
+			a3real lj = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_L, a3key_J);
+			a3real ik = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_I, a3key_K);
 
-			demoMode->axis_l[0] = 
-			demoMode->axis_l[1] = (a3real)rightJoystick[1];
-			demoMode->axis_r[0] = (a3real)leftJoystick[0];
-			demoMode->axis_r[1] = (a3real)leftJoystick[1];
+			// normalize
+			a3real lenWASD = (a3real)sqrt(da * da + ws * ws);
+			if (lenWASD > 0)
+			{
+				da = da / lenWASD;
+				ws = ws / lenWASD;
+			}
+			a3real lenIJKL = (a3real)sqrt(lj * lj + ik * ik);
+			if (lenIJKL > 0)
+			{
+				lj = lj / lenIJKL;
+				ik = ik / lenIJKL;
+			}
+
+			demoMode->axis_l[0] = da;
+			demoMode->axis_l[1] = ws;
+			demoMode->axis_r[0] = lj;
+			demoMode->axis_r[1] = ik;
 		}
 
 		// switch on input mode and move the character
