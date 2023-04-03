@@ -266,9 +266,13 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 			// interpolate to target value
 		case animation_input_interpolate1:
-			const a3real radius = 5.0f;
-			demoMode->pos.x = a3lerp(demoMode->pos.x, demoMode->vel.x * radius, (a3real)dt);
-			demoMode->pos.y = a3lerp(demoMode->pos.y, demoMode->vel.y * radius, (a3real)dt);
+			{
+				a3vec2 target;
+				target.x = demoMode->vel.x*5.0f;
+				target.y = demoMode->vel.y*5.0f;
+				demoMode->pos.x = a3lerp(demoMode->pos.x, target.x, (a3real)dt);
+				demoMode->pos.y = a3lerp(demoMode->pos.y, target.y, (a3real)dt);
+			}
 			break;
 			// interpolate to target velocity
 		case animation_input_interpolate2:
