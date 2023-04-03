@@ -254,23 +254,18 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 			// Euler integration (integrate velocity into position)
 		case animation_input_euler:
-			demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
 			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
 			break;
 			// kinematic integration (integrate acceleration into velocity, and velocity into position)
 		case animation_input_kinematic:
-			demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
 			demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
-			demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
 			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
 			break;
 			// interpolate to target value
 		case animation_input_interpolate1:
 			{
 				a3vec2 target;
-				target.x = demoMode->vel.x*5.0f;
 				target.y = demoMode->vel.y*5.0f;
-				demoMode->pos.x = a3lerp(demoMode->pos.x, target.x, (a3real)dt);
 				demoMode->pos.y = a3lerp(demoMode->pos.y, target.y, (a3real)dt);
 			}
 			break;
@@ -278,12 +273,8 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		case animation_input_interpolate2:
 			{
 				a3vec2 target;
-				target.x =  demoMode->acc.x * 5.0f;
 				target.y = demoMode->acc.y * 5.0f;
-				demoMode->vel.x = a3lerp(demoMode->vel.x, target.x, (a3real)dt);
 				demoMode->vel.y = a3lerp(demoMode->vel.y, target.y, (a3real)dt);
-
-				demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
 				demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
 			}
 			break;
@@ -291,7 +282,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 		}
 
-		demoMode->obj_skeleton_ctrl->position.x = +(demoMode->pos.x);
+		demoMode->obj_skeleton_ctrl->position.x = a3real4x4MulTransform() + (demoMode->pos.x);
 		demoMode->obj_skeleton_ctrl->position.y = +(demoMode->pos.y);
 
 		switch (demoMode->ctrl_rotation)
