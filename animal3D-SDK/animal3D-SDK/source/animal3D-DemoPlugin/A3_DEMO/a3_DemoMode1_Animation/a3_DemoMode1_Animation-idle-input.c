@@ -164,32 +164,60 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		{
 			// direct assignment of position
 			case animation_input_direct:
-				demoMode->pos.x = (a3real)demoMode->axis_r[0];
-				demoMode->pos.y = (a3real)demoMode->axis_r[1];
+				demoMode->pos.x = (a3real)demoMode->axis_l[0];
+				demoMode->pos.y = (a3real)demoMode->axis_l[1];
 				break;
 			// Euler integration (integrate velocity into position)
 			case animation_input_euler:
-				demoMode->vel.x = (a3real)demoMode->axis_r[0];
-				demoMode->vel.y = (a3real)demoMode->axis_r[1];
+				demoMode->vel.x = (a3real)demoMode->axis_l[0];
+				demoMode->vel.y = (a3real)demoMode->axis_l[1];
 				break;
 			// kinematic integration (integrate acceleration into velocity, and velocity into position)
 			case animation_input_kinematic:
-				demoMode->acc.x = (a3real)demoMode->axis_r[0];
-				demoMode->acc.y = (a3real)demoMode->axis_r[1];
+				demoMode->acc.x = (a3real)demoMode->axis_l[0];
+				demoMode->acc.y = (a3real)demoMode->axis_l[1];
 				break;
 			// interpolate to target value
 			case animation_input_interpolate1:
-				demoMode->vel.x = (a3real)demoMode->axis_r[0];
-				demoMode->vel.y = (a3real)demoMode->axis_r[1];
+				demoMode->vel.x = (a3real)demoMode->axis_l[0];
+				demoMode->vel.y = (a3real)demoMode->axis_l[1];
 				break;
 			// interpolate to target velocity
 			case animation_input_interpolate2:
-				demoMode->acc.x = (a3real)demoMode->axis_r[0];
-				demoMode->acc.y = (a3real)demoMode->axis_r[1];
+				demoMode->acc.x = (a3real)demoMode->axis_l[0];
+				demoMode->acc.y = (a3real)demoMode->axis_l[1];
 				break;
 			default:
 				break;
 		}
+
+		// switch on input mode and rotate the character
+		switch (demoMode->ctrl_rotation)
+		{
+			// direct assignment of rotation
+		case animation_input_direct:
+			demoMode->rot = (a3real)demoMode->axis_r[0] * 90.0f;
+			break;
+			// Euler integration (integrate angular velocity into rotation)
+		case animation_input_euler:
+			demoMode->velr = (a3real)demoMode->axis_r[0];
+			break;
+			// kinematic integration (integrate angular acceleration into angular velocity, and angular velocity into rotation)
+		case animation_input_kinematic:
+			demoMode->accr = (a3real)demoMode->axis_r[0];
+			break;
+			// interpolate to target value
+		case animation_input_interpolate1:
+			demoMode->velr = (a3real)demoMode->axis_r[0];
+			break;
+			// interpolate to target angular velocity
+		case animation_input_interpolate2:
+			demoMode->accr = (a3real)demoMode->axis_r[0];
+			break;
+		default:
+			break;
+		}
+
 		break;
 	}
 
