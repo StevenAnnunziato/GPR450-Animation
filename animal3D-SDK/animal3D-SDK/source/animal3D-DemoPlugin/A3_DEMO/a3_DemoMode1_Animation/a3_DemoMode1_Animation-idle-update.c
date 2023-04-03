@@ -246,6 +246,32 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		// process input
 
 		// apply input
+				// switch on input mode and move the character
+		switch (demoMode->ctrl_position)
+		{
+			// direct assignment of position
+		case animation_input_direct:
+			demoMode->pos.x += demoMode->pos.x * (a3real)dt;
+			demoMode->pos.y += demoMode->pos.y * (a3real)dt;
+			break;
+			// Euler integration (integrate velocity into position)
+		case animation_input_euler:
+			demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
+			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
+			break;
+			// kinematic integration (integrate acceleration into velocity, and velocity into position)
+		case animation_input_kinematic:
+			break;
+			// interpolate to target value
+		case animation_input_interpolate1:
+			break;
+			// interpolate to target velocity
+		case animation_input_interpolate2:
+			break;
+		default:
+			break;
+		}
+
 		demoMode->obj_skeleton_ctrl->position.x = +(demoMode->pos.x);
 		demoMode->obj_skeleton_ctrl->position.y = +(demoMode->pos.y);
 		demoMode->obj_skeleton_ctrl->euler.z = -a3trigValid_sind(demoMode->rot);

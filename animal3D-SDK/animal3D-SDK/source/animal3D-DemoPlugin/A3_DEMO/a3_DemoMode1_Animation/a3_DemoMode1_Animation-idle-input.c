@@ -113,6 +113,9 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		a3real4Real4x4Mul(projector->sceneObject->modelMat.m, coord.v);
 	}
 	
+	a3f64 rightJoystick[2];
+	a3f64 leftJoystick[2];
+
 	// choose control target
 	switch (demoMode->ctrl_target)
 	{
@@ -127,7 +130,13 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		{
 			// ****TO-DO:
 			// get directly from joysticks
-		
+
+			if (a3XboxControlGetRightJoystick(demoState->xcontrol, rightJoystick)) {
+				//demoMode->vel.x = (a3real)rightJoystick[0];
+				//demoMode->vel.y = (a3real)rightJoystick[1];
+			}
+			if (a3XboxControlGetRightJoystick(demoState->xcontrol, leftJoystick)) {
+			}
 		}
 		else
 		{
@@ -141,9 +150,13 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		{
 			// direct assignment of position
 			case animation_input_direct:
+				demoMode->pos.x = (a3real)rightJoystick[0];
+				demoMode->pos.y = (a3real)rightJoystick[1];
 				break;
 			// Euler integration (integrate velocity into position)
 			case animation_input_euler:
+				demoMode->vel.x = (a3real)rightJoystick[0];
+				demoMode->vel.y = (a3real)rightJoystick[1];
 				break;
 			// kinematic integration (integrate acceleration into velocity, and velocity into position)
 			case animation_input_kinematic:
