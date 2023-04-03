@@ -276,6 +276,16 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 			// interpolate to target velocity
 		case animation_input_interpolate2:
+			{
+				a3vec2 target;
+				target.x =  demoMode->acc.x * 5.0f;
+				target.y = demoMode->acc.y * 5.0f;
+				demoMode->vel.x = a3lerp(demoMode->vel.x, target.x, (a3real)dt);
+				demoMode->vel.y = a3lerp(demoMode->vel.y, target.y, (a3real)dt);
+
+				demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
+				demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
+			}
 			break;
 		default:
 			break;
