@@ -163,6 +163,8 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 				break;
 			// interpolate to target value
 			case animation_input_interpolate1:
+				demoMode->vel.x = (a3real)rightJoystick[0];
+				demoMode->vel.y = (a3real)rightJoystick[1];
 				break;
 			// interpolate to target velocity
 			case animation_input_interpolate2:

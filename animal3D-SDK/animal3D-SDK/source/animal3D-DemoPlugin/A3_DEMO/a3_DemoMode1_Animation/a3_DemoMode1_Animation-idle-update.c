@@ -246,7 +246,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		// process input
 
 		// apply input
-				// switch on input mode and move the character
+		// switch on input mode and move the character
 		switch (demoMode->ctrl_position)
 		{
 			// direct assignment of position
@@ -264,6 +264,9 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 			// interpolate to target value
 		case animation_input_interpolate1:
+			const a3real radius = 5.0f;
+			demoMode->pos.x = a3lerp(demoMode->pos.x, demoMode->vel.x * radius, (a3real)dt);
+			demoMode->pos.y = a3lerp(demoMode->pos.y, demoMode->vel.y * radius, (a3real)dt);
 			break;
 			// interpolate to target velocity
 		case animation_input_interpolate2:
