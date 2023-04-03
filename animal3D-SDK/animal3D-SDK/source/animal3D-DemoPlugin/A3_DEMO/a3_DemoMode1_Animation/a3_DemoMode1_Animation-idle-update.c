@@ -291,6 +291,14 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 		}
 
+		// multiply demoMode->pos by obj_skeleton_ctrl->modelMat
+		a3real4 pos4;
+		pos4[0] = demoMode->pos.x;
+		pos4[1] = demoMode->pos.y;
+		pos4[2] = 0.0f;
+		pos4[3] = 1.0f;
+		a3real4x4Product(&pos4, demoMode->obj_skeleton_ctrl->modelMat.m, &pos4);
+
 		demoMode->obj_skeleton_ctrl->position.x = +(demoMode->pos.x);
 		demoMode->obj_skeleton_ctrl->position.y = +(demoMode->pos.y);
 
