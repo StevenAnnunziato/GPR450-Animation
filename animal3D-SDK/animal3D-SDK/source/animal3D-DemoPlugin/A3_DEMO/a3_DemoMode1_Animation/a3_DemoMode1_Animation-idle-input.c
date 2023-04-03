@@ -127,7 +127,7 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		{
 			// get directly from joysticks
 
-			if (a3XboxControlGetRightJoystick(demoState->xcontrol, demoMode->axis_r)) {
+			if (a3XboxControlGetLeftJoystick(demoState->xcontrol, demoMode->axis_l)) {
 				//demoMode->vel.x = (a3real)rightJoystick[0];
 				//demoMode->vel.y = (a3real)rightJoystick[1];
 			}
@@ -141,10 +141,10 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 			a3real ws = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_W, a3key_S);
 			// normalize
 
-			demoMode->axis_l[0] = 
-			demoMode->axis_l[1] = (a3real)rightJoystick[1];
-			demoMode->axis_r[0] = (a3real)leftJoystick[0];
-			demoMode->axis_r[1] = (a3real)leftJoystick[1];
+			//demoMode->axis_l[0] = 
+			//demoMode->axis_l[1] = (a3real)rightJoystick[1];
+			//demoMode->axis_r[0] = (a3real)leftJoystick[0];
+			//demoMode->axis_r[1] = (a3real)leftJoystick[1];
 		}
 
 		// switch on input mode and move the character
@@ -178,6 +178,34 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 			default:
 				break;
 		}
+
+		// switch on input mode and move the character
+		switch (demoMode->ctrl_rotation)
+		{
+			// direct assignment of position
+		case animation_input_direct:
+			demoMode->rot = (a3real)demoMode->axis_l[0] * 90.0f;
+			break;
+			// Euler integration (integrate velocity into position)
+		case animation_input_euler:
+			demoMode->velr = (a3real)demoMode->axis_l[0];
+			break;
+			// kinematic integration (integrate acceleration into velocity, and velocity into position)
+		case animation_input_kinematic:
+			demoMode->accr = (a3real)demoMode->axis_l[0];
+			break;
+			// interpolate to target value
+		case animation_input_interpolate1:
+			demoMode->velr = (a3real)demoMode->axis_l[0];
+			break;
+			// interpolate to target velocity
+		case animation_input_interpolate2:
+			demoMode->accr = (a3real)demoMode->axis_l[0];
+			break;
+		default:
+			break;
+		}
+
 		break;
 	}
 

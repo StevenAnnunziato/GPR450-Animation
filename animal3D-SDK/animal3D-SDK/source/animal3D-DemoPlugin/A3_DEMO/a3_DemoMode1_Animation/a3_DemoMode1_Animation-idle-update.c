@@ -293,6 +293,44 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 
 		demoMode->obj_skeleton_ctrl->position.x = +(demoMode->pos.x);
 		demoMode->obj_skeleton_ctrl->position.y = +(demoMode->pos.y);
+
+		switch (demoMode->ctrl_rotation)
+		{
+			// direct assignment of position
+		case animation_input_direct:
+			break;
+			// Euler integration (integrate velocity into position)
+		case animation_input_euler:
+			demoMode->rot = demoMode->rot + demoMode->velr * (a3real)dt * 90.0f;
+			break;
+			// kinematic integration (integrate acceleration into velocity, and velocity into position)
+		case animation_input_kinematic:
+			demoMode->velr = demoMode->velr + demoMode->accr * (a3real)dt * 90.0f;
+			demoMode->rot = demoMode->rot + demoMode->velr * (a3real)dt;
+			break;
+			// interpolate to target value
+		case animation_input_interpolate1:
+			{
+				a3real target;
+				target = demoMode->velr * 90.0f;
+				demoMode->rot = a3lerp(demoMode->rot, target, (a3real)dt);
+			}
+			break;
+			// interpolate to target velocity
+		case animation_input_interpolate2:
+			{
+				a3real target;
+				target = demoMode->accr * 90.0f;
+				demoMode->velr = a3lerp(demoMode->velr, target, (a3real)dt);
+				demoMode->rot = demoMode->rot + demoMode->velr * (a3real)dt;
+
+			}
+			break;
+		default:
+			break;
+		}
+
+
 		demoMode->obj_skeleton_ctrl->euler.z = -a3trigValid_sind(demoMode->rot);
 	}
 
