@@ -128,21 +128,23 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		// capture axes
 		if (a3XboxControlIsConnected(demoState->xcontrol))
 		{
-			// ****TO-DO:
 			// get directly from joysticks
-
-			if (a3XboxControlGetRightJoystick(demoState->xcontrol, rightJoystick)) {
-				//demoMode->vel.x = (a3real)rightJoystick[0];
-				//demoMode->vel.y = (a3real)rightJoystick[1];
-			}
-			if (a3XboxControlGetRightJoystick(demoState->xcontrol, leftJoystick)) {
-			}
+			demoMode->axis_r[0] = (a3real)rightJoystick[0];
+			demoMode->axis_r[1] = (a3real)rightJoystick[1];
+			demoMode->axis_l[0] = (a3real)leftJoystick[0];
+			demoMode->axis_l[1] = (a3real)leftJoystick[1];
 		}
 		else
 		{
-			// ****TO-DO:
 			// calculate normalized vectors given keyboard state
+			a3real da = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_D, a3key_A);
+			a3real ws = (a3real)a3keyboardGetDifference(demoState->keyboard, a3key_W, a3key_S);
+			// normalize
 
+			demoMode->axis_l[0] = 
+			demoMode->axis_l[1] = (a3real)rightJoystick[1];
+			demoMode->axis_r[0] = (a3real)leftJoystick[0];
+			demoMode->axis_r[1] = (a3real)leftJoystick[1];
 		}
 
 		// switch on input mode and move the character
