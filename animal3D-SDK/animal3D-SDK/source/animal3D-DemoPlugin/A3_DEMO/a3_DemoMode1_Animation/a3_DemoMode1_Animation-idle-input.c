@@ -160,6 +160,8 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 				break;
 			// kinematic integration (integrate acceleration into velocity, and velocity into position)
 			case animation_input_kinematic:
+				demoMode->acc.x = (a3real)rightJoystick[0];
+				demoMode->acc.y = (a3real)rightJoystick[1];
 				break;
 			// interpolate to target value
 			case animation_input_interpolate1:
