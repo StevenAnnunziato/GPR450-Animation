@@ -135,6 +135,28 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 			// calculate normalized vectors given keyboard state
 
 		}
+
+		// switch on input mode and move the character
+		switch (demoMode->ctrl_position)
+		{
+			// direct assignment of position
+			case animation_input_direct:
+				break;
+			// Euler integration (integrate velocity into position)
+			case animation_input_euler:
+				break;
+			// kinematic integration (integrate acceleration into velocity, and velocity into position)
+			case animation_input_kinematic:
+				break;
+			// interpolate to target value
+			case animation_input_interpolate1:
+				break;
+			// interpolate to target velocity
+			case animation_input_interpolate2:
+				break;
+			default:
+				break;
+		}
 		break;
 	}
 
