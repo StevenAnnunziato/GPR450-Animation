@@ -245,25 +245,56 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		// ****TO-DO: 
 		// process input
 
+		//a3vec4 pos_w;
+		//a3vec4 pos_l = a3vec4_zero;
+
 		// apply input
 		// switch on input mode and move the character
 		switch (demoMode->ctrl_position)
 		{
 			// direct assignment of position
 		case animation_input_direct:
+			{
+				a3vec4 vel_w;
+				a3vec4 vel_l = a3vec4_zero;
+				vel_l.x = demoMode->pos.x;
+				vel_l.y = demoMode->pos.y;
+				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&vel_l.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
+				demoMode->pos.x = vel_w.x;
+				demoMode->pos.y = vel_w.y;
+			}
 			break;
 			// Euler integration (integrate velocity into position)
 
 		case animation_input_euler:
-			demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
-			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
+			{
+				a3vec4 vel_w;
+				a3vec4 vel_l = a3vec4_zero;
+				vel_l.x = demoMode->vel.x;
+				vel_l.y = demoMode->vel.y;
+				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&vel_l.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
+				//demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
+				//demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
+				demoMode->pos.x += vel_w.x * (a3real)dt;
+				demoMode->pos.y += vel_w.y * (a3real)dt;
+			}
+			/*demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
+			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;*/
 			break;
 			// kinematic integration (integrate acceleration into velocity, and velocity into position)
 		case animation_input_kinematic:
-			demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
-			demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
-			demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
-			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
+			{
+				a3vec4 vel_w;
+				//a3vec4 vel_l = a3vec4_zero;
+				demoMode->vel.x += demoMode->acc.x * (a3real)dt;
+				demoMode->vel.y += demoMode->acc.y * (a3real)dt;
+				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&demoMode->vel.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
+				//demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
+				//demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
+				demoMode->pos.x +=  vel_w.x * (a3real)dt;
+				demoMode->pos.y +=  vel_w.y * (a3real)dt;
+			}
+			
 			break;
 			// interpolate to target value
 		case animation_input_interpolate1:
@@ -271,8 +302,13 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 				a3vec2 target;
 				target.x = demoMode->vel.x*5.0f;
 				target.y = demoMode->vel.y*5.0f;
-				demoMode->pos.x = a3lerp(demoMode->pos.x, target.x, (a3real)dt);
-				demoMode->pos.y = a3lerp(demoMode->pos.y, target.y, (a3real)dt);
+			
+				a3vec4 vel_w;
+				//a3vec4 vel_l = a3vec4_zero;
+				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&target.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
+
+				demoMode->pos.x = a3lerp(demoMode->pos.x, vel_w.x, (a3real)dt);
+				demoMode->pos.y = a3lerp(demoMode->pos.y, vel_w.y, (a3real)dt);
 			}
 			break;
 			// interpolate to target velocity
@@ -284,8 +320,12 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 				demoMode->vel.x = a3lerp(demoMode->vel.x, target.x, (a3real)dt);
 				demoMode->vel.y = a3lerp(demoMode->vel.y, target.y, (a3real)dt);
 
-				demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
-				demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
+				a3vec4 vel_w;
+				//a3vec4 vel_l = a3vec4_zero;
+				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&demoMode->vel.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
+
+				demoMode->pos.x = demoMode->pos.x + vel_w.x * (a3real)dt;
+				demoMode->pos.y = demoMode->pos.y + vel_w.y * (a3real)dt;
 			}
 			break;
 		default:
@@ -310,13 +350,8 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		//	// pos_w += ...vel_w*dt...
 
 		//}
-		a3real4 pos_w;
-		a3vec4 pos_l = a3vec4_zero;
-		pos_l.x = demoMode->pos.x;
-		pos_l.y = demoMode->pos.y;
-		a3real4x4ProductTransform(&pos_w, demoMode->obj_skeleton_ctrl->modelMat.m, &pos_l.v);
-		demoMode->obj_skeleton_ctrl->position.x = pos_w[0];
-		demoMode->obj_skeleton_ctrl->position.y = pos_w[1];
+
+
 
 		switch (demoMode->ctrl_rotation)
 		{
@@ -354,8 +389,14 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 		}
 
-
+		//a3real4ProductTransform((a3real*)&demoMode->rot, (a3real*)&demoMode->rot, demoMode->obj_skeleton_ctrl->modelMat.m);
 		demoMode->obj_skeleton_ctrl->euler.z = -a3trigValid_sind(demoMode->rot);
+
+		//pos_l.x = demoMode->pos.x;
+		//pos_l.y = demoMode->pos.y;
+		//a3real4ProductTransform((a3real*)&pos_w.v, (a3real*)&pos_l.v, demoMode->obj_skeleton_ctrl->modelMat.m);
+		demoMode->obj_skeleton_ctrl->position.x = demoMode->pos.x;
+		demoMode->obj_skeleton_ctrl->position.y = demoMode->pos.y;
 	}
 
 
