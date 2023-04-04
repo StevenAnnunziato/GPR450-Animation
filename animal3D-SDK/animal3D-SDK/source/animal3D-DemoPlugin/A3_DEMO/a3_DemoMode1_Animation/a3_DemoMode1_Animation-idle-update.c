@@ -253,6 +253,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		case animation_input_direct:
 			break;
 			// Euler integration (integrate velocity into position)
+
 		case animation_input_euler:
 			demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
 			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;
@@ -291,16 +292,31 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 		}
 
-		// multiply demoMode->pos by obj_skeleton_ctrl->modelMat
-		a3real4 pos4;
-		pos4[0] = demoMode->pos.x;
-		pos4[1] = demoMode->pos.y;
-		pos4[2] = 0.0f;
-		pos4[3] = 1.0f;
-		a3real4x4Product(&pos4, demoMode->obj_skeleton_ctrl->modelMat.m, &pos4);
+		//{
+		//	// velocity
+		//	a3vec4 vel_l = a3vec4_zero; // 0,0,0,0
 
-		demoMode->obj_skeleton_ctrl->position.x = +(demoMode->pos.x);
-		demoMode->obj_skeleton_ctrl->position.y = +(demoMode->pos.y);
+		//	// red
+		//	vel_l.x += demoMode->acc.x * (a3real)dt;
+
+		//	// green
+		//	vel_l.y += demoMode->acc.y * (a3real)dt;
+
+		//	// make relative to object's parent
+		//	// vel_w = T_obj * vel_l
+
+		//	
+
+		//	// pos_w += ...vel_w*dt...
+
+		//}
+		a3real4 pos_w;
+		a3vec4 pos_l = a3vec4_zero;
+		pos_l.x = demoMode->pos.x;
+		pos_l.y = demoMode->pos.y;
+		a3real4x4ProductTransform(&pos_w, demoMode->obj_skeleton_ctrl->modelMat.m, &pos_l.v);
+		demoMode->obj_skeleton_ctrl->position.x = pos_w[0];
+		demoMode->obj_skeleton_ctrl->position.y = pos_w[1];
 
 		switch (demoMode->ctrl_rotation)
 		{
