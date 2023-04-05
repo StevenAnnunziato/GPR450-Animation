@@ -490,11 +490,11 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		
 		Node setup:
 
-		0: root; lerp with two inputs
+		0: root; concat with two inputs
 		1: lerp with two inputs
 		2: sample
 		3: sample
-		4: sample
+		4: sample - walk
 
 		*/
 
@@ -518,26 +518,30 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		// set up masks for nodes 4 and 1
 		a3ui32 maskindecies1[128] = { 0 };
-		demoMode->blendTree->nodes[1].numMaskBones = 1;
+		demoMode->blendTree->nodes[1].numMaskBones = 80;
 
 		//a3ui32 maskindecies4[128] = {  };
 		demoMode->blendTree->nodes[4].numMaskBones = 56;
-
 
 		const a3ui32 maskNum = 6;
 		for (a3ui32 i = 0; i < 128; i++)
 		{
 
-			demoMode->blendTree->nodes[1].baskBoneIndices[i] = maskindecies1[i];
+			//demoMode->blendTree->nodes[1].baskBoneIndices[i] = maskindecies1[i];
 			
-			if (i < demoMode->blendTree->nodes[4].numMaskBones)
+			// set up mask for node 4 - walking
+			if (i < demoMode->blendTree->nodes[4].numMaskBones) // first 40 bones - filter out upper body
 			{
 				//demoMode->blendTree->nodes[4].baskBoneIndices[i] = maskindecies4[i];
 				demoMode->blendTree->nodes[4].baskBoneIndices[i] = i;
-
+			}
+			else // set up mask for node 1 - dance - last bones, filter out lower body
+			{
+				demoMode->blendTree->nodes[1].baskBoneIndices[i - demoMode->blendTree->nodes[4].numMaskBones + 1] = i; // janky and hard coded - leave space for filtering out bone 0 (root)
 			}
 		}
-		//demoMode->blendTree->nodes[4].baskBoneIndices[0]
+		// add back in root for walking
+		demoMode->blendTree->nodes[4].baskBoneIndices[0] = 1;
 
 		// set up connections
 		// final lerp and mask
@@ -545,14 +549,14 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[0].inputNodes[1] = &demoMode->blendTree->nodes[4];
 		demoMode->blendTree->nodes[0].numInputs = 2;
 
-		// initial lerp without masking
+		// initial lerp
 		demoMode->blendTree->nodes[1].inputNodes[0] = &demoMode->blendTree->nodes[2];
 		demoMode->blendTree->nodes[1].inputNodes[1] = &demoMode->blendTree->nodes[3];
 		demoMode->blendTree->nodes[1].numInputs = 2;
 		demoMode->blendTree->nodes[1].opParams[0] = 1.0f;
 
 		// set up clip controllers
-		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_gangnam");
+		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_pistol");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[0], "xbot_ctrl", demoMode->clipPool, j, rate, fps);
 		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_ymca");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[1], "xbot_ctrlA", demoMode->clipPool, j, rate, fps);
