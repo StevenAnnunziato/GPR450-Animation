@@ -491,10 +491,20 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		Node setup:
 
 		0: root; concat with two inputs
-		1: lerp with two inputs
-		2: sample
-		3: sample
+		1: lerp 2 and 3
+		2: sample - dance 1
+		3: sample - dance 2
 		4: sample - walk
+		5: sample - idle
+		6: lerp 4 and 5
+
+		2
+			1
+		3
+				0
+		4
+			6
+		5
 
 		*/
 

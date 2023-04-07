@@ -230,6 +230,10 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		fkInputs[0] = *baseHS->localSpace;
 		fkInputs[1] = *demoMode->blendTree->nodes[rootIndex].outPose;
 		
+		// take activeHS->localSpace and set its root bone translation to zero
+		//activeHS->localSpace->pose[0].transformMat;
+		//a3matrix
+		
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
 			demoMode->hierarchy_skel->numNodes,
 			fkInputPtr, // holds current sample pose
@@ -275,8 +279,9 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&vel_l.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
 				//demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
 				//demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
-				demoMode->pos.x += vel_w.x * (a3real)dt;
-				demoMode->pos.y += vel_w.y * (a3real)dt;
+				const a3real speedModifier = 3.0f;
+				demoMode->pos.x += vel_w.x * (a3real)dt * speedModifier;
+				demoMode->pos.y += vel_w.y * (a3real)dt * speedModifier;
 			}
 			/*demoMode->pos.x = demoMode->pos.x + demoMode->vel.x * (a3real)dt;
 			demoMode->pos.y = demoMode->pos.y + demoMode->vel.y * (a3real)dt;*/
