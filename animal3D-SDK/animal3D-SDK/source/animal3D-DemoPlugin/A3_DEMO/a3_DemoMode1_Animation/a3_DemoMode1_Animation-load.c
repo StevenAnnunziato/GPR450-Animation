@@ -543,9 +543,6 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		const a3ui32 maskNum = 6;
 		for (a3ui32 i = 0; i < 128; i++)
 		{
-
-			//demoMode->blendTree->nodes[1].baskBoneIndices[i] = maskindecies1[i];
-			
 			// set up mask for node 4 - walking
 			if (i < demoMode->blendTree->nodes[4].numMaskBones) // first 40 bones - filter out upper body
 			{
@@ -559,8 +556,8 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			}
 		}
 		// add back in root for walking
-		demoMode->blendTree->nodes[4].baskBoneIndices[0] = 1;
-		demoMode->blendTree->nodes[5].baskBoneIndices[0] = 1;
+		//demoMode->blendTree->nodes[4].baskBoneIndices[0] = 1;
+		//demoMode->blendTree->nodes[5].baskBoneIndices[0] = 1;
 
 		// set up connections
 		// final lerp and mask

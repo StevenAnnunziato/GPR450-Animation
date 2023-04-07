@@ -231,10 +231,10 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		fkInputs[0] = *baseHS->localSpace;
 		fkInputs[1] = *demoMode->blendTree->nodes[rootIndex].outPose;
 		
-		// take activeHS->localSpace and set its root bone translation to zero
-		//activeHS->localSpace->pose[0].transformMat;
-		//a3matrix
-		
+		// TODO:
+		// zero translation values for the root bone of activeHS->localSpace
+
+
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
 			demoMode->hierarchy_skel->numNodes,
 			fkInputPtr, // holds current sample pose
@@ -249,9 +249,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 
 		// ****TO-DO: 
 		// process input
-
-		//a3vec4 pos_w;
-		//a3vec4 pos_l = a3vec4_zero;
 
 		// apply input
 		// switch on input mode and move the character
@@ -338,27 +335,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			break;
 		}
 
-		//{
-		//	// velocity
-		//	a3vec4 vel_l = a3vec4_zero; // 0,0,0,0
-
-		//	// red
-		//	vel_l.x += demoMode->acc.x * (a3real)dt;
-
-		//	// green
-		//	vel_l.y += demoMode->acc.y * (a3real)dt;
-
-		//	// make relative to object's parent
-		//	// vel_w = T_obj * vel_l
-
-		//	
-
-		//	// pos_w += ...vel_w*dt...
-
-		//}
-
-
-
 		switch (demoMode->ctrl_rotation)
 		{
 			// direct assignment of position
@@ -398,11 +374,10 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		//a3real4ProductTransform((a3real*)&demoMode->rot, (a3real*)&demoMode->rot, demoMode->obj_skeleton_ctrl->modelMat.m);
 		demoMode->obj_skeleton_ctrl->euler.z = -a3trigValid_sind(demoMode->rot);
 
-		//pos_l.x = demoMode->pos.x;
-		//pos_l.y = demoMode->pos.y;
-		//a3real4ProductTransform((a3real*)&pos_w.v, (a3real*)&pos_l.v, demoMode->obj_skeleton_ctrl->modelMat.m);
-
-		demoMode->blendTree->nodes[6].opParams[0] = () demoMode->vel.y;
+		// find magnitude of demoMode->vel
+		const a3real maxSpeed = 6.0f;
+		a3real mag = (a3real)sqrt(demoMode->vel.x * demoMode->vel.x + demoMode->vel.y * demoMode->vel.y);
+		demoMode->blendTree->nodes[6].opParams[0] = a3lerpInverse(maxSpeed, 0.0f, mag);
 
 		demoMode->obj_skeleton_ctrl->position.x = demoMode->pos.x;
 		demoMode->obj_skeleton_ctrl->position.y = demoMode->pos.y;
