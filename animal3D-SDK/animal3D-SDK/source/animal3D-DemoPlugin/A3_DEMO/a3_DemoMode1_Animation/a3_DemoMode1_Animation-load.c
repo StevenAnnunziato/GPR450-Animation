@@ -503,7 +503,10 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[0].numMaskBones = 0;
 
 		demoMode->blendTree->nodes[1].poseOp = a3hierarchyPoseOpLERP; // root
-		demoMode->blendTree->nodes[1].numMaskBones = 0;
+		demoMode->blendTree->nodes[1].numMaskBones = 0;		
+		
+		demoMode->blendTree->nodes[6].poseOp = a3hierarchyPoseOpLERP; // root
+		demoMode->blendTree->nodes[6].numMaskBones = 0;
 
 		// sample nodes
 		demoMode->blendTree->nodes[2].poseOp = 0;
@@ -516,12 +519,16 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[4].poseOp = 0;
 		demoMode->blendTree->nodes[4].numInputs = 0;
 
+		demoMode->blendTree->nodes[5].poseOp = 0;
+		demoMode->blendTree->nodes[5].numInputs = 0;
+
 		// set up masks for nodes 4 and 1
 		a3ui32 maskindecies1[128] = { 0 };
 		demoMode->blendTree->nodes[1].numMaskBones = 80;
 
 		//a3ui32 maskindecies4[128] = {  };
 		demoMode->blendTree->nodes[4].numMaskBones = 56;
+		demoMode->blendTree->nodes[5].numMaskBones = 56;
 
 		const a3ui32 maskNum = 6;
 		for (a3ui32 i = 0; i < 128; i++)
@@ -534,6 +541,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			{
 				//demoMode->blendTree->nodes[4].baskBoneIndices[i] = maskindecies4[i];
 				demoMode->blendTree->nodes[4].baskBoneIndices[i] = i;
+				demoMode->blendTree->nodes[5].baskBoneIndices[i] = i;
 			}
 			else // set up mask for node 1 - dance - last bones, filter out lower body
 			{
@@ -542,11 +550,12 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		}
 		// add back in root for walking
 		demoMode->blendTree->nodes[4].baskBoneIndices[0] = 1;
+		demoMode->blendTree->nodes[5].baskBoneIndices[0] = 1;
 
 		// set up connections
 		// final lerp and mask
 		demoMode->blendTree->nodes[0].inputNodes[0] = &demoMode->blendTree->nodes[1];
-		demoMode->blendTree->nodes[0].inputNodes[1] = &demoMode->blendTree->nodes[4];
+		demoMode->blendTree->nodes[0].inputNodes[1] = &demoMode->blendTree->nodes[6];
 		demoMode->blendTree->nodes[0].numInputs = 2;
 
 		// initial lerp
@@ -555,6 +564,11 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[1].numInputs = 2;
 		demoMode->blendTree->nodes[1].opParams[0] = 1.0f;
 
+		demoMode->blendTree->nodes[6].inputNodes[0] = &demoMode->blendTree->nodes[4];
+		demoMode->blendTree->nodes[6].inputNodes[1] = &demoMode->blendTree->nodes[5];
+		demoMode->blendTree->nodes[6].numInputs = 2;
+		demoMode->blendTree->nodes[6].opParams[0] = 1.0f;
+
 		// set up clip controllers
 		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_pistol");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[0], "xbot_ctrl", demoMode->clipPool, j, rate, fps);
@@ -562,11 +576,14 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[1], "xbot_ctrlA", demoMode->clipPool, j, rate, fps);
 		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_walk_m");
 		a3clipControllerInit(&demoMode->blendTree->clipControllers[2], "xbot_ctrlB", demoMode->clipPool, j, rate, fps);
+		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_m");
+		a3clipControllerInit(&demoMode->blendTree->clipControllers[3], "xbot_ctrlC", demoMode->clipPool, j, rate, fps);
 
 		// link clip ctrls to nodes
 		demoMode->blendTree->nodes[2].myClipController = &demoMode->blendTree->clipControllers[0];
 		demoMode->blendTree->nodes[3].myClipController = &demoMode->blendTree->clipControllers[1];
 		demoMode->blendTree->nodes[4].myClipController = &demoMode->blendTree->clipControllers[2];
+		demoMode->blendTree->nodes[5].myClipController = &demoMode->blendTree->clipControllers[3];
 	}
 }
 
@@ -598,8 +615,8 @@ void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* d
 	// initialize cameras not dependent on viewport
 
 		// set up blend tree memory
-	demoMode->blendTree->nodeCount = 5;
-	demoMode->blendTree->clipCount = 3;
+	demoMode->blendTree->nodeCount = 7;
+	demoMode->blendTree->clipCount = 4;
 	demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
 	//demoMode->blendTree->clipControllers = malloc(sizeof(a3_ClipController) * demoMode->blendTree->clipCount);
 

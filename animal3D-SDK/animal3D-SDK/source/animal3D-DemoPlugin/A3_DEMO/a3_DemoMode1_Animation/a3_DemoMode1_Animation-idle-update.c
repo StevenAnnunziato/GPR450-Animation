@@ -201,6 +201,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			a3clipControllerUpdate(&demoMode->blendTree->clipControllers[i], dt);
 		}
 
+
 		// first update the nodes which have no inputs and just sample from a clip
 		// for each node in the blend tree...
 		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; i++)
@@ -395,6 +396,9 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		//pos_l.x = demoMode->pos.x;
 		//pos_l.y = demoMode->pos.y;
 		//a3real4ProductTransform((a3real*)&pos_w.v, (a3real*)&pos_l.v, demoMode->obj_skeleton_ctrl->modelMat.m);
+
+		demoMode->blendTree->nodes[6].opParams[0] = () demoMode->vel.y;
+
 		demoMode->obj_skeleton_ctrl->position.x = demoMode->pos.x;
 		demoMode->obj_skeleton_ctrl->position.y = demoMode->pos.y;
 	}
