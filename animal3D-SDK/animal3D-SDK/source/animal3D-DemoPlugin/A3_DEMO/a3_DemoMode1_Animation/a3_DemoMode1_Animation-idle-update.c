@@ -379,6 +379,16 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		a3real mag = (a3real)sqrt(demoMode->vel.x * demoMode->vel.x + demoMode->vel.y * demoMode->vel.y);
 		demoMode->blendTree->nodes[6].opParams[0] = a3lerpInverse(maxSpeed, 0.0f, mag);
 
+		// change the playback speed of walking animation based on velocity direction
+		if (demoMode->vel.y >= 0) {
+			demoMode->blendTree->clipControllers[2].playback_sec = 1;
+		}
+		else
+		{
+			demoMode->blendTree->clipControllers[2].playback_sec = -1;
+
+		}
+
 		demoMode->obj_skeleton_ctrl->position.x = demoMode->pos.x;
 		demoMode->obj_skeleton_ctrl->position.y = demoMode->pos.y;
 	}
