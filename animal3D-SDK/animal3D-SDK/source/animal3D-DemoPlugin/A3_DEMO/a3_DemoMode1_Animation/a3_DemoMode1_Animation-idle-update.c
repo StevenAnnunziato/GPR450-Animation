@@ -191,19 +191,20 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 	if (demoState->updateAnimation)
 	{
 		a3real const dtr = (a3real)dt;
-		//a3_ClipController* clipCtrl = &demoMode->blendTree->clipControllers[0];
-		//a3_ClipController* clipCtrlA = &demoMode->blendTree->clipControllers[1];
-		//a3_ClipController* clipCtrlB = &demoMode->blendTree->clipControllers[2];
 
-		// update clip controllers in the blend tree
+		/*
+			Update clip controllers in the blend tree
+		*/ 
 		for (a3ui32 i = 0; i < demoMode->blendTree->clipCount; i++)
 		{
 			a3clipControllerUpdate(&demoMode->blendTree->clipControllers[i], dt);
 		}
 
 
-		// first update the nodes which have no inputs and just sample from a clip
-		// for each node in the blend tree...
+		/*
+			first update the nodes which have no inputs and just sample from a clip
+			for each node in the blend tree...
+		*/ 
 		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; i++)
 		{
 			// if the node is a clip node...
@@ -216,8 +217,9 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 										demoMode->hierarchy_skel->numNodes);
 			}
 		}
-
-		// finally execute the nodes of the blend tree in order
+		/*
+			finally execute the nodes of the blend tree in order
+		*/
 		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
 		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel->numNodes);
 

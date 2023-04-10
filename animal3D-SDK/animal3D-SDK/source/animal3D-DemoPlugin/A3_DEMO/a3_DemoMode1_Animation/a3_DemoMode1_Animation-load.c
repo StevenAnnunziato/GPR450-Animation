@@ -470,16 +470,18 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			a3clipCalculateDuration(demoMode->clipPool, j, fps);
 		}
 
-		//a3_spatialPoseOp identity = *a3spatialPoseOpIdentity;
-		//a3_spatialPoseOp construct = *a3spatialPoseConstruct;
-		//identity(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, NULL);
-		//construct(demoMode->hierarchyPoseGroup_skel->hpose->pose, NULL, (a3real[4]) { 5.0f, 2.0f, 3.0f, 4.0f });
+		/*
+			Set up blend tree
+		*/
 
-		// set up nodes to be use with outpose's
-		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes);
-		//a3hierarchyPoseReset(&demoMode->blendTree->poses[0], demoMode->blendTree->nodeCount, NULL, NULL);
-		//demoMode->blendTree->nodes[0].outPose = &demoMode->blendTree->poses[0];
+		/*
+			Blend tree init
 
+			a3initBlendTree(demoMode->blendTree, 7, 4, hierarchyState->hierarchy->numNodes);
+		*/
+		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes); 		// set up nodes to be use with outpose's
+
+		// Resets pose data with identity matrix
 		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
 			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
 			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
@@ -488,27 +490,39 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		/*
 		
-		Node setup:
+			Node setup:
 
-		0: root; concat with two inputs
-		1: lerp 2 and 3
-		2: sample - dance 1
-		3: sample - dance 2
-		4: sample - walk
-		5: sample - idle
-		6: lerp 4 and 5
+			0: root; concat with two inputs
+			1: lerp 2 and 3
+			2: sample - dance 1
+			3: sample - dance 2
+			4: sample - walk
+			5: sample - idle
+			6: lerp 4 and 5
 
-		2
-			1
-		3
-				0
-		4
-			6
-		5
+			2
+			  \
+				1
+			  /
+			3
+					\
+					  0
+			4		/
+			  \	
+				6
+			  /
+			5
 
 		*/
 
-		// lerp nodes
+		/*
+			Init nodes
+
+			init node
+			- Operation
+			- Animation
+		*/
+		// Function nodes
 		demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseConcat; // root
 		demoMode->blendTree->nodes[0].numMaskBones = 0;
 
@@ -518,7 +532,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[6].poseOp = a3hierarchyPoseOpLERP; // root
 		demoMode->blendTree->nodes[6].numMaskBones = 0;
 
-		// sample nodes
+		// Sample nodes
 		demoMode->blendTree->nodes[2].poseOp = 0;
 		demoMode->blendTree->nodes[2].numInputs = 0;
 
@@ -532,15 +546,17 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[5].poseOp = 0;
 		demoMode->blendTree->nodes[5].numInputs = 0;
 
-		// set up masks for nodes 4 and 1
-		a3ui32 maskindecies1[128] = { 0 };
-		demoMode->blendTree->nodes[1].numMaskBones = 80;
+		/*
+			Set up blend masking
+			
+			a3ui32 maskindecies1[128] = { 0 }; // this is one way of standardized masking operation
+		*/
 
-		//a3ui32 maskindecies4[128] = {  };
+		demoMode->blendTree->nodes[1].numMaskBones = 80;
 		demoMode->blendTree->nodes[4].numMaskBones = 56;
 		demoMode->blendTree->nodes[5].numMaskBones = 56;
 
-		const a3ui32 maskNum = 6;
+		// Hard coded masking for nodes 4 and 5
 		for (a3ui32 i = 0; i < 128; i++)
 		{
 			// set up mask for node 4 - walking
@@ -555,11 +571,15 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 				demoMode->blendTree->nodes[1].baskBoneIndices[i - demoMode->blendTree->nodes[4].numMaskBones + 1] = i; // janky and hard coded - leave space for filtering out bone 0 (root)
 			}
 		}
-		// add back in root for walking
-		//demoMode->blendTree->nodes[4].baskBoneIndices[0] = 1;
-		//demoMode->blendTree->nodes[5].baskBoneIndices[0] = 1;
 
-		// set up connections
+		/*
+			Setting up connections
+			Function: initConnection(outnode, inputs[])
+			or
+			Function: blendClips(outnode, clips[], operation)
+
+			note: this could be done at the init stage if we have a better format for loading data
+		*/
 		// final lerp and mask
 		demoMode->blendTree->nodes[0].inputNodes[0] = &demoMode->blendTree->nodes[1];
 		demoMode->blendTree->nodes[0].inputNodes[1] = &demoMode->blendTree->nodes[6];
@@ -571,6 +591,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		demoMode->blendTree->nodes[1].numInputs = 2;
 		demoMode->blendTree->nodes[1].opParams[0] = 1.0f;
 
+		// Lerp between walking and idle
 		demoMode->blendTree->nodes[6].inputNodes[0] = &demoMode->blendTree->nodes[4];
 		demoMode->blendTree->nodes[6].inputNodes[1] = &demoMode->blendTree->nodes[5];
 		demoMode->blendTree->nodes[6].numInputs = 2;
@@ -621,10 +642,16 @@ void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* d
 
 	// initialize cameras not dependent on viewport
 
-		// set up blend tree memory
+	/*
+		set up blend tree memory
+
+		Blend tree load validate
+	*/
 	demoMode->blendTree->nodeCount = 7;
 	demoMode->blendTree->clipCount = 4;
 	demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
+
+
 	//demoMode->blendTree->clipControllers = malloc(sizeof(a3_ClipController) * demoMode->blendTree->clipCount);
 
 	// animation

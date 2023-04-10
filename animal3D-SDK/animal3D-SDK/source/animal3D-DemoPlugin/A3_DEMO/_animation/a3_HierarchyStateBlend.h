@@ -376,6 +376,26 @@ struct a3_BlendTree
 // zeros out the deltas of the specified spatial poses.
 a3ui32 a3maskNode(a3_BlendTreeNode* node_inout);
 
+void a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 clipCount, a3ui32 hierarchyNodes);
+
+void a3freeBlendTree(a3_BlendTree* blend_in);
+
+void a3initBlendNode(a3_BlendTreeNode* node_out, a3_BlendTree* blendTree, const a3byte clipName[a3keyframeAnimation_nameLenMax]);
+
+void a3initBlendFunction(a3_BlendTreeNode* node_out, a3_BlendTree* blendTree, a3_HierarchyPoseOp poseOp, a3_BlendTreeNode* inputNodes[]);
+
+void a3freeBlendNode(a3_BlendTreeNode* node_in);
+
+void a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[128]);
+
+void a3updateBlendTree(const a3_BlendTree* blend_in);
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
 
 /// <summary>
@@ -386,6 +406,7 @@ a3ui32 a3maskNode(a3_BlendTreeNode* node_inout);
 /// <param name="p"></param>
 /// <returns></returns>
 a3ui32 a3real4Pow(a3real* v_out, const a3real* v, const a3real p);
+
 
 #ifdef __cplusplus
 }
