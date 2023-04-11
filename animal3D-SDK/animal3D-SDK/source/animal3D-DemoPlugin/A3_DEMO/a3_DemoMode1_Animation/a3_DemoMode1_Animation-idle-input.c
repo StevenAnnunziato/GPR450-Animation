@@ -126,7 +126,7 @@ void a3animation_input(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMode
 		if (a3XboxControlIsConnected(demoState->xcontrol))
 		{
 			// get directly from joysticks
-			if (a3XboxControlGetRightJoystick(demoState->xcontrol, demoMode->axis_r)) {
+			if (a3XboxControlGetLeftJoystick(demoState->xcontrol, demoMode->axis_l)) {
 			}
 			if (a3XboxControlGetRightJoystick(demoState->xcontrol, demoMode->axis_r)) {
 			}
