@@ -367,7 +367,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		demoMode->obj_skeleton_ctrl->euler.z = -a3trigValid_sind(demoMode->rot);
 
 		// find magnitude of demoMode->vel
-		const a3real maxSpeed = 6.0f;
+		const a3real maxSpeed = 8.0f;
 		a3real mag = (a3real)sqrt(demoMode->vel.x * demoMode->vel.x + demoMode->vel.y * demoMode->vel.y);
 		demoMode->blendTree->nodes[6].opParams[0] = a3lerpInverse(maxSpeed, 0.0f, mag);
 
