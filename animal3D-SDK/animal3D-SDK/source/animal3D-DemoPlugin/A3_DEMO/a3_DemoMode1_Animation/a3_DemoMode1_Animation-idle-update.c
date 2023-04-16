@@ -236,7 +236,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		// TODO:
 		// zero translation values for the root bone of activeHS->localSpace
 
-
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
 			demoMode->hierarchy_skel->numNodes,
 			fkInputPtr, // holds current sample pose
@@ -277,8 +276,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 				vel_l.x = demoMode->vel.x;
 				vel_l.y = demoMode->vel.y;
 				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&vel_l.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
-				//demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
-				//demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
 				const a3real speedModifier = 3.0f;
 				demoMode->pos.x += vel_w.x * (a3real)dt * speedModifier;
 				demoMode->pos.y += vel_w.y * (a3real)dt * speedModifier;
@@ -290,12 +287,9 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		case animation_input_kinematic:
 			{
 				a3vec4 vel_w;
-				//a3vec4 vel_l = a3vec4_zero;
 				demoMode->vel.x += demoMode->acc.x * (a3real)dt;
 				demoMode->vel.y += demoMode->acc.y * (a3real)dt;
 				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&demoMode->vel.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
-				//demoMode->vel.x = demoMode->vel.x + demoMode->acc.x * (a3real)dt;
-				//demoMode->vel.y = demoMode->vel.y + demoMode->acc.y * (a3real)dt;
 				demoMode->pos.x +=  vel_w.x * (a3real)dt;
 				demoMode->pos.y +=  vel_w.y * (a3real)dt;
 			}
@@ -309,7 +303,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 				target.y = demoMode->vel.y*5.0f;
 			
 				a3vec4 vel_w;
-				//a3vec4 vel_l = a3vec4_zero;
 				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&target.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
 
 				demoMode->pos.x = a3lerp(demoMode->pos.x, vel_w.x, (a3real)dt);
@@ -326,7 +319,6 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 				demoMode->vel.y = a3lerp(demoMode->vel.y, target.y, (a3real)dt);
 
 				a3vec4 vel_w;
-				//a3vec4 vel_l = a3vec4_zero;
 				a3real4ProductTransform((a3real*)&vel_w.v, (a3real*)&demoMode->vel.v, demoMode->obj_skeleton_ctrl->modelMatInv.m);
 
 				demoMode->pos.x = demoMode->pos.x + vel_w.x * (a3real)dt;
@@ -377,9 +369,19 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		demoMode->obj_skeleton_ctrl->euler.z = -a3trigValid_sind(demoMode->rot);
 
 		// find magnitude of demoMode->vel
-		const a3real maxSpeed = 6.0f;
+		const a3real maxSpeed = 8.0f;
 		a3real mag = (a3real)sqrt(demoMode->vel.x * demoMode->vel.x + demoMode->vel.y * demoMode->vel.y);
 		demoMode->blendTree->nodes[6].opParams[0] = a3lerpInverse(maxSpeed, 0.0f, mag);
+
+		// change the playback speed of walking animation based on velocity direction
+		if (demoMode->vel.y >= 0) {
+			demoMode->blendTree->clipControllers[2].playback_sec = 1;
+		}
+		else
+		{
+			demoMode->blendTree->clipControllers[2].playback_sec = -1;
+
+		}
 
 		demoMode->obj_skeleton_ctrl->position.x = demoMode->pos.x;
 		demoMode->obj_skeleton_ctrl->position.y = demoMode->pos.y;

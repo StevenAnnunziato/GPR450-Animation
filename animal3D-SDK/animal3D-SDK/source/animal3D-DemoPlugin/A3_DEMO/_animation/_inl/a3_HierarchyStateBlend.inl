@@ -567,6 +567,29 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
 	return 0;
 }
 
+inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose_in, a3real const param_in[])
+{
+	const a3_HierarchyPose* pose0 = &pose_in[0]; // Local space Hierarchy Pose
+
+	const a3real target_index = param_in[0];
+	const a3real x = param_in[1];
+	const a3real y = param_in[2];
+	const a3real z = param_in[3];
+
+	// Solve object space for effector and heierarchy; a3kinematicsSolveForward;
+
+	// Perform look at
+
+	// Solve for world space; a3kinematicsSolveInversePartial
+
+	return 0;
+}
+
+inline a3_HierarchyPose* a3hierarchyPoseOpChain(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose_in, a3real const param_in[])
+{
+	return 0;
+}
+
 inline a3_HierarchyPose* a3hierarchyPoseCubicBlend(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
