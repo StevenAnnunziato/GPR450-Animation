@@ -113,7 +113,8 @@ inline a3_HierarchyPose* a3hierarchyPoseConcat(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
 	a3_HierarchyPose const* pose_in,
-	a3real const param_in[])
+	a3real const param_in[],
+	a3_Hierarchy const* hierarchyPose)
 {
 	const a3_HierarchyPose* pose_lhs = &pose_in[0];
 	const a3_HierarchyPose* pose_rhs = &pose_in[1];
@@ -145,7 +146,8 @@ inline a3_HierarchyPose* a3hierarchyPoseLerp(
 	a3_HierarchyPose* pose_out,
 	a3ui32  nodeCount,
 	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+	a3real const param_in[],
+	a3_Hierarchy const* hierarchyPose)
 {
 	const a3_HierarchyPose* pose_0 = pose_in[0];
 	const a3_HierarchyPose* pose_1 = pose_in[1];

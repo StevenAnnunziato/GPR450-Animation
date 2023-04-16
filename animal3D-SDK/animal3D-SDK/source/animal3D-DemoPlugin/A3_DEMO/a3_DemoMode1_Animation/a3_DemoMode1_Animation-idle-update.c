@@ -71,12 +71,12 @@ inline a3real4x2r a3demo_mat2dquat_safe(a3real4x2 Q, a3real4x4 const m)
 
 //-----------------------------------------------------------------------------
 
-a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3ui32 hNodeCount)
+a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy)
 {
 	// create an array of all input poses
 	a3_HierarchyPose inPoses[8];
 	a3_HierarchyPose* inPosePtr; // 8 max inputs
-	inPoses[0].pose = malloc(sizeof(a3_SpatialPose) * hNodeCount * numOfInputs);
+	inPoses[0].pose = malloc(sizeof(a3_SpatialPose) * heierarchy->numNodes * numOfInputs);
 	inPosePtr = inPoses;
 
 	// if we rely on any additional inputs...
@@ -86,15 +86,15 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 		for (a3ui32 i = 0; i < numOfInputs; i++)
 		{
 			// allocate space for the input poses
-			inPoses[i].pose = inPoses[0].pose + hNodeCount * i;
-			a3hierarchyPoseReset(&inPoses[i], hNodeCount, NULL, NULL);
+			inPoses[i].pose = inPoses[0].pose + heierarchy->numNodes * i;
+			a3hierarchyPoseReset(&inPoses[i], heierarchy->numNodes, NULL, NULL);
 
 
 			// if there is an input node...
 			if (node->inputNodes[i]) {
 				// recurse solve the tree 
-				a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, blendNodeCount, hNodeCount); //calc children blend nodes
-				a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, hNodeCount); // copy children blend into temp data to be operated on
+				a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, blendNodeCount, heierarchy); //calc children blend nodes
+				a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, heierarchy->numNodes); // copy children blend into temp data to be operated on
 
 			}
 			
@@ -107,7 +107,7 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 
 	//operate on all inputs
 	if (node->poseOp != 0)
-		node->poseOp(node->outPose, hNodeCount, inPosePtr, node->opParams);
+		node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams, heierarchy);
 	else // no operations on this node, so just copy the in pose into the out pose.
 		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
 
@@ -222,7 +222,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			finally execute the nodes of the blend tree in order
 		*/
 		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel->numNodes);
+		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel);
 
 		// FK pipeline
 		/*a3_HierarchyPose fkInputs[2] = (a3_HierarchyPose[]){
@@ -240,7 +240,8 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 		a3hierarchyPoseConcat(activeHS->localSpace,	// goal to calculate
 			demoMode->hierarchy_skel->numNodes,
 			fkInputPtr, // holds current sample pose
-			NULL);
+			NULL,
+			demoMode->hierarchy_skel);
 		a3hierarchyPoseConvert(activeHS->localSpace,
 			demoMode->hierarchy_skel->numNodes,
 			demoMode->hierarchyPoseGroup_skel->channel,
