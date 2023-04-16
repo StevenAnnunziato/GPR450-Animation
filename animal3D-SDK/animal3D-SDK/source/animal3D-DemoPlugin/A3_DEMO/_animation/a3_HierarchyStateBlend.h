@@ -200,6 +200,38 @@ a3_HierarchyPose* a3hierarchyPoseOpLERP(
 /// </summary>
 /// <param name="pose_out"></param>
 /// <param name="nodeCount"></param>
+/// <param name="pose_in"></param>
+/// <param name="target_start_index"></param>
+/// <param name="u_x"></param>
+/// <param name="u_y"></param>
+/// <param name="u_z"></param>
+/// <returns></returns>
+a3_HierarchyPose* a3hierarchyPoseOpLookAt(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in,
+	a3real const param_in[]);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pose_out"></param>
+/// <param name="nodeCount"></param>
+/// <param name="pose0"></param>
+/// <param name="pose1"></param>
+/// <param name="u"></param>
+/// <returns></returns>
+a3_HierarchyPose* a3hierarchyPoseOpChain(
+	a3_HierarchyPose* pose_out,
+	a3ui32  nodeCount,
+	a3_HierarchyPose const* pose_in,
+	a3real const param_in[]);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pose_out"></param>
+/// <param name="nodeCount"></param>
 /// <param name="pose_pre"></param>
 /// <param name="pose0"></param>
 /// <param name="pose1"></param>
