@@ -351,7 +351,7 @@ struct a3_BlendTreeNode
 	a3_ClipController* myClipController;
 
 	// info for masking
-	a3ui32 baskBoneIndices[128]; // TODO: this should be a dynamic array
+	a3ui32 baskBoneIndices[128];
 	a3ui32 numMaskBones;
 };
 
@@ -363,7 +363,7 @@ struct a3_BlendTree
 	a3_HierarchyPose* poses;
 
 	// keyframe animation controllers to update each animation used for blending
-	a3_ClipController clipControllers[4];
+	a3_ClipController clipControllers[16];
 	a3ui32 clipCount;
 
 	// hierarchy of nodes defined by the animator
