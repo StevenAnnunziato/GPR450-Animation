@@ -490,15 +490,18 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		/*
 		
+		Node setup:
+
 			Node setup:
 
-			0: root; concat with two inputs
+			0: root; IK solver 
 			1: lerp 2 and 3
 			2: sample - dance 1
 			3: sample - dance 2
 			4: sample - walk
 			5: sample - idle
 			6: lerp 4 and 5
+			7: concat with two inputs
 
 			2
 			  \
@@ -506,7 +509,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			  /
 			3
 					\
-					  0
+					  7 - 0 - FK
 			4		/
 			  \	
 				6
@@ -523,8 +526,11 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			- Animation
 		*/
 		// Function nodes
-		demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseConcat; // root
+		demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseOpLookAt; // root
 		demoMode->blendTree->nodes[0].numMaskBones = 0;
+
+		demoMode->blendTree->nodes[7].poseOp = a3hierarchyPoseConcat; // root
+		demoMode->blendTree->nodes[7].numMaskBones = 0;
 
 		demoMode->blendTree->nodes[1].poseOp = a3hierarchyPoseOpLERP; // root
 		demoMode->blendTree->nodes[1].numMaskBones = 0;		
@@ -581,9 +587,9 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			note: this could be done at the init stage if we have a better format for loading data
 		*/
 		// final lerp and mask
-		demoMode->blendTree->nodes[0].inputNodes[0] = &demoMode->blendTree->nodes[1];
-		demoMode->blendTree->nodes[0].inputNodes[1] = &demoMode->blendTree->nodes[6];
-		demoMode->blendTree->nodes[0].numInputs = 2;
+		demoMode->blendTree->nodes[7].inputNodes[0] = &demoMode->blendTree->nodes[1];
+		demoMode->blendTree->nodes[7].inputNodes[1] = &demoMode->blendTree->nodes[6];
+		demoMode->blendTree->nodes[7].numInputs = 2;
 
 		// initial lerp
 		demoMode->blendTree->nodes[1].inputNodes[0] = &demoMode->blendTree->nodes[2];
@@ -647,7 +653,7 @@ void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* d
 
 		Blend tree load validate
 	*/
-	demoMode->blendTree->nodeCount = 7;
+	demoMode->blendTree->nodeCount = 8;
 	demoMode->blendTree->clipCount = 4;
 	demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
 
