@@ -30,6 +30,7 @@
 
 #include "../a3_DemoMode1_Animation.h"
 #include "../animal3D-DemoPlugin/A3_DEMO/_animation/a3_HierarchyState.h"
+#include "../animal3D-DemoPlugin/A3_DEMO/_animation/a3_BlendTree.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
