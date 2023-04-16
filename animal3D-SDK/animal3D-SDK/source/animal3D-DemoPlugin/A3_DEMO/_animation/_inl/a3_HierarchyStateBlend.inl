@@ -570,7 +570,7 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
 inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose_in, a3real const param_in[])
 {
 	const a3_HierarchyPose* pose0 = &pose_in[0]; // Local space Hierarchy Pose
-
+	
 	const a3real target_index = param_in[0];
 	const a3real x = param_in[1];
 	const a3real y = param_in[2];
