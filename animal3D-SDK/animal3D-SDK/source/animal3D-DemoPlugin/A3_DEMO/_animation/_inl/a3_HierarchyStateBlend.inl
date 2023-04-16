@@ -822,6 +822,10 @@ inline void a3updateBlendTree(const a3_BlendTree* blend_in)
 {
 }
 
+inline void a3ReadBlendTreeFromFile()
+{
+}
+
 // additional helper functions
 //-----------------------------------------------------------------------------
 

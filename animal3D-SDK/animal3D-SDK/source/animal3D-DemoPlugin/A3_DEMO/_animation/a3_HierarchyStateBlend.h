@@ -422,7 +422,7 @@ void a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[128]);
 
 void a3updateBlendTree(const a3_BlendTree* blend_in);
 
-
+void a3ReadBlendTreeFromFile();
 
 
 
