@@ -577,15 +577,77 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyPose* pose_out, a3u
 	const a3real y = param_in[2];
 	const a3real z = param_in[3];
 
-	// Solve object space for effector and heierarchy; a3kinematicsSolveForward;
+	a3_HierarchyPose* poseObjInv = malloc(sizeof(a3_HierarchyPose));
 
-	// Perform look at
+	if (pose_out && pose0 && hierarchyPose) {
 
-	// Solve for world space; a3kinematicsSolveInversePartial
-	
-	//pose_out = pose0;
-	a3hierarchyPoseCopy(pose_out, pose0, nodeCount);
-	return pose_out;
+		// Solve object space for effector and heierarchy; a3kinematicsSolveForward;
+		const a3_HierarchyNode* itr = hierarchyPose->nodes + (a3ui32)target_index;
+		const a3_HierarchyNode* const end = itr + nodeCount;
+		for (; itr < end; ++itr)
+		{
+			if (itr->parentIndex >= 0)
+				a3real4x4Product(pose_out->pose[itr->index].transformMat.m,
+					pose_out->pose[itr->parentIndex].transformMat.m,
+					pose0->pose[itr->index].transformMat.m);
+			else
+				pose_out->pose[itr->index] = pose0->pose[itr->index];
+		}
+
+		//Get Object-Space Inverse for IK later
+		a3index i;
+		for (i = 0; i < hierarchyPose->numNodes; ++i)
+			a3real4x4TransformInverse(poseObjInv->pose[i].transformMat.m,
+				pose_out->pose[i].transformMat.m);
+
+		/*
+		//Perform look at
+		a3vec3 target;
+		target.x = x;
+		target.y = y;
+		target.z = z;
+
+		//Should I be calling a spacialPoseConvert to get node to matrix and then restore later?
+		a3vec3 neck;
+		neck.x = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.x;
+		neck.y = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.y;
+		neck.z = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.z;
+		 
+		a3vec3 dir;
+		dir.x = target.x - neck.x;
+		dir.y = target.y - neck.y;
+		dir.z = target.z - neck.z;
+
+		a3vec3 vx, vy, vz;
+
+		vz = normalize(dir);
+
+		a3vec3 up;
+
+		vx = cross(up, vz);
+
+		vx = normalize(vx);
+
+		vy = cross(vz, vx);
+
+		pose_out->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate = R[vx, vy, vz];
+		*/
+
+		// Solve for world space; a3kinematicsSolveInversePartial
+		const a3_HierarchyNode* itr = hierarchyPose->nodes + (a3ui32)target_index;
+		const a3_HierarchyNode* const end = itr + nodeCount;
+		for (; itr < end; ++itr)
+		{
+			if (itr->parentIndex >= 0)
+				a3real4x4Product(pose0->pose[itr->index].transformMat.m,
+					poseObjInv->pose[itr->parentIndex].transformMat.m,
+					pose_out->pose[itr->index].transformMat.m);
+			else
+				pose0->pose[itr->index] = pose_out->pose[itr->index];
+		}
+		return pose_out;
+	}
+	return 0;
 }
 
 inline a3_HierarchyPose* a3hierarchyPoseOpChain(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose_in, a3real const param_in[])
