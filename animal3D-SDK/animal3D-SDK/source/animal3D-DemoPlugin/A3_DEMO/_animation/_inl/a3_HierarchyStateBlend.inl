@@ -633,6 +633,17 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyPose* pose_out, a3u
 		pose_out->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate = R[vx, vy, vz];
 		*/
 
+
+		/*
+		* 1) solve above: gives matrix in this form: 
+		*	[vx, vy, vz, t]
+		* 2) IK: my local = parent object inv * my object (the thing solved above)
+		* 
+		*/
+
+		a3_SpatialPose *affectedPose = pose_out->pose + (hierarchyPose->nodes + (a3ui32)target_index)->index;
+		//affectedPose->
+
 		// Solve for world space; a3kinematicsSolveInversePartial
 		const a3_HierarchyNode* itr = hierarchyPose->nodes + (a3ui32)target_index;
 		const a3_HierarchyNode* const end = itr + nodeCount;

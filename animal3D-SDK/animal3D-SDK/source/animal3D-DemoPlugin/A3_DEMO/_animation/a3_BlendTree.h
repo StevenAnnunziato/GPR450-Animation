@@ -23,6 +23,115 @@ extern "C"
 
 // ---------------------------------------------------------------------------------
 
+// generalized yet somewhat specialized approach
+//	-> general approach for multiple sets of specific purposes
+
+typedef a3ret (*a3_BlendFunc) (void const* op);
+
+// identity (0 or 1) [out] - single
+// copy (unary +) [out, in0] - single
+// negate (unary -) [out, in0] - single
+// concat (binary +) [out, in0, in1] - single
+// unconcat (binary -) [out, in0, in1] - single
+// scale
+// unscale
+// lerp [out, in0, in1, param0] - single
+// loglerp []...
+// unloglerp[]...
+// unlerp - single
+// bilerp - single
+#define POSE_IN_MAX 4
+#define PARAM_MAX 3
+typedef struct a3_SpatialPoseBlendOp
+{
+	a3_SpatialPose* pose_out;
+	a3_SpatialPose const* pose_in[POSE_IN_MAX];
+	a3real const* param[PARAM_MAX];
+} a3_SpatialPoseBlendOp;
+
+a3ret a3blendFuncSpatialPoseCopy(a3_SpatialPoseBlendOp const* op)
+{
+	// implements copy
+}
+
+a3ret a3blendFuncSpatialPoseLerp(a3_SpatialPoseBlendOp const* op)
+{
+	// implements lerp
+}
+
+// identity - float - additive or multiplicative
+// copy - float
+// negate - float
+// concat - float
+// unconcat - float
+// scale - add or mult
+// unscale - additive or mult
+// lerp - float - additive (lerp) or multiplicative (loglerp)
+//	-> x = lerp[x0,x1](u) = (x1 - x0) * u + x0
+// lerp inv - float
+//	-> u = lerp^-1[x0,x1](x) = (x - x0) / (x1 - x0)
+//		****problem: no op defined for (pose * pose) or (pose / pose)
+// bilerp
+// CR
+// H
+// B
+
+#define VALUE_IN_MAX 2
+typedef struct a3_FloatBlendOp
+{
+	a3real *value_out;
+	//a3_SpatialPose const* pose_in[POSE_IN_MAX]; // does not map mathematically so not good
+	a3real const* value_in[VALUE_IN_MAX]; // x
+	a3real const* param[PARAM_MAX]; // u
+} a3_FloatBlendOp;
+
+// could use float op to do individual CHANNELS
+//	-> build for rotation X, Y, Z, translation X, Y, Z, scale X, Y, Z
+
+// identity - hierarchy
+//	-> all of the above apply to this
+
+// convert
+typedef struct a3_PoseToMatBlendOp
+{
+	a3mat4 *mat_out;
+	a3_SpatialPose const* pose_in;
+} a3_PoseToMatBlendOp;
+
+// revert
+typedef struct a3_MatToPoseBlendOp
+{
+	a3_SpatialPose* pose_out;
+	a3mat4 const* mat_in;
+} a3_MatToPoseBlendOp;
+
+// forward kinematics
+// inverse kinematics
+typedef struct a3_MatrixBlendOp
+{
+	a3mat4 *mat_out;
+	a3mat4 const* mat_in[POSE_IN_MAX];
+} a3_MatrixBlendOp;
+
+// identity
+// copy
+// inv
+// concat
+// lerp
+typedef struct a3_QuaternionBlendOp
+{
+	a3quat* quat_out;
+	a3quat const* quat_in[POSE_IN_MAX];
+} a3_QuaternionBlendOp;
+
+////typedef struct a3_HierarchyStateBlendOp
+////{
+////
+////} a3_HierarchyStateBlendOp;
+
+
+// ---------------------------------------------------------------------------------
+
 // function pointer typedef for blend operations
 typedef a3_HierarchyPose* (*a3_HierarchyPoseOp) (
 	a3_HierarchyPose* pose_out,
