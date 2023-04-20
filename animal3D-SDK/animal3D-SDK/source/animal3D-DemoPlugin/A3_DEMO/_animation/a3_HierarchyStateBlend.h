@@ -56,19 +56,11 @@ extern "C"
 // pointer-based reset/identity operation for single spatial pose
 a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data);
 
-<<<<<<< HEAD
 a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translate);
 a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPoseBlendOp* data);
 a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPoseBlendOp* data);
 a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPoseBlendOp* data);
 a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPoseBlendOp* data);
-=======
-a3ret a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translation);
-a3ret a3spatialPoseConstant(a3_SpatialPoseBlendOp* data);
-a3ret a3spatialPoseInvert(a3_SpatialPoseBlendOp* data);
-a3ret a3spatialPoseMerge(a3_SpatialPoseBlendOp* data);
-a3ret a3spatialPoseNearest(a3_SpatialPoseBlendOp* data);
->>>>>>> 1af7117636da5afa6b4e5194811689a206c31924
 
 // pointer-based LERP operation for single spatial pose
 a3ret a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data);
