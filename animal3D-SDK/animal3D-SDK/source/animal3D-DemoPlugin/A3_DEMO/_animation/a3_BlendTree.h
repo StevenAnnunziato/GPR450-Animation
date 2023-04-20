@@ -29,7 +29,7 @@ typedef enum Operation(a3_OpType);
 // generalized yet somewhat specialized approach
 //	-> general approach for multiple sets of specific purposes
 
-typedef a3ret (*a3_BlendFunc) (void const* op);
+typedef a3ret (*a3_BlendFunc) (void* data);
 
 #define POSE_IN_MAX 16
 #define PARAM_MAX 5
@@ -118,13 +118,13 @@ typedef struct a3_QuaternionBlendOp
 } a3_QuaternionBlendOp;
 
 // hierarchy pose inputs
-typedef struct a3_HierarchyBlendOp
+typedef struct a3_HierarchyPoseBlendOp
 {
 	a3_HierarchyPose* pose_out;
 	a3ui32  nodeCount;
 	a3_HierarchyPose const* pose_in[POSE_IN_MAX];
 	a3real const param_in[PARAM_MAX];
-} a3_HierarchyStateBlendOp;
+} a3_HierarchyPoseBlendOp;
 
 // struct for look at and chain inputs
 typedef struct a3_HierarchyStateBlendOp
@@ -191,15 +191,6 @@ struct a3_BlendTree
 	a3_BlendTreeNode nodes[32];
 	a3ui32 nodeCount;
 };
-a3ret a3blendFuncSpatialPoseCopy(a3_SpatialPoseBlendOp* op)
-{
-	// implements copy
-}
-
-a3ret a3blendFuncSpatialPoseLerp(a3_SpatialPoseBlendOp* op)
-{
-	// implements lerp
-}
 
 
 // mask node: takes in a hierarchy pose and an array of spatial poses, then
