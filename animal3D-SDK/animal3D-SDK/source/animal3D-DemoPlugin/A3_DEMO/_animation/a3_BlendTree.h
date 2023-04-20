@@ -137,8 +137,7 @@ typedef a3_HierarchyPose* (*a3_HierarchyPoseOp) (
 	a3_HierarchyPose* pose_out,
 	a3ui32 nodeCount,
 	a3_HierarchyPose const* pose_in,
-	a3real const param_in[],
-	a3_Hierarchy const* heierarchy
+	a3real const param_in[]
 	);
 
 // blend tree operations and structures
@@ -148,7 +147,7 @@ struct a3_BlendTreeNode;
 struct a3_BlendTreeNode
 {
 	// function pointer to my particular operation
-	a3_HierarchyPoseOp poseOp;
+	a3_BlendFunc poseOp;
 	a3real opParams[32];
 
 	// store the hierarchy pose after poseOp is completed
