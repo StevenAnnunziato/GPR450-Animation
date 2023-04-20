@@ -223,154 +223,156 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 			Set up blend tree
 		*/
 
-		/*
-			Blend tree init
 
-			a3initBlendTree(demoMode->blendTree, 7, 4, hierarchyState->hierarchy->numNodes);
-		*/
-		demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes); 		// set up nodes to be use with outpose's
 
-		// Resets pose data with identity matrix
-		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
-			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
-			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
-			demoMode->blendTree->nodes[i].outPose = &demoMode->blendTree->poses[i];
-		}
+		///*
+		//	Blend tree init
 
-		/*
-		
-		Node setup:
+		//	a3initBlendTree(demoMode->blendTree, 7, 4, hierarchyState->hierarchy->numNodes);
+		//*/
+		//demoMode->blendTree->poses->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes); 		// set up nodes to be use with outpose's
 
-			Node setup:
+		//// Resets pose data with identity matrix
+		//for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
+		//	demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
+		//	a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
+		//	demoMode->blendTree->nodes[i].outPose = &demoMode->blendTree->poses[i];
+		//}
 
-			0: root; IK solver 
-			1: lerp 2 and 3
-			2: sample - dance 1
-			3: sample - dance 2
-			4: sample - walk
-			5: sample - idle
-			6: lerp 4 and 5
-			7: concat with two inputs
+		///*
+		//
+		//Node setup:
 
-			2
-			  \
-				1
-			  /
-			3
-					\
-					  7 - 0 - FK
-			4		/
-			  \	
-				6
-			  /
-			5
+		//	Node setup:
 
-		*/
+		//	0: root; IK solver 
+		//	1: lerp 2 and 3
+		//	2: sample - dance 1
+		//	3: sample - dance 2
+		//	4: sample - walk
+		//	5: sample - idle
+		//	6: lerp 4 and 5
+		//	7: concat with two inputs
 
-		/*
-			Init nodes
+		//	2
+		//	  \
+		//		1
+		//	  /
+		//	3
+		//			\
+		//			  7 - 0 - FK
+		//	4		/
+		//	  \	
+		//		6
+		//	  /
+		//	5
 
-			init node
-			- Operation
-			- Animation
-		*/
-		// Function nodes
-		demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseOpLookAt; // root
-		demoMode->blendTree->nodes[0].numMaskBones = 0;
+		//*/
 
-		demoMode->blendTree->nodes[7].poseOp = a3hierarchyPoseConcat; // root
-		demoMode->blendTree->nodes[7].numMaskBones = 0;
+		///*
+		//	Init nodes
 
-		demoMode->blendTree->nodes[1].poseOp = a3hierarchyPoseOpLERP; // root
-		demoMode->blendTree->nodes[1].numMaskBones = 0;		
-		
-		demoMode->blendTree->nodes[6].poseOp = a3hierarchyPoseOpLERP; // root
-		demoMode->blendTree->nodes[6].numMaskBones = 0;
+		//	init node
+		//	- Operation
+		//	- Animation
+		//*/
+		//// Function nodes
+		//demoMode->blendTree->nodes[0].poseOp = a3hierarchyPoseOpLookAt; // root
+		//demoMode->blendTree->nodes[0].numMaskBones = 0;
 
-		// Sample nodes
-		demoMode->blendTree->nodes[2].poseOp = 0;
-		demoMode->blendTree->nodes[2].numInputs = 0;
+		//demoMode->blendTree->nodes[7].poseOp = a3hierarchyPoseConcat; // root
+		//demoMode->blendTree->nodes[7].numMaskBones = 0;
 
-		demoMode->blendTree->nodes[3].poseOp = 0;
-		demoMode->blendTree->nodes[3].numInputs = 0;
-		demoMode->blendTree->nodes[3].numMaskBones = 0;
+		//demoMode->blendTree->nodes[1].poseOp = a3hierarchyPoseOpLERP; // root
+		//demoMode->blendTree->nodes[1].numMaskBones = 0;		
+		//
+		//demoMode->blendTree->nodes[6].poseOp = a3hierarchyPoseOpLERP; // root
+		//demoMode->blendTree->nodes[6].numMaskBones = 0;
 
-		demoMode->blendTree->nodes[4].poseOp = 0;
-		demoMode->blendTree->nodes[4].numInputs = 0;
+		//// Sample nodes
+		//demoMode->blendTree->nodes[2].poseOp = 0;
+		//demoMode->blendTree->nodes[2].numInputs = 0;
 
-		demoMode->blendTree->nodes[5].poseOp = 0;
-		demoMode->blendTree->nodes[5].numInputs = 0;
+		//demoMode->blendTree->nodes[3].poseOp = 0;
+		//demoMode->blendTree->nodes[3].numInputs = 0;
+		//demoMode->blendTree->nodes[3].numMaskBones = 0;
 
-		/*
-			Set up blend masking
-			
-			a3ui32 maskindecies1[128] = { 0 }; // this is one way of standardized masking operation
-		*/
+		//demoMode->blendTree->nodes[4].poseOp = 0;
+		//demoMode->blendTree->nodes[4].numInputs = 0;
 
-		demoMode->blendTree->nodes[1].numMaskBones = 80;
-		demoMode->blendTree->nodes[4].numMaskBones = 56;
-		demoMode->blendTree->nodes[5].numMaskBones = 56;
+		//demoMode->blendTree->nodes[5].poseOp = 0;
+		//demoMode->blendTree->nodes[5].numInputs = 0;
 
-		// Hard coded masking for nodes 4 and 5
-		for (a3ui32 i = 0; i < 128; i++)
-		{
-			// set up mask for node 4 - walking
-			if (i < demoMode->blendTree->nodes[4].numMaskBones) // first 40 bones - filter out upper body
-			{
-				//demoMode->blendTree->nodes[4].baskBoneIndices[i] = maskindecies4[i];
-				demoMode->blendTree->nodes[4].baskBoneIndices[i] = i;
-				demoMode->blendTree->nodes[5].baskBoneIndices[i] = i;
-			}
-			else // set up mask for node 1 - dance - last bones, filter out lower body
-			{
-				demoMode->blendTree->nodes[1].baskBoneIndices[i - demoMode->blendTree->nodes[4].numMaskBones + 1] = i; // janky and hard coded - leave space for filtering out bone 0 (root)
-			}
-		}
+		///*
+		//	Set up blend masking
+		//	
+		//	a3ui32 maskindecies1[128] = { 0 }; // this is one way of standardized masking operation
+		//*/
 
-		/*
-			Setting up connections
-			Function: initConnection(outnode, inputs[])
-			or
-			Function: blendClips(outnode, clips[], operation)
+		//demoMode->blendTree->nodes[1].numMaskBones = 80;
+		//demoMode->blendTree->nodes[4].numMaskBones = 56;
+		//demoMode->blendTree->nodes[5].numMaskBones = 56;
 
-			note: this could be done at the init stage if we have a better format for loading data
-		*/
-		// final lerp and mask
-		demoMode->blendTree->nodes[7].inputNodes[0] = &demoMode->blendTree->nodes[1];
-		demoMode->blendTree->nodes[7].inputNodes[1] = &demoMode->blendTree->nodes[6];
-		demoMode->blendTree->nodes[7].numInputs = 2;
+		//// Hard coded masking for nodes 4 and 5
+		//for (a3ui32 i = 0; i < 128; i++)
+		//{
+		//	// set up mask for node 4 - walking
+		//	if (i < demoMode->blendTree->nodes[4].numMaskBones) // first 40 bones - filter out upper body
+		//	{
+		//		//demoMode->blendTree->nodes[4].baskBoneIndices[i] = maskindecies4[i];
+		//		demoMode->blendTree->nodes[4].baskBoneIndices[i] = i;
+		//		demoMode->blendTree->nodes[5].baskBoneIndices[i] = i;
+		//	}
+		//	else // set up mask for node 1 - dance - last bones, filter out lower body
+		//	{
+		//		demoMode->blendTree->nodes[1].baskBoneIndices[i - demoMode->blendTree->nodes[4].numMaskBones + 1] = i; // janky and hard coded - leave space for filtering out bone 0 (root)
+		//	}
+		//}
 
-		// IK solver
-		demoMode->blendTree->nodes[0].inputNodes[0] = &demoMode->blendTree->nodes[7];
-		demoMode->blendTree->nodes[0].numInputs = 1;
+		///*
+		//	Setting up connections
+		//	Function: initConnection(outnode, inputs[])
+		//	or
+		//	Function: blendClips(outnode, clips[], operation)
 
-		// initial lerp
-		demoMode->blendTree->nodes[1].inputNodes[0] = &demoMode->blendTree->nodes[2];
-		demoMode->blendTree->nodes[1].inputNodes[1] = &demoMode->blendTree->nodes[3];
-		demoMode->blendTree->nodes[1].numInputs = 2;
-		demoMode->blendTree->nodes[1].opParams[0] = 1.0f;
+		//	note: this could be done at the init stage if we have a better format for loading data
+		//*/
+		//// final lerp and mask
+		//demoMode->blendTree->nodes[7].inputNodes[0] = &demoMode->blendTree->nodes[1];
+		//demoMode->blendTree->nodes[7].inputNodes[1] = &demoMode->blendTree->nodes[6];
+		//demoMode->blendTree->nodes[7].numInputs = 2;
 
-		// Lerp between walking and idle
-		demoMode->blendTree->nodes[6].inputNodes[0] = &demoMode->blendTree->nodes[4];
-		demoMode->blendTree->nodes[6].inputNodes[1] = &demoMode->blendTree->nodes[5];
-		demoMode->blendTree->nodes[6].numInputs = 2;
-		demoMode->blendTree->nodes[6].opParams[0] = 1.0f;
+		//// IK solver
+		//demoMode->blendTree->nodes[0].inputNodes[0] = &demoMode->blendTree->nodes[7];
+		//demoMode->blendTree->nodes[0].numInputs = 1;
 
-		// set up clip controllers
-		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_pistol");
-		a3clipControllerInit(&demoMode->blendTree->clipControllers[0], "xbot_ctrl", demoMode->clipPool, j, rate, fps);
-		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_ymca");
-		a3clipControllerInit(&demoMode->blendTree->clipControllers[1], "xbot_ctrlA", demoMode->clipPool, j, rate, fps);
-		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_walk_m");
-		a3clipControllerInit(&demoMode->blendTree->clipControllers[2], "xbot_ctrlB", demoMode->clipPool, j, rate, fps);
-		j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_m");
-		a3clipControllerInit(&demoMode->blendTree->clipControllers[3], "xbot_ctrlC", demoMode->clipPool, j, rate, fps);
+		//// initial lerp
+		//demoMode->blendTree->nodes[1].inputNodes[0] = &demoMode->blendTree->nodes[2];
+		//demoMode->blendTree->nodes[1].inputNodes[1] = &demoMode->blendTree->nodes[3];
+		//demoMode->blendTree->nodes[1].numInputs = 2;
+		//demoMode->blendTree->nodes[1].opParams[0] = 1.0f;
 
-		// link clip ctrls to nodes
-		demoMode->blendTree->nodes[2].myClipController = &demoMode->blendTree->clipControllers[0];
-		demoMode->blendTree->nodes[3].myClipController = &demoMode->blendTree->clipControllers[1];
-		demoMode->blendTree->nodes[4].myClipController = &demoMode->blendTree->clipControllers[2];
-		demoMode->blendTree->nodes[5].myClipController = &demoMode->blendTree->clipControllers[3];
+		//// Lerp between walking and idle
+		//demoMode->blendTree->nodes[6].inputNodes[0] = &demoMode->blendTree->nodes[4];
+		//demoMode->blendTree->nodes[6].inputNodes[1] = &demoMode->blendTree->nodes[5];
+		//demoMode->blendTree->nodes[6].numInputs = 2;
+		//demoMode->blendTree->nodes[6].opParams[0] = 1.0f;
+
+		//// set up clip controllers
+		//j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_pistol");
+		//a3clipControllerInit(&demoMode->blendTree->clipControllers[0], "xbot_ctrl", demoMode->clipPool, j, rate, fps);
+		//j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_ymca");
+		//a3clipControllerInit(&demoMode->blendTree->clipControllers[1], "xbot_ctrlA", demoMode->clipPool, j, rate, fps);
+		//j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_walk_m");
+		//a3clipControllerInit(&demoMode->blendTree->clipControllers[2], "xbot_ctrlB", demoMode->clipPool, j, rate, fps);
+		//j = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_m");
+		//a3clipControllerInit(&demoMode->blendTree->clipControllers[3], "xbot_ctrlC", demoMode->clipPool, j, rate, fps);
+
+		//// link clip ctrls to nodes
+		//demoMode->blendTree->nodes[2].myClipController = &demoMode->blendTree->clipControllers[0];
+		//demoMode->blendTree->nodes[3].myClipController = &demoMode->blendTree->clipControllers[1];
+		//demoMode->blendTree->nodes[4].myClipController = &demoMode->blendTree->clipControllers[2];
+		//demoMode->blendTree->nodes[5].myClipController = &demoMode->blendTree->clipControllers[3];
 	}
 }
 
@@ -406,9 +408,9 @@ void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* d
 
 		Blend tree load validate
 	*/
-	demoMode->blendTree->nodeCount = 8;
 	demoMode->blendTree->clipCount = 4;
-	demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
+	//demoMode->blendTree->nodeCount = 8;
+	//demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
 
 
 	//demoMode->blendTree->clipControllers = malloc(sizeof(a3_ClipController) * demoMode->blendTree->clipCount);

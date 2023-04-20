@@ -23,6 +23,8 @@ extern "C"
 
 // ---------------------------------------------------------------------------------
 
+enum Operation { NONE = 0, SPATIAL = 1, IK = 2, FLOAT = 3, };
+
 // generalized yet somewhat specialized approach
 //	-> general approach for multiple sets of specific purposes
 

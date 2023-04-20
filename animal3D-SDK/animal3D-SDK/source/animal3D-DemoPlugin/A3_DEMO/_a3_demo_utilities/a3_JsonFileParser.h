@@ -23,7 +23,10 @@ extern "C"
 
 
 #endif	// __cplusplus
-
+enum
+{
+	a3BlendName_nameLenMax = 32,
+};
 //-----------------------------------------------------------------------------
 
 //void a3ReadBlendTreeFromFile(const a3byte fileName[a3keyframeAnimation_nameLenMax], a3_ClipPool* out_pool, a3ui32* out_size, const a3_KeyframePool* keypool);
