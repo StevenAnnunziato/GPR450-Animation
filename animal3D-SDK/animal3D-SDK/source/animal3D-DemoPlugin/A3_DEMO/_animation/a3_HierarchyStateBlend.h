@@ -201,12 +201,7 @@ a3_HierarchyPose* a3hierarchyPoseOpLERP(
 /// <param name="u_y"></param>
 /// <param name="u_z"></param>
 /// <returns></returns>
-a3_HierarchyPose* a3hierarchyPoseOpLookAt(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in,
-	a3real const param_in[],
-	a3_Hierarchy const* hierarchyPose);
+a3_HierarchyPose* a3hierarchyPoseOpLookAt( a3_HierarchyStateBlendOp* data );
 
 /// <summary>
 /// 

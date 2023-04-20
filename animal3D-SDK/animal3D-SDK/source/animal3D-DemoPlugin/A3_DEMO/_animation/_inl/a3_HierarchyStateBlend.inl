@@ -568,7 +568,7 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
 	return 0;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose_in, a3real const param_in[], a3_Hierarchy const * hierarchyPose)
+inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 {
 	const a3_HierarchyPose* pose0 = &pose_in[0]; // Local space Hierarchy Pose
 	

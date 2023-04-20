@@ -24,11 +24,16 @@ extern "C"
 // ---------------------------------------------------------------------------------
 
 enum Operation { NONE = 0, SPATIAL = 1, IK = 2, FLOAT = 3, };
+typedef enum Operation(a3_OpType);
 
 // generalized yet somewhat specialized approach
 //	-> general approach for multiple sets of specific purposes
 
 typedef a3ret (*a3_BlendFunc) (void const* op);
+
+#define POSE_IN_MAX 4
+#define PARAM_MAX 4
+#define VALUE_IN_MAX 2 // for float ops
 
 // identity (0 or 1) [out] - single
 // copy (unary +) [out, in0] - single
@@ -42,8 +47,6 @@ typedef a3ret (*a3_BlendFunc) (void const* op);
 // unloglerp[]...
 // unlerp - single
 // bilerp - single
-#define POSE_IN_MAX 4
-#define PARAM_MAX 3
 typedef struct a3_SpatialPoseBlendOp
 {
 	a3_SpatialPose* pose_out;
@@ -77,8 +80,6 @@ a3ret a3blendFuncSpatialPoseLerp(a3_SpatialPoseBlendOp const* op)
 // CR
 // H
 // B
-
-#define VALUE_IN_MAX 2
 typedef struct a3_FloatBlendOp
 {
 	a3real *value_out;
@@ -126,10 +127,14 @@ typedef struct a3_QuaternionBlendOp
 	a3quat const* quat_in[POSE_IN_MAX];
 } a3_QuaternionBlendOp;
 
-////typedef struct a3_HierarchyStateBlendOp
-////{
-////
-////} a3_HierarchyStateBlendOp;
+// struct for look at and chain inputs
+typedef struct a3_HierarchyStateBlendOp
+{
+	a3_HierarchyPose* pose_out;
+	a3_HierarchyPose const* pose_in;
+	a3real const param_in[PARAM_MAX];
+	a3_HierarchyState const* hierarchyState;
+} a3_HierarchyStateBlendOp;
 
 
 // ---------------------------------------------------------------------------------
@@ -151,6 +156,9 @@ struct a3_BlendTreeNode
 	// function pointer to my particular operation
 	a3_BlendFunc poseOp;
 	a3real opParams[32];
+
+	// info for function type
+	a3_OpType opType;
 
 	// store the hierarchy pose after poseOp is completed
 	// this is the most important part of the blend node
