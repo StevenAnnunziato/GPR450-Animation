@@ -54,28 +54,24 @@ extern "C"
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for single spatial pose
-a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPose* pose_out);
+a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data);
 
-a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translation);
-a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in);
-a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in);
-a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs);
-a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3real blendParam);
+a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPoseBlendOp* data);
 
 // pointer-based LERP operation for single spatial pose
-a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPose* pose_out, a3_SpatialPose const* pose0, a3_SpatialPose const* pose1, a3real const u);
+a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data);
 
-a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_pre, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3_SpatialPose* pose_post, const a3real blendParam);
+a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data);
 //a3_SpatialPose* a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs);
-a3_SpatialPose* a3spatialPoseScale(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in, const a3real blendParam);
-a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3_SpatialPose* pose2, const a3real u0, const a3real u1);
-a3_SpatialPose* a3spatialPoseBinearestBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* init0, const a3_SpatialPose* init1, const a3_SpatialPose* final1, const a3_SpatialPose* final2, const a3real u, const a3real u0, const a3real u1);
-a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* init0, const a3_SpatialPose* init1, const a3_SpatialPose* final0, const a3_SpatialPose* final1, const a3real u, const a3real u0, const a3real u1);
-a3_SpatialPose* a3spatialPoseBicubicBlend(		  a3_SpatialPose* pose_out, const a3real blendTotal,
-											const a3_SpatialPose* pose_A0, const a3_SpatialPose* pose_A1, const a3_SpatialPose* pose_A2, const a3_SpatialPose* pose_A3, const a3real blendA,
-											const a3_SpatialPose* pose_B0, const a3_SpatialPose* pose_B1, const a3_SpatialPose* pose_B2, const a3_SpatialPose* pose_B3, const a3real blendB,
-											const a3_SpatialPose* pose_C0, const a3_SpatialPose* pose_C1, const a3_SpatialPose* pose_C2, const a3_SpatialPose* pose_C3, const a3real blendC,
-											const a3_SpatialPose* pose_D0, const a3_SpatialPose* pose_D1, const a3_SpatialPose* pose_D2, const a3_SpatialPose* pose_D3, const a3real blendD);
+a3_SpatialPose* a3spatialPoseScale(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data);
 
 
 //-----------------------------------------------------------------------------

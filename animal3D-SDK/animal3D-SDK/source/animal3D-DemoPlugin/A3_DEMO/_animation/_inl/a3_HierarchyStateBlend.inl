@@ -144,7 +144,7 @@ inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPose* pose_out, const a3_S
 }
 
 // pointer-based LERP operation for single spatial pose
-inline a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPose* pose_out, a3_SpatialPose const* pose0, a3_SpatialPose const* pose1, a3real const u)
+inline a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
 {
 	if (pose_out && pose0 && pose1)
 	{
@@ -306,7 +306,7 @@ inline a3_SpatialPose* a3spatialPoseScale(a3_SpatialPose* pose_out, const a3_Spa
 {
 	if (pose_out && pose_in)
 	{
-		a3spatialPoseOpLERP(pose_out, a3spatialPoseOpIdentity(pose_out), pose_in, blendParam);
+		a3spatialPoseOpLERP();
 
 		return pose_out;
 	}
@@ -374,9 +374,9 @@ inline a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPose* pose_out, cons
 		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
 
-		a3spatialPoseOpLERP(b0, init0, init1, u0);
-		a3spatialPoseOpLERP(b1, final0, final1, u1);
-		a3spatialPoseOpLERP(pose_out, b0, b1, u);
+		a3spatialPoseOpLERP();
+		a3spatialPoseOpLERP();
+		a3spatialPoseOpLERP();
 
 		free(b0);
 		free(b1);
