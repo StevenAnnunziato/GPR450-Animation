@@ -570,35 +570,35 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
 
 inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 {
-	const a3_HierarchyPose* pose0 = &pose_in[0]; // Local space Hierarchy Pose
+	const a3_HierarchyPose* pose0 = &data->pose_in[0]; // Local space Hierarchy Pose
 	
-	const a3real target_index = param_in[0];
-	const a3real x = param_in[1];
-	const a3real y = param_in[2];
-	const a3real z = param_in[3];
+	const a3real target_index = data->param_in[0];
+	const a3real x = data->param_in[1];
+	const a3real y = data->param_in[2];
+	const a3real z = data->param_in[3];
 
 	a3_HierarchyPose* poseObjInv = malloc(sizeof(a3_HierarchyPose));
 
-	if (pose_out && pose0 && hierarchyPose) {
+	if (data->pose_out && pose0 && data->hierarchyState) {
 
 		// Solve object space for effector and heierarchy; a3kinematicsSolveForward;
-		const a3_HierarchyNode* itr = hierarchyPose->nodes + (a3ui32)target_index;
-		const a3_HierarchyNode* const end = itr + nodeCount;
+		const a3_HierarchyNode* itr = data->hierarchyState->hierarchy->nodes + (a3ui32)target_index;
+		const a3_HierarchyNode* const end = itr + data->hierarchyState->hierarchy->numNodes;
 		for (; itr < end; ++itr)
 		{
 			if (itr->parentIndex >= 0)
-				a3real4x4Product(pose_out->pose[itr->index].transformMat.m,
-					pose_out->pose[itr->parentIndex].transformMat.m,
+				a3real4x4Product(data->pose_out->pose[itr->index].transformMat.m,
+					data->pose_out->pose[itr->parentIndex].transformMat.m,
 					pose0->pose[itr->index].transformMat.m);
 			else
-				pose_out->pose[itr->index] = pose0->pose[itr->index];
+				data->pose_out->pose[itr->index] = pose0->pose[itr->index];
 		}
 
 		//Get Object-Space Inverse for IK later
 		a3index i;
-		for (i = 0; i < hierarchyPose->numNodes; ++i)
+		for (i = 0; i < data->hierarchyState->hierarchy->numNodes; ++i)
 			a3real4x4TransformInverse(poseObjInv->pose[i].transformMat.m,
-				pose_out->pose[i].transformMat.m);
+				data->pose_out->pose[i].transformMat.m);
 
 		/*
 		//Perform look at
@@ -641,22 +641,22 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 		* 
 		*/
 
-		a3_SpatialPose *affectedPose = pose_out->pose + (hierarchyPose->nodes + (a3ui32)target_index)->index;
+		a3_SpatialPose *affectedPose = data->pose_out->pose + (data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index;
 		//affectedPose->
 
 		// Solve for world space; a3kinematicsSolveInversePartial
-		const a3_HierarchyNode* itr = hierarchyPose->nodes + (a3ui32)target_index;
-		const a3_HierarchyNode* const end = itr + nodeCount;
+		const a3_HierarchyNode* itr = data->hierarchyState->hierarchy->nodes + (a3ui32)target_index;
+		const a3_HierarchyNode* const end = itr + data->hierarchyState->hierarchy->numNodes;
 		for (; itr < end; ++itr)
 		{
 			if (itr->parentIndex >= 0)
 				a3real4x4Product(pose0->pose[itr->index].transformMat.m,
 					poseObjInv->pose[itr->parentIndex].transformMat.m,
-					pose_out->pose[itr->index].transformMat.m);
+					data->pose_out->pose[itr->index].transformMat.m);
 			else
-				pose0->pose[itr->index] = pose_out->pose[itr->index];
+				pose0->pose[itr->index] = data->pose_out->pose[itr->index];
 		}
-		return pose_out;
+		return data->pose_out;
 	}
 	return 0;
 }
