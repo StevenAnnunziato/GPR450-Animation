@@ -23,7 +23,7 @@ extern "C"
 
 // ---------------------------------------------------------------------------------
 
-enum Operation { NONE = 0, SPATIAL = 1, HIERARCHY = 2, KINEMATICS = 3, FLOAT = 4, };
+enum Operation { NONE = 0, SPATIAL = 1, HIERARCHY_STETE = 2, KINEMATICS = 3, FLOAT = 4, };
 typedef enum Operation(a3_OpType);
 
 // generalized yet somewhat specialized approach
