@@ -224,7 +224,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 		*/
 
 
-
+		a3ReadBlendTreeFromFile(demoMode->blendTree, "data", demoMode);
 		///*
 		//	Blend tree init
 
@@ -234,7 +234,7 @@ void a3animation_init_animation(a3_DemoState const* demoState, a3_DemoMode1_Anim
 
 		//// Resets pose data with identity matrix
 		//for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
-		//	demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
+			//demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
 		//	a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
 		//	demoMode->blendTree->nodes[i].outPose = &demoMode->blendTree->poses[i];
 		//}
@@ -408,7 +408,7 @@ void a3animation_loadValidate(a3_DemoState* demoState, a3_DemoMode1_Animation* d
 
 		Blend tree load validate
 	*/
-	demoMode->blendTree->clipCount = 4;
+
 	//demoMode->blendTree->nodeCount = 8;
 	//demoMode->blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
 

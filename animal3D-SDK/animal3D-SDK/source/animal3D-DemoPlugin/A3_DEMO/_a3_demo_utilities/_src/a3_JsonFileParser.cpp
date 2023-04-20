@@ -25,36 +25,42 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 
 		const a3ui32 numOfBlendNodes = (a3ui32)data["nodes"].size();
 
-		out_blendTree->nodeCount = 8;
-		out_blendTree->poses = malloc(sizeof(a3_HierarchyPose) * demoMode->blendTree->nodeCount);
 
-		out_blendTree->pose = malloc(sizeof(a3_SpatialPose) * demoMode->blendTree->nodeCount * hierarchyState->hierarchy->numNodes); 		// set up nodes to be use with outpose's
+		/*
+		* Create Blend Tree
+		* 
+		* a3createBlendTree(out_pool, numOfBlendNodes, demoMode);
+		*/
+		out_blendTree->nodeCount = numOfBlendNodes;
+		out_blendTree->poses = (a3_HierarchyPose*)malloc(sizeof(a3_HierarchyPose) * out_blendTree->nodeCount);
+		out_blendTree->poses->pose = (a3_SpatialPose*)malloc(sizeof(a3_SpatialPose) * out_blendTree->nodeCount * demoMode->hierarchyState_skel->hierarchy->numNodes); 		// set up nodes to be use with outpose's
 
 		// Resets pose data with identity matrix
 		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
-			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + hierarchyState->hierarchy->numNodes * i;
+			demoMode->blendTree->poses[i].pose = demoMode->blendTree->poses[0].pose + demoMode->hierarchyState_skel->hierarchy->numNodes * i;
 			a3hierarchyPoseReset(&demoMode->blendTree->poses[i], demoMode->blendTree->nodeCount, NULL, NULL);
 			demoMode->blendTree->nodes[i].outPose = &demoMode->blendTree->poses[i];
 		}
 
-		//a3createBlendTree(out_pool, numOfBlendNodes);
-
+		/*
+		* Init Blend Nodes
+		* 
+		* 
+		*/
 		for (a3ui32 i = 0; i < numOfBlendNodes; i++) 
 		{
-			a3ui32 id = data["Clips"][i]["id"].get<a3ui32>();
-			a3ui32 nodeType = data["Clips"][i]["data"]["value"].get<a3ui32>();
-			a3ui32 numInputs = data["Clips"][i]["data"]["inputs"].get<a3ui32>();
-			a3ui32 numParams = data["Clips"][i]["data"]["params"].get<a3ui32>();
+			a3ui32 id			= data["Clips"][i]["id"].get<a3ui32>();
+			a3ui32 nodeType		= data["Clips"][i]["data"]["value"].get<a3ui32>();
+			a3ui32 numInputs	= data["Clips"][i]["data"]["inputs"].get<a3ui32>();
+			a3ui32 numParams	= data["Clips"][i]["data"]["params"].get<a3ui32>();
 
 			// a3createBlendNode(&out_pool->nodes[i], nodeType, numInputs, numParams)
 
 			// Set up graph connections with inputs
 			for (a3ui32 j = 0; j < numInputs; j++) {
 				a3ui32 targetID = data["Clips"][i]["inputs"][j]["index"].get<a3ui32>();
-
+				
 				// out_pool->nodes[i].inputNodes[j] = out_pool->nodes[targetID]; // TargetID may not corrospond correctly to array index
-
-
 			}
 
 			// Loop over params
@@ -63,21 +69,27 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 				//Checks if input node else treat input like a float
 				switch (nodeType) {
 				case 2:
+					demoMode->blendTree->nodes[i].opType = Operation::NONE;
 					a3byte* param = (a3byte*)data["Clips"][i]["params"][j].get<std::string>().c_str();
-					a3ui32 k = a3clipGetIndexInPool(demoMode->clipPool, "xbot_idle_pistol");
+					a3ui32 k = a3clipGetIndexInPool(demoMode->clipPool, param);
 					a3clipControllerInit(&demoMode->blendTree->clipControllers[numOfClipControllers], "xbot_ctrl", demoMode->clipPool, k, rate, fps);
 
 					demoMode->blendTree->nodes[i].myClipController = &demoMode->blendTree->clipControllers[numOfClipControllers];
 					numOfClipControllers++;
 
 					break;
+				case 3:
+					demoMode->blendTree->nodes[i].opType = Operation::IK;
+					break;
 				default:
+					demoMode->blendTree->nodes[i].opType = Operation::SPATIAL;
 					a3real param = data["Clips"][i]["params"][j].get<a3real>();
 					// out_pool->nodes[i].opParams[j] = param; 
 
 					break;
 				}
-			}			
+			}		
+			out_blendTree->clipCount = numOfClipControllers;
 		}
 	}
 
