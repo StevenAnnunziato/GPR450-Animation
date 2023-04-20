@@ -31,8 +31,8 @@ typedef enum Operation(a3_OpType);
 
 typedef a3ret (*a3_BlendFunc) (void const* op);
 
-#define POSE_IN_MAX 4
-#define PARAM_MAX 4
+#define POSE_IN_MAX 16
+#define PARAM_MAX 5
 #define VALUE_IN_MAX 2 // for float ops
 
 // identity (0 or 1) [out] - single

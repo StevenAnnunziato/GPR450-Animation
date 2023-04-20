@@ -56,7 +56,7 @@ extern "C"
 // pointer-based reset/identity operation for single spatial pose
 a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data);
 
-a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPoseBlendOp* data);
+a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translate);
 a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPoseBlendOp* data);
 a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPoseBlendOp* data);
 a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPoseBlendOp* data);

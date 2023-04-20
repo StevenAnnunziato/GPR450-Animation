@@ -34,18 +34,18 @@
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for single spatial pose
-inline a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPose* pose_out)
+inline a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out)
+	if (data->pose_out)
 	{
-		pose_out->transformMat = a3mat4_identity;
-		pose_out->rotate = a3vec4_one;
-		pose_out->rotate = a3vec4_zero;
-		pose_out->scale = a3vec4_one;
-		pose_out->translate = a3vec4_zero;
+		data->pose_out->transformMat = a3mat4_identity;
+		data->pose_out->rotate = a3vec4_one;
+		data->pose_out->rotate = a3vec4_zero;
+		data->pose_out->scale = a3vec4_one;
+		data->pose_out->translate = a3vec4_zero;
 
 		// done
-		return pose_out;
+		return data->pose_out;
 	}
 	
 	return 0;
@@ -65,79 +65,79 @@ inline a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in)
+inline a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose_in)
+	if (data->pose_out && data->pose_in[0])
 	{
 		// set values
-		a3spatialPoseConstruct(pose_out, pose_in->rotate, pose_in->scale, pose_in->translate);
+		a3spatialPoseConstruct(data->pose_out, data->pose_in[0]->rotate, data->pose_in[0]->scale, data->pose_in[0]->translate);
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in)
+inline a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose_in && pose_in->scale.x > 0.0f
-							&& pose_in->scale.y > 0.0f
-							&& pose_in->scale.z > 0.0f)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[0]->scale.x > 0.0f
+							&& data->pose_in[0]->scale.y > 0.0f
+							&& data->pose_in[0]->scale.z > 0.0f)
 	{
-		pose_out->rotate.x = -pose_in->rotate.x;
-		pose_out->rotate.y = -pose_in->rotate.y;
-		pose_out->rotate.z = -pose_in->rotate.z;
+		data->pose_out->rotate.x = -data->pose_in[0]->rotate.x;
+		data->pose_out->rotate.y = -data->pose_in[0]->rotate.y;
+		data->pose_out->rotate.z = -data->pose_in[0]->rotate.z;
 
-		pose_out->translate.x = -pose_in->translate.x;
-		pose_out->translate.y = -pose_in->translate.y;
-		pose_out->translate.z = -pose_in->translate.z;
+		data->pose_out->translate.x = -data->pose_in[0]->translate.x;
+		data->pose_out->translate.y = -data->pose_in[0]->translate.y;
+		data->pose_out->translate.z = -data->pose_in[0]->translate.z;
 
-		pose_out->scale.x = 1.0f / pose_in->scale.x;
-		pose_out->scale.y = 1.0f / pose_in->scale.y;
-		pose_out->scale.z = 1.0f / pose_in->scale.z;
+		data->pose_out->scale.x = 1.0f / data->pose_in[0]->scale.x;
+		data->pose_out->scale.y = 1.0f / data->pose_in[0]->scale.y;
+		data->pose_out->scale.z = 1.0f / data->pose_in[0]->scale.z;
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
+inline a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && lhs && rhs)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
-		pose_out->rotate.x = lhs->rotate.x + rhs->rotate.x;
-		pose_out->rotate.y = lhs->rotate.y + rhs->rotate.y;
-		pose_out->rotate.z = lhs->rotate.z + rhs->rotate.z;
+		data->pose_out->rotate.y = data->pose_in[0]->rotate.y + data->pose_in[1]->rotate.y;
+		data->pose_out->rotate.x = data->pose_in[0]->rotate.x + data->pose_in[1]->rotate.x;
+		data->pose_out->rotate.z = data->pose_in[0]->rotate.z + data->pose_in[1]->rotate.z;
+		
+		data->pose_out->translate.x = data->pose_in[0]->translate.x + data->pose_in[1]->translate.x;
+		data->pose_out->translate.y = data->pose_in[0]->translate.y + data->pose_in[1]->translate.y;
+		data->pose_out->translate.z = data->pose_in[0]->translate.z + data->pose_in[1]->translate.z;
+		
+		data->pose_out->scale.x = data->pose_in[0]->scale.x * data->pose_in[1]->scale.x;
+		data->pose_out->scale.y = data->pose_in[0]->scale.y * data->pose_in[1]->scale.y;
+		data->pose_out->scale.z = data->pose_in[0]->scale.z * data->pose_in[1]->scale.z;
 
-		pose_out->translate.x = lhs->translate.x + rhs->translate.x;
-		pose_out->translate.y = lhs->translate.y + rhs->translate.y;
-		pose_out->translate.z = lhs->translate.z + rhs->translate.z;
-
-		pose_out->scale.x = lhs->scale.x * rhs->scale.x;
-		pose_out->scale.y = lhs->scale.y * rhs->scale.y;
-		pose_out->scale.z = lhs->scale.z * rhs->scale.z;
-
-		return pose_out;
+		return data->pose_out;
 	}
 	
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3real blendParam)
+inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose0 && pose1)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
-		if (blendParam < 0.5f)
+		if (*data->param[0] < 0.5f)
 		{
-			a3spatialPoseConstant(pose_out, pose0);
+			a3spatialPoseConstant(data->pose_out, data->pose_in[0]);
 		}
 		else
 		{
-			a3spatialPoseConstant(pose_out, pose1);
+			a3spatialPoseConstant(data->pose_out, data->pose_in[1]);
 		}
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
@@ -146,23 +146,23 @@ inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPose* pose_out, const a3_S
 // pointer-based LERP operation for single spatial pose
 inline a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose0 && pose1)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
-		a3real3Lerp(pose_out->rotate.v, pose0->rotate.v, pose1->rotate.v, u);
+		a3real3Lerp(data->pose_out->rotate.v, data->pose_in[0]->rotate.v, data->pose_in[1]->rotate.v, *data->param[0]);
 
-		a3real3Lerp(pose_out->scale.v, pose0->scale.v, pose1->scale.v, u);
+		a3real3Lerp(data->pose_out->scale.v, data->pose_in[0]->scale.v, data->pose_in[1]->scale.v, *data->param[0]);
 
-		a3real3Lerp(pose_out->translate.v, pose0->translate.v, pose1->translate.v, u);
+		a3real3Lerp(data->pose_out->translate.v, data->pose_in[0]->translate.v, data->pose_in[1]->translate.v, *data->param[0]);
 
 		// done
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 	
 }
 
-inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_pre, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3_SpatialPose* pose_post, const a3real blendParam)
+inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data)
 {
 	// construct a matrix with all the control inputs
 	/*a3mat4 rotationControlMat;
@@ -209,10 +209,10 @@ inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPose* pose_out, const a
 	a3real4Real4x4ProductR(outArray, scaleControlMat.m, kernelTime.m);
 	pose_out->scale.x = outArray[0]; pose_out->scale.y = outArray[1]; pose_out->scale.z = outArray[2];*/
 
-	if (pose_out && pose_pre && pose0 && pose1 && pose_post)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
 		// make blend params
-		const a3real t = blendParam;
+		const a3real t = *data->param[0];
 		const a3real t2 = t * t;
 		const a3real t3 = t2 * t;
 
@@ -227,52 +227,52 @@ inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPose* pose_out, const a
 		a3real out1[4];
 
 		// rotation
-		a3real4ProductS(out1, pose_pre->rotate.v, s1);
+		a3real4ProductS(out1, data->pose_in[0]->rotate.v, s1);
 		a3real4Add(sum, out1);
-		a3real4ProductS(out1, pose0->rotate.v, s2);
+		a3real4ProductS(out1, data->pose_in[1]->rotate.v, s2);
 		a3real4Add(sum, out1);
-		a3real4ProductS(out1, pose1->rotate.v, s3);
+		a3real4ProductS(out1, data->pose_in[2]->rotate.v, s3);
 		a3real4Add(sum, out1);
-		a3real4ProductS(out1, pose_post->rotate.v, s4);
+		a3real4ProductS(out1, data->pose_in[3]->rotate.v, s4);
 		a3real4Add(sum, out1);
 		a3real4ProductS(sum, sum, 0.5f);
 
-		pose_out->rotate.v[0] = sum[0];
-		pose_out->rotate.v[1] = sum[1];
-		pose_out->rotate.v[2] = sum[2];
+		data->pose_out->rotate.v[0] = sum[0];
+		data->pose_out->rotate.v[1] = sum[1];
+		data->pose_out->rotate.v[2] = sum[2];
 
 		// translate
-		a3real4ProductS(out1, pose_pre->translate.v, s1);
+		a3real4ProductS(out1, data->pose_in[0]->translate.v, s1);
 		a3real4Add(sum, out1);
-		a3real4ProductS(out1, pose0->translate.v, s2);
+		a3real4ProductS(out1, data->pose_in[1]->translate.v, s2);
 		a3real4Add(sum, out1);
-		a3real4ProductS(out1, pose1->translate.v, s3);
+		a3real4ProductS(out1, data->pose_in[2]->translate.v, s3);
 		a3real4Add(sum, out1);
-		a3real4ProductS(out1, pose_post->translate.v, s4);
+		a3real4ProductS(out1, data->pose_in[3]->translate.v, s4);
 		a3real4Add(sum, out1);
 		a3real4ProductS(sum, sum, 0.5f);
 
-		pose_out->translate.v[0] = sum[0];
-		pose_out->translate.v[1] = sum[1];
-		pose_out->translate.v[2] = sum[2];
+		data->pose_out->translate.v[0] = sum[0];
+		data->pose_out->translate.v[1] = sum[1];
+		data->pose_out->translate.v[2] = sum[2];
 
 		// scale
 		s1, s2, s3, s4 *= 0.5f;
-		a3real4Pow(out1, pose_pre->scale.v, s1);
+		a3real4Pow(out1, data->pose_in[0]->scale.v, s1);
 		a3real4MulComp(sum, out1);
-		a3real4Pow(out1, pose0->scale.v, s2);
+		a3real4Pow(out1, data->pose_in[1]->scale.v, s2);
 		a3real4MulComp(sum, out1);
-		a3real4Pow(out1, pose1->scale.v, s3);
+		a3real4Pow(out1, data->pose_in[2]->scale.v, s3);
 		a3real4MulComp(sum, out1);
-		a3real4Pow(out1, pose_post->scale.v, s4);
+		a3real4Pow(out1, data->pose_in[3]->scale.v, s4);
 		a3real4MulComp(sum, out1);
 		a3real4Pow(sum, sum, 0.5f);
 
-		pose_out->scale.v[0] = sum[0];
-		pose_out->scale.v[1] = sum[1];
-		pose_out->scale.v[2] = sum[2];
+		data->pose_out->scale.v[0] = sum[0];
+		data->pose_out->scale.v[1] = sum[1];
+		data->pose_out->scale.v[2] = sum[2];
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
@@ -302,23 +302,24 @@ inline a3_SpatialPose* a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_Spa
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseScale(a3_SpatialPose* pose_out, const a3_SpatialPose* pose_in, const a3real blendParam)
+inline a3_SpatialPose* a3spatialPoseScale(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose_in)
+	if (data->pose_out && data->pose_in[0])
 	{
-		a3spatialPoseOpLERP();
+		a3spatialPoseOpLERP(data->pose_out, a3spatialPoseOpIdentity(data->pose_out), data->pose_in[0], data->param[0]);
+		//a3spatialPoseOpLERP(data);
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* pose0, const a3_SpatialPose* pose1, const a3_SpatialPose* pose2, const a3real u1, const a3real u2)
+inline a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose0 && pose1 && pose2)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2])
 	{
-		a3real u0 = 1 - u1 - u2;
+		a3real u0 = 1 - *data->param[0] - *data->param[1];
 
 		// allocate spatial poses for internal calculations
 		a3_SpatialPose* s0 = malloc(sizeof(a3_SpatialPose));
@@ -327,13 +328,13 @@ inline a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPose* pose_out, co
 		a3_SpatialPose* c1 = malloc(sizeof(a3_SpatialPose));
 
 		// scale the poses for weighted average calculation
-		a3spatialPoseScale(s0, pose0, u0);
-		a3spatialPoseScale(s1, pose1, u1);
-		a3spatialPoseScale(s2, pose2, u2);
+		a3spatialPoseScale(s0, data->pose_in[0], u0);
+		a3spatialPoseScale(s1, data->pose_in[1], data->param[0]);
+		a3spatialPoseScale(s2, data->pose_in[2], data->param[1]);
 
 		// concat all
 		a3spatialPoseMerge(c1, s0, s1);
-		a3spatialPoseMerge(pose_out, c1, s2);
+		a3spatialPoseMerge(data->pose_out, c1, s2);
 
 		// free memory
 		free(s0);
@@ -341,76 +342,76 @@ inline a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPose* pose_out, co
 		free(s2);
 		free(c1);
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseBinearestBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* init0, const a3_SpatialPose* init1, const a3_SpatialPose* final0, const a3_SpatialPose* final1, const a3real u, const a3real u0, const a3real u1)
+inline a3_SpatialPose* a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && init0 && init1 && final0 && final1)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
 		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
 
-		a3spatialPoseNearest(b0, init0, init1, u0);
-		a3spatialPoseNearest(b1, final0, final1, u1);
-		a3spatialPoseNearest(pose_out, b0, b1, u);
+		a3spatialPoseNearest(b0, data->pose_in[0], data->pose_in[1], data->param[1]);
+		a3spatialPoseNearest(b1, data->pose_in[2], data->pose_in[3], data->param[2]);
+		a3spatialPoseNearest(data->pose_out, b0, b1, data->param[0]);
 
 		free(b0);
 		free(b1);
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPose* pose_out, const a3_SpatialPose* init0, const a3_SpatialPose* init1, const a3_SpatialPose* final0, const a3_SpatialPose* final1, const a3real u, const a3real u0, const a3real u1)
+inline a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && init0 && init1 && final0 && final1)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
 		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
 
-		a3spatialPoseOpLERP();
-		a3spatialPoseOpLERP();
-		a3spatialPoseOpLERP();
+		a3spatialPoseOpLERP(b0, data->pose_in[0], data->pose_in[1], data->param[1]);
+		a3spatialPoseOpLERP(b1, data->pose_in[2], data->pose_in[3], data->param[2]);
+		a3spatialPoseOpLERP(data->pose_out, b0, b1, data->param[0]);
 
 		free(b0);
 		free(b1);
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
 }
 
-inline a3_SpatialPose* a3spatialPoseBicubicBlend(a3_SpatialPose* pose_out, const a3real blendTotal, const a3_SpatialPose* pose_A0, const a3_SpatialPose* pose_A1, const a3_SpatialPose* pose_A2, const a3_SpatialPose* pose_A3, const a3real blendA, const a3_SpatialPose* pose_B0, const a3_SpatialPose* pose_B1, const a3_SpatialPose* pose_B2, const a3_SpatialPose* pose_B3, const a3real blendB, const a3_SpatialPose* pose_C0, const a3_SpatialPose* pose_C1, const a3_SpatialPose* pose_C2, const a3_SpatialPose* pose_C3, const a3real blendC, const a3_SpatialPose* pose_D0, const a3_SpatialPose* pose_D1, const a3_SpatialPose* pose_D2, const a3_SpatialPose* pose_D3, const a3real blendD)
+inline a3_SpatialPose* a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data)
 {
-	if (pose_out && pose_A0 && pose_A1 && pose_A2 && pose_A3 &&
-					pose_B0 && pose_B1 && pose_B2 && pose_B3 &&
-					pose_C0 && pose_C1 && pose_C2 && pose_C3 &&
-					pose_D0 && pose_D1 && pose_D2 && pose_D3)
+	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3] &&
+		data->pose_in[4] && data->pose_in[5] && data->pose_in[6] && data->pose_in[7] &&
+		data->pose_in[8] && data->pose_in[9] && data->pose_in[10] && data->pose_in[11] &&
+		data->pose_in[12] && data->pose_in[13] && data->pose_in[14] && data->pose_in[15])
 	{
 		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* b2 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* b3 = malloc(sizeof(a3_SpatialPose));
 
-		a3spatialPoseCubicBlend(b0, pose_A0, pose_A1, pose_A2, pose_A3, blendA);
-		a3spatialPoseCubicBlend(b1, pose_B0, pose_B1, pose_B2, pose_B3, blendB);
-		a3spatialPoseCubicBlend(b2, pose_C0, pose_C1, pose_C2, pose_C3, blendC);
-		a3spatialPoseCubicBlend(b3, pose_D0, pose_D1, pose_D2, pose_D3, blendD);
-		a3spatialPoseCubicBlend(pose_out, b0, b1, b2, b3, blendTotal);
+		a3spatialPoseCubicBlend(b0, data->pose_in[0], data->pose_in[1], data->pose_in[2], data->pose_in[3], data->param[0]);
+		a3spatialPoseCubicBlend(b1, data->pose_in[4], data->pose_in[5], data->pose_in[6], data->pose_in[7], data->param[1]);
+		a3spatialPoseCubicBlend(b2, data->pose_in[8], data->pose_in[9], data->pose_in[10], data->pose_in[11], data->param[2]);
+		a3spatialPoseCubicBlend(b3, data->pose_in[12], data->pose_in[13], data->pose_in[14], data->pose_in[15], data->param[3]);
+		a3spatialPoseCubicBlend(data->pose_out, b0, b1, b2, b3, data->param[4]);
 
 		free(b0);
 		free(b1);
 		free(b2);
 		free(b3);
 
-		return pose_out;
+		return data->pose_out;
 	}
 
 	return 0;
