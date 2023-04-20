@@ -23,7 +23,7 @@ extern "C"
 
 // ---------------------------------------------------------------------------------
 
-enum Operation { NONE = 0, SPATIAL = 1, IK = 2, FLOAT = 3, };
+enum Operation { NONE = 0, SPOSE = 1, IK_SOLVER = 2, KINEMATICS = 3, FLOAT = 4, HPOSE = 5, };
 typedef enum Operation(a3_OpType);
 
 // generalized yet somewhat specialized approach
@@ -53,16 +53,6 @@ typedef struct a3_SpatialPoseBlendOp
 	a3_SpatialPose const* pose_in[POSE_IN_MAX];
 	a3real const* param[PARAM_MAX];
 } a3_SpatialPoseBlendOp;
-
-a3ret a3blendFuncSpatialPoseCopy(a3_SpatialPoseBlendOp const* op)
-{
-	// implements copy
-}
-
-a3ret a3blendFuncSpatialPoseLerp(a3_SpatialPoseBlendOp const* op)
-{
-	// implements lerp
-}
 
 // identity - float - additive or multiplicative
 // copy - float
@@ -126,6 +116,15 @@ typedef struct a3_QuaternionBlendOp
 	a3quat* quat_out;
 	a3quat const* quat_in[POSE_IN_MAX];
 } a3_QuaternionBlendOp;
+
+// hierarchy pose inputs
+typedef struct a3_HierarchyBlendOp
+{
+	a3_HierarchyPose* pose_out;
+	a3ui32  nodeCount;
+	a3_HierarchyPose const* pose_in[POSE_IN_MAX];
+	a3real const param_in[PARAM_MAX];
+} a3_HierarchyStateBlendOp;
 
 // struct for look at and chain inputs
 typedef struct a3_HierarchyStateBlendOp
@@ -192,6 +191,16 @@ struct a3_BlendTree
 	a3_BlendTreeNode nodes[32];
 	a3ui32 nodeCount;
 };
+a3ret a3blendFuncSpatialPoseCopy(a3_SpatialPoseBlendOp const* op)
+{
+	// implements copy
+}
+
+a3ret a3blendFuncSpatialPoseLerp(a3_SpatialPoseBlendOp const* op)
+{
+	// implements lerp
+}
+
 
 // mask node: takes in a hierarchy pose and an array of spatial poses, then
 // zeros out the deltas of the specified spatial poses.
