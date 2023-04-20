@@ -191,15 +191,6 @@ struct a3_BlendTree
 	a3_BlendTreeNode nodes[32];
 	a3ui32 nodeCount;
 };
-a3ret a3blendFuncSpatialPoseCopy(a3_SpatialPoseBlendOp* op)
-{
-	// implements copy
-}
-
-a3ret a3blendFuncSpatialPoseLerp(a3_SpatialPoseBlendOp* op)
-{
-	// implements lerp
-}
 
 
 // mask node: takes in a hierarchy pose and an array of spatial poses, then
