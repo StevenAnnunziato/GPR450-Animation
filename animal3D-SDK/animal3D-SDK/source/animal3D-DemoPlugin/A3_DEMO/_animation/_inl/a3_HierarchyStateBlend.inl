@@ -286,9 +286,12 @@ inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 
 
 		// scale the poses for weighted average calculation
-		a3spatialPoseScale(s0, data->pose_in[0], u0); // will have to pass a a3_HierarchyPoseBlendOp* as data
+		a3spatialPoseScale(s0, data->pose_in[0], u0); // will have to pass a a3_HierarchyPoseBlendOp* as data?
 		a3spatialPoseScale(s1, data->pose_in[1], data->param[0]);
 		a3spatialPoseScale(s2, data->pose_in[2], data->param[1]);
+		//a3spatialPoseScale(data);
+		//a3spatialPoseScale(data);
+		//Possibly unroll the operation (triangle here) to be the multiple operations that make it up in the tree
 
 		// concat all
 		a3spatialPoseMerge(c1, s0, s1);
