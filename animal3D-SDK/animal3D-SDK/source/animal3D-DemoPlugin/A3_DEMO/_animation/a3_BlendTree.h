@@ -13,6 +13,8 @@ typedef struct a3_BlendTree					a3_BlendTree;
 
 #include "a3_KeyframeAnimationController.h"
 #include "a3_Kinematics.h"
+#include "A3_DEMO/a3_DemoMode1_Animation.h"
+#include "A3_DEMO/a3_DemoState.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -209,7 +211,7 @@ a3ret a3freeBlendNode(a3_BlendTreeNode* node_in);
 
 a3ret a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[128]);
 
-a3ret a3updateBlendTree(const a3_DemoMode1_Animation* demoMode, const a3real dt);
+//a3ret a3updateBlendTree(a3_DemoMode1_Animation const* demoMode, const a3real dt);
 
 
 

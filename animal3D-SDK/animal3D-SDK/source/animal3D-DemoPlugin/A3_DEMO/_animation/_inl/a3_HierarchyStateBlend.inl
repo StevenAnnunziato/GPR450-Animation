@@ -1,4 +1,3 @@
-#include "a3_HierarchyStateBlend.h"
 #include <stdlib.h>
 
 /*
