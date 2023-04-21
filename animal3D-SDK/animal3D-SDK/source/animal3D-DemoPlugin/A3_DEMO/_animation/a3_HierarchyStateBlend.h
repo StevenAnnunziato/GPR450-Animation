@@ -56,7 +56,9 @@ extern "C"
 // pointer-based reset/identity operation for single spatial pose
 a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data);
 
+// create spatial pose from euler angles, scale, and translation
 a3ret a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translate);
+
 a3ret a3spatialPoseConstant(a3_SpatialPoseBlendOp* data);
 a3ret a3spatialPoseInvert(a3_SpatialPoseBlendOp* data);
 a3ret a3spatialPoseMerge(a3_SpatialPoseBlendOp* data);

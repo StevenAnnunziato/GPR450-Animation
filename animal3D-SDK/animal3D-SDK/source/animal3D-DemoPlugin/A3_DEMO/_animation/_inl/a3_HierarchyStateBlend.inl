@@ -130,11 +130,11 @@ inline a3ret a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
 	{
 		if (*data->param[0] < 0.5f)
 		{
-			a3spatialPoseConstant(data->pose_out, data->pose_in[0]);
+			a3spatialPoseConstant(data);
 		}
 		else
 		{
-			a3spatialPoseConstant(data->pose_out, data->pose_in[1]);
+			a3spatialPoseConstant(data);
 		}
 
 		return 0;
@@ -261,7 +261,7 @@ inline a3ret a3spatialPoseScale(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0])
 	{
-		a3spatialPoseOpLERP(data->pose_out, a3spatialPoseOpIdentity(data->pose_out), data->pose_in[0], data->param[0]);
+		a3spatialPoseOpLERP(data);
 		//a3spatialPoseOpLERP(data);
 
 		return 0;
@@ -281,9 +281,11 @@ inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 		a3_SpatialPose* s1 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* s2 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* c1 = malloc(sizeof(a3_SpatialPose));
+		
+		a3_SpatialPoseBlendOp temp;
 
 		// scale the poses for weighted average calculation
-		a3spatialPoseScale(s0, data->pose_in[0], u0);
+		a3spatialPoseScale(s0, data->pose_in[0], u0); // will have to pass a a3_HierarchyPoseBlendOp* as data
 		a3spatialPoseScale(s1, data->pose_in[1], data->param[0]);
 		a3spatialPoseScale(s2, data->pose_in[2], data->param[1]);
 
