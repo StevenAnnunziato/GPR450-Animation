@@ -281,7 +281,9 @@ inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 		a3_SpatialPose* s2 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* c1 = malloc(sizeof(a3_SpatialPose));
 		
-		a3_SpatialPoseBlendOp temp;
+		const a3ui32 NUM_OPS = 5;
+		a3_SpatialPoseBlendOp* temp = malloc(sizeof(a3_SpatialPoseBlendOp) * NUM_OPS); // TODO: Move this chunk of temp data to blend tree
+
 
 		// scale the poses for weighted average calculation
 		a3spatialPoseScale(s0, data->pose_in[0], u0); // will have to pass a a3_HierarchyPoseBlendOp* as data

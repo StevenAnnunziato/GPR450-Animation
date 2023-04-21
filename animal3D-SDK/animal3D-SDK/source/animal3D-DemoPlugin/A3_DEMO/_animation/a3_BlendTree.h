@@ -13,8 +13,6 @@ typedef struct a3_BlendTree					a3_BlendTree;
 
 #include "a3_KeyframeAnimationController.h"
 #include "a3_Kinematics.h"
-#include "A3_DEMO/a3_DemoMode1_Animation.h"
-#include "A3_DEMO/a3_DemoState.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -31,7 +29,8 @@ typedef enum Operation(a3_OpType);
 // generalized yet somewhat specialized approach
 //	-> general approach for multiple sets of specific purposes
 
-typedef a3ret (*a3_BlendFunc) (void* data);
+// TODO: Propogate the tree into all functions
+typedef a3ret (*a3_BlendFunc) (void* data, <tree>);
 
 #define POSE_IN_MAX 16
 #define PARAM_MAX 5
@@ -211,7 +210,7 @@ a3ret a3freeBlendNode(a3_BlendTreeNode* node_in);
 
 a3ret a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[128]);
 
-//a3ret a3updateBlendTree(a3_DemoMode1_Animation const* demoMode, const a3real dt);
+a3ret a3updateBlendTree(a3_DemoMode1_Animation const* demoMode, const a3real dt);
 
 
 
