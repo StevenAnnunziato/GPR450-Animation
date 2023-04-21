@@ -34,7 +34,7 @@
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for single spatial pose
-inline a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out)
 	{
@@ -45,13 +45,13 @@ inline a3_SpatialPose* a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data)
 		data->pose_out->translate = a3vec4_zero;
 
 		// done
-		return data->pose_out;
+		return 0;
 	}
 	
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translate)
+inline a3ret a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 eulers, const a3vec4 scale, const a3vec4 translate)
 {
 	if (pose_out)
 	{
@@ -59,26 +59,26 @@ inline a3_SpatialPose* a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3
 		pose_out->translate = translate;
 		pose_out->scale = scale;
 
-		return pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseConstant(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseConstant(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0])
 	{
 		// set values
 		a3spatialPoseConstruct(data->pose_out, data->pose_in[0]->rotate, data->pose_in[0]->scale, data->pose_in[0]->translate);
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseInvert(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[0]->scale.x > 0.0f
 							&& data->pose_in[0]->scale.y > 0.0f
@@ -96,13 +96,13 @@ inline a3_SpatialPose* a3spatialPoseInvert(a3_SpatialPoseBlendOp* data)
 		data->pose_out->scale.y = 1.0f / data->pose_in[0]->scale.y;
 		data->pose_out->scale.z = 1.0f / data->pose_in[0]->scale.z;
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseMerge(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
@@ -118,13 +118,13 @@ inline a3_SpatialPose* a3spatialPoseMerge(a3_SpatialPoseBlendOp* data)
 		data->pose_out->scale.y = data->pose_in[0]->scale.y * data->pose_in[1]->scale.y;
 		data->pose_out->scale.z = data->pose_in[0]->scale.z * data->pose_in[1]->scale.z;
 
-		return data->pose_out;
+		return 0;
 	}
 	
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
@@ -137,14 +137,14 @@ inline a3_SpatialPose* a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
 			a3spatialPoseConstant(data->pose_out, data->pose_in[1]);
 		}
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
 // pointer-based LERP operation for single spatial pose
-inline a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
@@ -155,60 +155,15 @@ inline a3_SpatialPose* a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
 		a3real3Lerp(data->pose_out->translate.v, data->pose_in[0]->translate.v, data->pose_in[1]->translate.v, *data->param[0]);
 
 		// done
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 	
 }
 
-inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data)
 {
-	// construct a matrix with all the control inputs
-	/*a3mat4 rotationControlMat;
-	rotationControlMat.v0 = pose_pre->rotate;
-	rotationControlMat.v1 = pose0->rotate;
-	rotationControlMat.v2 = pose1->rotate;
-	rotationControlMat.v3 = pose_post->rotate;
-	a3mat4 translateControlMat;
-	translateControlMat.v0 = pose_pre->translate;
-	translateControlMat.v1 = pose0->translate;
-	translateControlMat.v2 = pose1->translate;
-	translateControlMat.v3 = pose_post->translate;
-	a3mat4 scaleControlMat;
-	scaleControlMat.v0 = pose_pre->scale;
-	scaleControlMat.v1 = pose0->scale;
-	scaleControlMat.v2 = pose1->scale;
-	scaleControlMat.v3 = pose_post->scale;
-
-	// construct the catmull-rom kernel matrix
-	const a3mat4 kernel;// = a3mat4(0.0, +2.0, 0.0, 0.0,
-						//		   -1.0, 0.0, +1.0, 0.0,
-						//		   +2.0, -5.0, +4.0, -1.0,
-						//		   -1.0, +3.0, -3.0, +1.0);
-	a3real4x4Set(&kernel, 0.0, +2.0, 0.0, 0.0, -1.0, 0.0, +1.0, 0.0, +2.0, -5.0, +4.0, -1.0, -1.0, +3.0, -3.0, +1.0);
-
-	// find blend parameter for each set of points
-	float t0 = 0.5;
-	float t1 = t0 * blendParam;
-	float t2 = t1 * blendParam;
-	float t3 = t2 * blendParam;
-	
-	//pose_out->rotation = (controlMat * (kernel * vec4(t0, t1, t2, t3)));
-	// put times in an array
-	a3mat4 kernelTime;
-	a3real timeVec[] = {t0, t1, t2, t3};
-	a3real4Real4x4ProductR(kernelTime.m, kernel.m, timeVec);
-
-	// finalize pose out
-	a3real outArray[4];
-	a3real4Real4x4ProductR(outArray, rotationControlMat.m, kernelTime.m);
-	pose_out->rotate.x = outArray[0]; pose_out->rotate.y = outArray[1]; pose_out->rotate.z = outArray[2];
-	a3real4Real4x4ProductR(outArray, translateControlMat.m, kernelTime.m);
-	pose_out->translate.x = outArray[0]; pose_out->translate.y = outArray[1]; pose_out->translate.z = outArray[2];
-	a3real4Real4x4ProductR(outArray, scaleControlMat.m, kernelTime.m);
-	pose_out->scale.x = outArray[0]; pose_out->scale.y = outArray[1]; pose_out->scale.z = outArray[2];*/
-
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
 		// make blend params
@@ -272,13 +227,13 @@ inline a3_SpatialPose* a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data)
 		data->pose_out->scale.v[1] = sum[1];
 		data->pose_out->scale.v[2] = sum[2];
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
+inline a3ret a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
 {
 	if (pose_out && lhs && rhs && rhs->scale.x > 0.0f
 							   && rhs->scale.y > 0.0f
@@ -296,26 +251,26 @@ inline a3_SpatialPose* a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_Spa
 		pose_out->scale.y = lhs->scale.y / rhs->scale.y;
 		pose_out->scale.z = lhs->scale.z / rhs->scale.z;
 
-		return pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseScale(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseScale(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0])
 	{
 		a3spatialPoseOpLERP(data->pose_out, a3spatialPoseOpIdentity(data->pose_out), data->pose_in[0], data->param[0]);
 		//a3spatialPoseOpLERP(data);
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2])
 	{
@@ -342,13 +297,13 @@ inline a3_SpatialPose* a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 		free(s2);
 		free(c1);
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
@@ -362,13 +317,13 @@ inline a3_SpatialPose* a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data)
 		free(b0);
 		free(b1);
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
@@ -382,13 +337,13 @@ inline a3_SpatialPose* a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data)
 		free(b0);
 		free(b1);
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
-inline a3_SpatialPose* a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3] &&
 		data->pose_in[4] && data->pose_in[5] && data->pose_in[6] && data->pose_in[7] &&
@@ -411,58 +366,28 @@ inline a3_SpatialPose* a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data)
 		free(b2);
 		free(b3);
 
-		return data->pose_out;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
-
-
-
-//-----------------------------------------------------------------------------
-
-//data-based reset/identity
-inline a3_SpatialPose a3spatialPoseDOpIdentity()
-{
-	a3_SpatialPose const result = { a3mat4_identity, a3dualquat_identity, a3vec4_one, a3vec4_zero, a3vec4_one, a3vec4_zero };
-	return result;
-}
-
-// data-based LERP
-inline a3_SpatialPose a3spatialPoseDOpLERP(a3_SpatialPose const pose0, a3_SpatialPose const pose1, a3real const u)
-{
-	a3_SpatialPose result = { 0 };
-	// ...
-
-	// done
-	return result;
-}
-
 
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for hierarchical pose
-inline a3_HierarchyPose* a3hierarchyPoseOpIdentity(
-	a3_HierarchyPose* pose_out, 
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[], 
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data)
 {
 	if (pose_out && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseOpIdentity(pose_out->pose + i);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseConstruct(
-	a3_HierarchyPose*		pose_out,
-	a3ui32					nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const			param_in[])
+inline a3ret a3hierarchyPoseConstruct(a3_HierarchyPoseBlendOp* data)
 {
 	const a3vec4	eulers = (a3vec4){param_in[0],param_in[1],param_in[2],param_in[3] }, 
 					scale = (a3vec4){ param_in[4],param_in[5],param_in[6],param_in[7] }, 
@@ -472,48 +397,36 @@ inline a3_HierarchyPose* a3hierarchyPoseConstruct(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseConstruct(pose_out->pose + i, eulers, scale, translate);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseConstant(
-	a3_HierarchyPose*		pose_out,
-	a3ui32					nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const			param_in[])
+inline a3ret a3hierarchyPoseConstant(a3_HierarchyPoseBlendOp* data)
 {
 	if (pose_out && pose_in[0] && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseConstant(pose_out->pose + i, pose_in[0]->pose + i);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseInvert(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseInvert(a3_HierarchyPoseBlendOp* data)
 {
 	if (pose_out && pose_in[0] && nodeCount)
 	{
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseInvert(pose_out->pose + i, pose_in[0]->pose + i);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseMerge(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseMerge(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* lhs = pose_in[0];
 	const a3_HierarchyPose* rhs = pose_in[1];
@@ -523,16 +436,12 @@ inline a3_HierarchyPose* a3hierarchyPoseMerge(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseMerge(pose_out->pose + i, lhs->pose + i, rhs->pose + i);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseNearest(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseNearest(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* pose0 = pose_in[0];
 	const a3_HierarchyPose* pose1 = pose_in[1];
@@ -543,18 +452,13 @@ inline a3_HierarchyPose* a3hierarchyPoseNearest(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseNearest(pose_out->pose + i, pose0->pose + i, pose1->pose + i, blendParam);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
 // pointer-based LERP operation for hierarchical pose
-inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in,
-	a3real const param_in[],
-	a3_Hierarchy const* hierarchyPose)
+inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* pose0 = &pose_in[0];
 	const a3_HierarchyPose* pose1 = &pose_in[1];
@@ -564,12 +468,12 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLERP(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseLerp(pose_out->pose + i, pose0->pose + i, pose1->pose + i, blendParam);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
+inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 {
 	const a3_HierarchyPose* pose0 = &data->pose_in[0]; // Local space Hierarchy Pose
 	
@@ -657,21 +561,17 @@ inline a3_HierarchyPose* a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 			else
 				pose0->pose[itr->index] = data->pose_out->pose[itr->index];
 		}
-		return data->pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseOpChain(a3_HierarchyPose* pose_out, a3ui32 nodeCount, a3_HierarchyPose const* pose_in, a3real const param_in[])
+inline a3ret a3hierarchyPoseOpChain(a3_HierarchyStateBlendOp* data)
 {
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseCubicBlend(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseCubicBlend(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* pose_pre =		pose_in[0];
 	const a3_HierarchyPose* pose0 =			pose_in[1];
@@ -684,16 +584,12 @@ inline a3_HierarchyPose* a3hierarchyPoseCubicBlend(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseCubicBlend(pose_out->pose + i, pose_pre->pose + i, pose0->pose + i, pose1->pose + i, pose_post->pose + i, blendParam);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseSplit(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseSplit(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* lhs = pose_in[0];
 	const a3_HierarchyPose* rhs = pose_in[1];
@@ -703,16 +599,12 @@ inline a3_HierarchyPose* a3hierarchyPoseSplit(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseSplit(pose_out->pose + i, lhs->pose + i, rhs->pose + i);
-		return pose_out;
+		return 0;
 	}
-	return pose_out;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseScale(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseScale(a3_HierarchyPoseBlendOp* data)
 {
 	const a3real blendParam = param_in[0];
 
@@ -721,16 +613,12 @@ inline a3_HierarchyPose* a3hierarchyPoseScale(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseScale(pose_out->pose + i, pose_in[0]->pose + i, blendParam);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseTriangularBlend(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseTriangularBlend(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* pose0 = pose_in[0];
 	const a3_HierarchyPose* pose1 = pose_in[1];
@@ -743,16 +631,12 @@ inline a3_HierarchyPose* a3hierarchyPoseTriangularBlend(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseTriangularBlend(pose_out->pose + i, pose0->pose + i, pose1->pose + i, pose2->pose + i, blendParam0, blendParam1);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseBinearestBlend(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseBinearestBlend(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* init0 = pose_in[0];
 	const a3_HierarchyPose* init1 = pose_in[1];
@@ -767,16 +651,12 @@ inline a3_HierarchyPose* a3hierarchyPoseBinearestBlend(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseBinearestBlend(pose_out->pose + i, init0->pose + i, init1->pose + i, final1->pose + i, final2->pose + i, blendParam0, blendParam1, blendParam2);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseBilinearBlend(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseBilinearBlend(a3_HierarchyPoseBlendOp* data)
 {
 	const a3_HierarchyPose* init0 = pose_in[0];
 	const a3_HierarchyPose* init1 = pose_in[1];
@@ -791,16 +671,12 @@ inline a3_HierarchyPose* a3hierarchyPoseBilinearBlend(
 		a3index i;
 		for (i = 0; i < nodeCount; ++i)
 			a3spatialPoseBilinearBlend(pose_out->pose + i, init0->pose + i, init1->pose + i, final0->pose + i, final1->pose + i, blendParam0, blendParam1, blendParam2);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
-inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(
-	a3_HierarchyPose* pose_out,
-	a3ui32  nodeCount,
-	a3_HierarchyPose const* pose_in[],
-	a3real const param_in[])
+inline a3ret a3hierarchyPoseBicubicBlend(a3_HierarchyPoseBlendOp* data)
 {
 	const a3real	blendTotal	= param_in[0],
 					blendA		= param_in[1], 
@@ -836,9 +712,9 @@ inline a3_HierarchyPose* a3hierarchyPoseBicubicBlend(
 				pose_B0->pose + i, pose_B1->pose + i, pose_B2->pose + i, pose_B3->pose + i, blendB,
 				pose_C0->pose + i, pose_C1->pose + i, pose_C2->pose + i, pose_C3->pose + i, blendC,
 				pose_D0->pose + i, pose_D1->pose + i, pose_D2->pose + i, pose_D3->pose + i, blendD);
-		return pose_out;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
 // additional helper functions
