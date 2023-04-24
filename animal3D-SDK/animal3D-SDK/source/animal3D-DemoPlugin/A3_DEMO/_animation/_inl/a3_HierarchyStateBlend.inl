@@ -33,7 +33,7 @@
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for single spatial pose
-inline a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out)
 	{
@@ -46,7 +46,7 @@ inline a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data)
 		// done
 		return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -64,7 +64,7 @@ inline a3ret a3spatialPoseConstruct(a3_SpatialPose* pose_out, const a3vec4 euler
 	return 1;
 }
 
-inline a3ret a3spatialPoseConstant(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseConstant(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0])
 	{
@@ -77,11 +77,11 @@ inline a3ret a3spatialPoseConstant(a3_SpatialPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3spatialPoseInvert(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseInvert(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[0]->scale.x > 0.0f
-							&& data->pose_in[0]->scale.y > 0.0f
-							&& data->pose_in[0]->scale.z > 0.0f)
+		&& data->pose_in[0]->scale.y > 0.0f
+		&& data->pose_in[0]->scale.z > 0.0f)
 	{
 		data->pose_out->rotate.x = -data->pose_in[0]->rotate.x;
 		data->pose_out->rotate.y = -data->pose_in[0]->rotate.y;
@@ -101,39 +101,39 @@ inline a3ret a3spatialPoseInvert(a3_SpatialPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3spatialPoseMerge(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseMerge(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
 		data->pose_out->rotate.y = data->pose_in[0]->rotate.y + data->pose_in[1]->rotate.y;
 		data->pose_out->rotate.x = data->pose_in[0]->rotate.x + data->pose_in[1]->rotate.x;
 		data->pose_out->rotate.z = data->pose_in[0]->rotate.z + data->pose_in[1]->rotate.z;
-		
+
 		data->pose_out->translate.x = data->pose_in[0]->translate.x + data->pose_in[1]->translate.x;
 		data->pose_out->translate.y = data->pose_in[0]->translate.y + data->pose_in[1]->translate.y;
 		data->pose_out->translate.z = data->pose_in[0]->translate.z + data->pose_in[1]->translate.z;
-		
+
 		data->pose_out->scale.x = data->pose_in[0]->scale.x * data->pose_in[1]->scale.x;
 		data->pose_out->scale.y = data->pose_in[0]->scale.y * data->pose_in[1]->scale.y;
 		data->pose_out->scale.z = data->pose_in[0]->scale.z * data->pose_in[1]->scale.z;
 
 		return 0;
 	}
-	
+
 	return 1;
 }
 
-inline a3ret a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseNearest(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
 		if (*data->param[0] < 0.5f)
 		{
-			a3spatialPoseConstant(data);
+			a3spatialPoseConstant(data, tree);
 		}
 		else
 		{
-			a3spatialPoseConstant(data);
+			a3spatialPoseConstant(data, tree);
 		}
 
 		return 0;
@@ -143,7 +143,7 @@ inline a3ret a3spatialPoseNearest(a3_SpatialPoseBlendOp* data)
 }
 
 // pointer-based LERP operation for single spatial pose
-inline a3ret a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1])
 	{
@@ -158,10 +158,10 @@ inline a3ret a3spatialPoseOpLERP(a3_SpatialPoseBlendOp* data)
 	}
 
 	return 1;
-	
+
 }
 
-inline a3ret a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
@@ -235,8 +235,8 @@ inline a3ret a3spatialPoseCubicBlend(a3_SpatialPoseBlendOp* data)
 inline a3ret a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_SpatialPose* lhs, const a3_SpatialPose* rhs)
 {
 	if (pose_out && lhs && rhs && rhs->scale.x > 0.0f
-							   && rhs->scale.y > 0.0f
-							   && rhs->scale.z > 0.0f)
+		&& rhs->scale.y > 0.0f
+		&& rhs->scale.z > 0.0f)
 	{
 		pose_out->rotate.x = lhs->rotate.x - rhs->rotate.x;
 		pose_out->rotate.y = lhs->rotate.y - rhs->rotate.y;
@@ -256,12 +256,11 @@ inline a3ret a3spatialPoseSplit(a3_SpatialPose* pose_out, const a3_SpatialPose* 
 	return 1;
 }
 
-inline a3ret a3spatialPoseScale(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseScale(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0])
 	{
-		a3spatialPoseOpLERP(data);
-		//a3spatialPoseOpLERP(data);
+		a3spatialPoseOpLERP(data, tree);
 
 		return 0;
 	}
@@ -269,7 +268,7 @@ inline a3ret a3spatialPoseScale(a3_SpatialPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2])
 	{
@@ -280,7 +279,7 @@ inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 		a3_SpatialPose* s1 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* s2 = malloc(sizeof(a3_SpatialPose));
 		a3_SpatialPose* c1 = malloc(sizeof(a3_SpatialPose));
-		
+
 		const a3ui32 NUM_OPS = 5;
 		a3_SpatialPoseBlendOp* temp = malloc(sizeof(a3_SpatialPoseBlendOp) * NUM_OPS); // TODO: Move this chunk of temp data to blend tree
 
@@ -309,7 +308,7 @@ inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
@@ -329,7 +328,7 @@ inline a3ret a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
@@ -349,7 +348,7 @@ inline a3ret a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data)
+inline a3ret a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3] &&
 		data->pose_in[4] && data->pose_in[5] && data->pose_in[6] && data->pose_in[7] &&
@@ -381,7 +380,7 @@ inline a3ret a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data)
 //-----------------------------------------------------------------------------
 
 // pointer-based reset/identity operation for hierarchical pose
-inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->nodeCount)
 	{
@@ -393,11 +392,11 @@ inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseConstruct(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseConstruct(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3vec4	eulers = (a3vec4){ data->param_in[0],data->param_in[1],data->param_in[2],data->param_in[3] },
-					scale = (a3vec4){ data->param_in[4],data->param_in[5],data->param_in[6],data->param_in[7] },
-					translate = (a3vec4){ data->param_in[8],data->param_in[9],data->param_in[10],data->param_in[11] };
+		scale = (a3vec4){ data->param_in[4],data->param_in[5],data->param_in[6],data->param_in[7] },
+		translate = (a3vec4){ data->param_in[8],data->param_in[9],data->param_in[10],data->param_in[11] };
 	if (data->pose_out && data->nodeCount)
 	{
 		a3index i;
@@ -408,7 +407,7 @@ inline a3ret a3hierarchyPoseConstruct(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseConstant(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseConstant(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->nodeCount)
 	{
@@ -420,7 +419,7 @@ inline a3ret a3hierarchyPoseConstant(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseInvert(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseInvert(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	if (data->pose_out && data->pose_in[0] && data->nodeCount)
 	{
@@ -432,7 +431,7 @@ inline a3ret a3hierarchyPoseInvert(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseMerge(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseMerge(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* lhs = data->pose_in[0];
 	const a3_HierarchyPose* rhs = data->pose_in[1];
@@ -447,7 +446,7 @@ inline a3ret a3hierarchyPoseMerge(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseNearest(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseNearest(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* pose0 = data->pose_in[0];
 	const a3_HierarchyPose* pose1 = data->pose_in[1];
@@ -464,7 +463,7 @@ inline a3ret a3hierarchyPoseNearest(a3_HierarchyPoseBlendOp* data)
 }
 
 // pointer-based LERP operation for hierarchical pose
-inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* pose0 = &data->pose_in[0];
 	const a3_HierarchyPose* pose1 = &data->pose_in[1];
@@ -479,10 +478,10 @@ inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
+inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* pose0 = &data->pose_in[0]; // Local space Hierarchy Pose
-	
+
 	const a3real target_index = data->param_in[0];
 	const a3real x = data->param_in[1];
 	const a3real y = data->param_in[2];
@@ -523,7 +522,7 @@ inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 		neck.x = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.x;
 		neck.y = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.y;
 		neck.z = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.z;
-		 
+
 		a3vec3 dir;
 		dir.x = target.x - neck.x;
 		dir.y = target.y - neck.y;
@@ -546,13 +545,13 @@ inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 
 
 		/*
-		* 1) solve above: gives matrix in this form: 
+		* 1) solve above: gives matrix in this form:
 		*	[vx, vy, vz, t]
 		* 2) IK: my local = parent object inv * my object (the thing solved above)
-		* 
+		*
 		*/
 
-		a3_SpatialPose *affectedPose = data->pose_out->pose + (data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index;
+		a3_SpatialPose* affectedPose = data->pose_out->pose + (data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index;
 		//affectedPose->
 
 		// Solve for world space; a3kinematicsSolveInversePartial
@@ -572,12 +571,12 @@ inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseOpChain(a3_HierarchyStateBlendOp* data)
+inline a3ret a3hierarchyPoseOpChain(a3_HierarchyStateBlendOp* data, a3_BlendTree* tree)
 {
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseCubicBlend(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseCubicBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* pose_pre = data->pose_in[0];
 	const a3_HierarchyPose* pose0 = data->pose_in[1];
@@ -595,7 +594,7 @@ inline a3ret a3hierarchyPoseCubicBlend(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseSplit(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseSplit(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* lhs = data->pose_in[0];
 	const a3_HierarchyPose* rhs = data->pose_in[1];
@@ -610,7 +609,7 @@ inline a3ret a3hierarchyPoseSplit(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseScale(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseScale(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3real blendParam = data->param_in[0];
 
@@ -624,7 +623,7 @@ inline a3ret a3hierarchyPoseScale(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseTriangularBlend(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseTriangularBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* pose0 = data->pose_in[0];
 	const a3_HierarchyPose* pose1 = data->pose_in[1];
@@ -642,7 +641,7 @@ inline a3ret a3hierarchyPoseTriangularBlend(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseBinearestBlend(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseBinearestBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* init0 = data->pose_in[0];
 	const a3_HierarchyPose* init1 = data->pose_in[1];
@@ -662,7 +661,7 @@ inline a3ret a3hierarchyPoseBinearestBlend(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseBilinearBlend(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseBilinearBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3_HierarchyPose* init0 = data->pose_in[0];
 	const a3_HierarchyPose* init1 = data->pose_in[1];
@@ -682,7 +681,7 @@ inline a3ret a3hierarchyPoseBilinearBlend(a3_HierarchyPoseBlendOp* data)
 	return 1;
 }
 
-inline a3ret a3hierarchyPoseBicubicBlend(a3_HierarchyPoseBlendOp* data)
+inline a3ret a3hierarchyPoseBicubicBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
 	const a3real	blendTotal	= data->param_in[0],
 					blendA		= data->param_in[1], 

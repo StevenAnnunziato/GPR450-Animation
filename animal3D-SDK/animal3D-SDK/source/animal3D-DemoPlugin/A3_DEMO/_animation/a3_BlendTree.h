@@ -29,12 +29,12 @@ typedef enum Operation(a3_OpType);
 // generalized yet somewhat specialized approach
 //	-> general approach for multiple sets of specific purposes
 
-// TODO: Propogate the tree into all functions
-typedef a3ret (*a3_BlendFunc) (void* data, <tree>);
+typedef a3ret (*a3_BlendFunc) (void* data, a3_BlendTree* tree);
 
 #define POSE_IN_MAX 16
 #define PARAM_MAX 5
 #define VALUE_IN_MAX 2 // for float ops
+#define NUM_TEMP_STRUCTS 8
 
 // identity (0 or 1) [out] - single
 // copy (unary +) [out, in0] - single
@@ -191,6 +191,10 @@ struct a3_BlendTree
 	// root is the final output pose
 	a3_BlendTreeNode nodes[32];
 	a3ui32 nodeCount;
+
+	// temp data for intermediate calculations
+	a3_SpatialPoseBlendOp* sposeOps;
+	a3_HierarchyPoseBlendOp* hposeOps;
 };
 
 
@@ -210,7 +214,9 @@ a3ret a3freeBlendNode(a3_BlendTreeNode* node_in);
 
 a3ret a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[128]);
 
-a3ret a3updateBlendTree(a3_DemoMode1_Animation const* demoMode, const a3real dt);
+a3ret a3updateBlendTree(a3_BlendTree* blendTree, a3_HierarchyPoseGroup const* hierarchyPoseGroup_skel, a3_Hierarchy const* hierarchy_skel, const a3real dt);
+
+a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy);
 
 
 

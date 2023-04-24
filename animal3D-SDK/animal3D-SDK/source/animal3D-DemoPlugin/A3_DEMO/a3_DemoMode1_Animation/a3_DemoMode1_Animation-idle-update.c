@@ -71,54 +71,6 @@ inline a3real4x2r a3demo_mat2dquat_safe(a3real4x2 Q, a3real4x4 const m)
 
 //-----------------------------------------------------------------------------
 
-a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy)
-{
-	// create an array of all input poses
-	a3_HierarchyPose inPoses[8];
-	a3_HierarchyPose* inPosePtr; // 8 max inputs
-	inPoses[0].pose = malloc(sizeof(a3_SpatialPose) * heierarchy->numNodes * numOfInputs);
-	inPosePtr = inPoses;
-
-	// if we rely on any additional inputs...
-	if (node->numInputs > 0)
-	{
-		// for each input pose that still needs to be solved...
-		for (a3ui32 i = 0; i < numOfInputs; i++)
-		{
-			// allocate space for the input poses
-			inPoses[i].pose = inPoses[0].pose + heierarchy->numNodes * i;
-			a3hierarchyPoseReset(&inPoses[i], heierarchy->numNodes, NULL, NULL);
-
-
-			// if there is an input node...
-			if (node->inputNodes[i]) {
-				// recurse solve the tree 
-				a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, blendNodeCount, heierarchy); //calc children blend nodes
-				a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, heierarchy->numNodes); // copy children blend into temp data to be operated on
-
-			}
-			
-		}
-	}
-	else // if we don't rely on inputs and just need to sample a clip...
-	{
-		// nothing to do here - stop recursing
-	}
-
-	//operate on all inputs
-	if (node->poseOp != 0)
-		node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams, heierarchy);
-	else // no operations on this node, so just copy the in pose into the out pose.
-		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
-
-	free(inPoses[0].pose);
-
-	// mask the animation
-	a3maskNode(node);
-
-	return node->outPose;
-}
-
 //-----------------------------------------------------------------------------
 // UPDATE
 

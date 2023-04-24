@@ -32,12 +32,20 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 c
 		a3hierarchyPoseReset(&blend_out->poses[i], blend_out->nodeCount, NULL, NULL);
 		blend_out->nodes[i].outPose = &blend_out->poses[i];
 	}
+
+	// allocate temp operation data structures
+	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS + sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMP_STRUCTS;
+	blend_out->sposeOps = malloc(memreq);
+	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)(blend_out->sposeOps + sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // shift forward by sposeOpSize * n
 }
 
 inline a3ret a3freeBlendTree(a3_BlendTree* blend_in)
 {
 	free(blend_in->poses->pose);
 	free(blend_in->poses);
+
+	// free temp operation data structures
+	free(blend_in->sposeOps);
 }
 
 inline a3ret a3initBlendNode(a3_BlendTreeNode* node_out, a3_BlendTree* blendTree, const a3byte clipName[a3keyframeAnimation_nameLenMax])
@@ -57,37 +65,88 @@ inline a3ret a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[12
 }
 
 // TODO: wrap blend tree, hierarchyPoseGroup_skel, and hierarchy_skel in a struct and pass that instead
-inline a3ret a3updateBlendTree(a3_DemoMode1_Animation const* demoMode, const a3real dt)
+inline a3ret a3updateBlendTree(a3_BlendTree* blendTree, a3_HierarchyPoseGroup const* hierarchyPoseGroup_skel, a3_Hierarchy const* hierarchy_skel, const a3real dt)
 {
 	// Update clip controllers in the blend tree
-	for (a3ui32 i = 0; i < demoMode->blendTree->clipCount; i++)
+	for (a3ui32 i = 0; i < blendTree->clipCount; i++)
 	{
-		a3clipControllerUpdate(&demoMode->blendTree->clipControllers[i], dt);
+		a3clipControllerUpdate(&blendTree->clipControllers[i], dt);
 	}
 
 	/*
 		first update the nodes which have no inputs and just sample from a clip
 		for each node in the blend tree...
 	*/
-	for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; i++)
+	for (a3ui32 i = 0; i < blendTree->nodeCount; i++)
 	{
 		// if the node is a clip node...
-		if (demoMode->blendTree->nodes[i].numInputs <= 0)
+		if (blendTree->nodes[i].numInputs <= 0)
 		{
 			// get the clip controller
 			// copy the pose from the clip controller to the node's out pose
-			a3hierarchyPoseCopy(demoMode->blendTree->nodes[i].outPose,
-				demoMode->hierarchyPoseGroup_skel->hpose + demoMode->blendTree->nodes[i].myClipController->keyframeIndex, // get deltas of a pose in frame keyframeIndex
-				demoMode->hierarchy_skel->numNodes);
+			a3hierarchyPoseCopy(blendTree->nodes[i].outPose,
+				hierarchyPoseGroup_skel->hpose + blendTree->nodes[i].myClipController->keyframeIndex, // get deltas of a pose in frame keyframeIndex
+				hierarchy_skel->numNodes);
 		}
 	}
 	/*
 		finally execute the nodes of the blend tree in order
 	*/
 	const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-	a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel);
+	a3executeBlendTree(&blendTree->nodes[rootIndex], blendTree->nodes[rootIndex].numInputs, blendTree->nodeCount, hierarchy_skel);
 }
 
+a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy)
+{
+	// create an array of all input poses
+	a3_HierarchyPose inPoses[8];
+	a3_HierarchyPose* inPosePtr; // 8 max inputs
+	inPoses[0].pose = malloc(sizeof(a3_SpatialPose) * heierarchy->numNodes * numOfInputs);
+	inPosePtr = inPoses;
+
+	// if we rely on any additional inputs...
+	if (node->numInputs > 0)
+	{
+		// for each input pose that still needs to be solved...
+		for (a3ui32 i = 0; i < numOfInputs; i++)
+		{
+			// allocate space for the input poses
+			inPoses[i].pose = inPoses[0].pose + heierarchy->numNodes * i;
+			a3hierarchyPoseReset(&inPoses[i], heierarchy->numNodes, NULL, NULL);
+
+
+			// if there is an input node...
+			if (node->inputNodes[i]) {
+				// recurse solve the tree 
+				a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, blendNodeCount, heierarchy); //calc children blend nodes
+				a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, heierarchy->numNodes); // copy children blend into temp data to be operated on
+
+			}
+
+		}
+	}
+	else // if we don't rely on inputs and just need to sample a clip...
+	{
+		// nothing to do here - stop recursing
+	}
+
+	//operate on all inputs
+	if (node->poseOp != 0)
+	{
+		// TODO: pick the right struct based on node type,
+		//       and pass the right struct to the operation
+		node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams, heierarchy);
+	}
+	//else // no operations on this node, so just copy the in pose into the out pose.
+		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
+
+	free(inPoses[0].pose);
+
+	// mask the animation
+	a3maskNode(node);
+
+	return node->outPose;
+}
 
 // ---------------------------------------------------------------------------------
 
