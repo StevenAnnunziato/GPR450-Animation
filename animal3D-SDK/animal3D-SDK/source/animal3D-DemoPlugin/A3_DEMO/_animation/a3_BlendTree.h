@@ -23,8 +23,14 @@ extern "C"
 
 // ---------------------------------------------------------------------------------
 
-enum Operation { NONE = 0, SPOSE = 1, IK_SOLVER = 2, KINEMATICS = 3, FLOAT = 4, HPOSE = 5, };
-typedef enum Operation(a3_OpType);
+typedef enum { 
+	NONE = 0,
+	SPOSE = 1, 
+	IK_SOLVER = 2, 
+	KINEMATICS = 3, 
+	FLOAT = 4, 
+	HPOSE = 5 
+} Operation;
 
 // generalized yet somewhat specialized approach
 //	-> general approach for multiple sets of specific purposes
@@ -158,7 +164,7 @@ struct a3_BlendTreeNode
 	a3real opParams[32];
 
 	// info for function type
-	a3_OpType opType;
+	Operation opType;
 
 	// store the hierarchy pose after poseOp is completed
 	// this is the most important part of the blend node
@@ -215,7 +221,7 @@ a3ret a3maskBlendNode(a3_BlendTreeNode* node_out, a3ui32 maskindecies1[128]);
 
 a3ret a3updateBlendTree(a3_BlendTree* blendTree, a3_HierarchyPoseGroup const* hierarchyPoseGroup_skel, a3_Hierarchy const* hierarchy_skel, const a3real dt);
 
-a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy);
+a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy);
 
 
 

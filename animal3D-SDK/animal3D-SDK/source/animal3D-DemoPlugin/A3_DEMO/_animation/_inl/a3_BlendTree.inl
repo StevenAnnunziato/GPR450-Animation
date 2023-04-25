@@ -41,7 +41,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 c
 	blend_out->sposeOps = malloc(memreq);
 
 	// assign pointers to sposeOps outPoses
-	a3ui32 ptr = (blend_out->sposeOps + sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // cache where the hposeOps end
+	a3_SpatialPoseBlendOp* ptr = (blend_out->sposeOps + sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // cache where the hposeOps end
 	for (a3ui32 i = 0; i < NUM_TEMP_STRUCTS; i++)
 	{
 		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(ptr + sizeof(a3_SpatialPose) * i);
@@ -102,10 +102,10 @@ inline a3ret a3updateBlendTree(a3_BlendTree* blendTree, a3_HierarchyPoseGroup co
 		finally execute the nodes of the blend tree in order
 	*/
 	const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-	a3executeBlendTree(&blendTree->nodes[rootIndex], blendTree->nodes[rootIndex].numInputs, blendTree->nodeCount, hierarchy_skel);
+	a3executeBlendTree(blendTree, &blendTree->nodes[rootIndex], blendTree->nodes[rootIndex].numInputs, blendTree->nodeCount, hierarchy_skel);
 }
 
-a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy)
+a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy)
 {
 	// create an array of all input poses
 	a3_HierarchyPose inPoses[8];
@@ -127,7 +127,7 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 			// if there is an input node...
 			if (node->inputNodes[i]) {
 				// recurse solve the tree 
-				a3executeBlendTree(node->inputNodes[i], node->inputNodes[i]->numInputs, blendNodeCount, heierarchy); //calc children blend nodes
+				a3executeBlendTree(tree, node->inputNodes[i], node->inputNodes[i]->numInputs, blendNodeCount, heierarchy); //calc children blend nodes
 				a3hierarchyPoseCopy(&inPoses[i], node->inputNodes[i]->outPose, heierarchy->numNodes); // copy children blend into temp data to be operated on
 
 			}
@@ -144,7 +144,30 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTreeNode* node, const a3ui32 numOfI
 	{
 		// TODO: pick the right struct based on node type,
 		//       and pass the right struct to the operation
-		node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams, heierarchy);
+		//	 a3_SpatialPoseBlendOp
+			//a3_HierarchyStateBlendOp
+			//a3_HierarchyPoseBlendOp
+		switch (node->opType)
+		{
+		case 1:		// spose
+		{
+			tree->sposeOps[0].pose_out = node->outPose->pose;
+			tree->sposeOps[0].pose_in[0] = inPosePtr->pose;
+			tree->sposeOps[0].param[0] = node->opParams;
+
+			node->poseOp(&tree->sposeOps[0], tree);
+
+			break;
+		}
+		case 2:		//IK_SOLVER
+			break;
+		case 5:		// hpose
+			break;
+		default:
+			break;
+		}
+
+		//node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams);
 	}
 	//else // no operations on this node, so just copy the in pose into the out pose.
 		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly

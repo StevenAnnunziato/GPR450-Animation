@@ -174,7 +174,7 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 			finally execute the nodes of the blend tree in order
 		*/
 		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-		a3executeBlendTree(&demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel);
+		a3executeBlendTree(&demoMode->blendTree, &demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel);
 		
 		// FK pipeline
 		/*a3_HierarchyPose fkInputs[2] = (a3_HierarchyPose[]){
