@@ -34,7 +34,8 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 c
 	}
 
 	// allocate temp operation data structures
-	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS + sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMP_STRUCTS;
+	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +
+					sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMP_STRUCTS;
 	blend_out->sposeOps = malloc(memreq);
 	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)(blend_out->sposeOps + sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // shift forward by sposeOpSize * n
 }

@@ -274,33 +274,33 @@ inline a3ret a3spatialPoseTriangularBlend(a3_SpatialPoseBlendOp* data, a3_BlendT
 	{
 		a3real u0 = 1 - *data->param[0] - *data->param[1];
 
-		// allocate spatial poses for internal calculations
-		a3_SpatialPose* s0 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* s1 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* s2 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* c1 = malloc(sizeof(a3_SpatialPose));
+		tree->sposeOps[1].pose_in[0] = data->pose_in[0];
+		tree->sposeOps[1].param[0] = &u0;
 
-		const a3ui32 NUM_OPS = 5;
-		a3_SpatialPoseBlendOp* temp = malloc(sizeof(a3_SpatialPoseBlendOp) * NUM_OPS); // TODO: Move this chunk of temp data to blend tree
+		tree->sposeOps[2].pose_in[0] = data->pose_in[1];
+		tree->sposeOps[2].param[0] = data->param[0];
 
+		tree->sposeOps[3].pose_in[0] = data->pose_in[2];
+		tree->sposeOps[3].param[0] = data->param[1];
 
 		// scale the poses for weighted average calculation
-		a3spatialPoseScale(s0, data->pose_in[0], u0); // will have to pass a a3_HierarchyPoseBlendOp* as data?
-		a3spatialPoseScale(s1, data->pose_in[1], data->param[0]);
-		a3spatialPoseScale(s2, data->pose_in[2], data->param[1]);
+		a3spatialPoseScale(&tree->sposeOps[1], tree); // will have to pass a a3_HierarchyPoseBlendOp* as data?
+		a3spatialPoseScale(&tree->sposeOps[2], tree);
+		a3spatialPoseScale(&tree->sposeOps[3], tree);
 		//a3spatialPoseScale(data);
 		//a3spatialPoseScale(data);
 		//Possibly unroll the operation (triangle here) to be the multiple operations that make it up in the tree
 
 		// concat all
-		a3spatialPoseMerge(c1, s0, s1);
-		a3spatialPoseMerge(data->pose_out, c1, s2);
+		tree->sposeOps[4].pose_in[0] = tree->sposeOps[1].pose_out;
+		tree->sposeOps[4].pose_in[1] = tree->sposeOps[2].pose_out;
+		tree->sposeOps[5].pose_in[0] = tree->sposeOps[4].pose_out;
+		tree->sposeOps[5].pose_in[1] = tree->sposeOps[3].pose_out;
 
-		// free memory
-		free(s0);
-		free(s1);
-		free(s2);
-		free(c1);
+		a3spatialPoseMerge(&tree->sposeOps[4], tree);
+		a3spatialPoseMerge(&tree->sposeOps[5], tree);
+
+		data->pose_out = tree->sposeOps[5].pose_out;
 
 		return 0;
 	}
