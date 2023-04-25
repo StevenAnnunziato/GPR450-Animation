@@ -18,7 +18,7 @@ inline a3ui32 a3maskNode(a3_BlendTreeNode* node_inout)
 	return 0;
 }
 
-inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 clipCount, a3ui32 hierarchyNodes)
+inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 clipCount, a3ui32 hierarchyNodes, a3_Hierarchy* hierarchy)
 {
 	blend_out->nodeCount = 7;
 	blend_out->clipCount = 4;
@@ -34,10 +34,18 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 c
 	}
 
 	// allocate temp operation data structures
-	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +
-					sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMP_STRUCTS;
+	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +			// sposeOps
+					sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS;					// outPoses for sposeOps
+
+	// malloc all data
 	blend_out->sposeOps = malloc(memreq);
-	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)(blend_out->sposeOps + sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // shift forward by sposeOpSize * n
+
+	// assign pointers to sposeOps outPoses
+	a3ui32 ptr = (blend_out->sposeOps + sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // cache where the hposeOps end
+	for (a3ui32 i = 0; i < NUM_TEMP_STRUCTS; i++)
+	{
+		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(ptr + sizeof(a3_SpatialPose) * i);
+	}
 }
 
 inline a3ret a3freeBlendTree(a3_BlendTree* blend_in)

@@ -194,7 +194,6 @@ struct a3_BlendTree
 
 	// temp data for intermediate calculations
 	a3_SpatialPoseBlendOp* sposeOps;
-	a3_HierarchyPoseBlendOp* hposeOps;
 };
 
 
@@ -202,7 +201,7 @@ struct a3_BlendTree
 // zeros out the deltas of the specified spatial poses.
 a3ui32 a3maskNode(a3_BlendTreeNode* node_inout);
 
-a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 clipCount, a3ui32 hierarchyNodes);
+a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 clipCount, a3ui32 hierarchyNodes, a3_Hierarchy* hierarchy);
 
 a3ret a3freeBlendTree(a3_BlendTree* blend_in);
 
