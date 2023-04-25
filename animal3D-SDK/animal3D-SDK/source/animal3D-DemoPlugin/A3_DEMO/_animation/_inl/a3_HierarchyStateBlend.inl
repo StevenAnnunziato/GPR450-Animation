@@ -312,15 +312,23 @@ inline a3ret a3spatialPoseBinearestBlend(a3_SpatialPoseBlendOp* data, a3_BlendTr
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
-		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
+		tree->sposeOps[1].pose_in[0] = data->pose_in[0];
+		tree->sposeOps[1].pose_in[1] = data->pose_in[1];
+		tree->sposeOps[1].param[0] = data->param[1];
 
-		a3spatialPoseNearest(b0, data->pose_in[0], data->pose_in[1], data->param[1]);
-		a3spatialPoseNearest(b1, data->pose_in[2], data->pose_in[3], data->param[2]);
-		a3spatialPoseNearest(data->pose_out, b0, b1, data->param[0]);
+		tree->sposeOps[2].pose_in[0] = data->pose_in[2];
+		tree->sposeOps[2].pose_in[1] = data->pose_in[3];
+		tree->sposeOps[2].param[0] = data->param[2];
 
-		free(b0);
-		free(b1);
+		tree->sposeOps[3].pose_in[0] = tree->sposeOps[1].pose_out;
+		tree->sposeOps[3].pose_in[1] = tree->sposeOps[2].pose_out;
+		tree->sposeOps[3].param[0] = data->param[0];
+
+		a3spatialPoseNearest(&tree->sposeOps[1], tree);
+		a3spatialPoseNearest(&tree->sposeOps[2], tree);
+		a3spatialPoseNearest(&tree->sposeOps[3], tree);
+
+		data->pose_out = tree->sposeOps[3].pose_out;
 
 		return 0;
 	}
@@ -332,15 +340,23 @@ inline a3ret a3spatialPoseBilinearBlend(a3_SpatialPoseBlendOp* data, a3_BlendTre
 {
 	if (data->pose_out && data->pose_in[0] && data->pose_in[1] && data->pose_in[2] && data->pose_in[3])
 	{
-		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
+		tree->sposeOps[1].pose_in[0] = data->pose_in[0];
+		tree->sposeOps[1].pose_in[1] = data->pose_in[1];
+		tree->sposeOps[1].param[0] = data->param[1];
 
-		a3spatialPoseOpLERP(b0, data->pose_in[0], data->pose_in[1], data->param[1]);
-		a3spatialPoseOpLERP(b1, data->pose_in[2], data->pose_in[3], data->param[2]);
-		a3spatialPoseOpLERP(data->pose_out, b0, b1, data->param[0]);
+		tree->sposeOps[2].pose_in[0] = data->pose_in[2];
+		tree->sposeOps[2].pose_in[1] = data->pose_in[3];
+		tree->sposeOps[2].param[0] = data->param[2];
 
-		free(b0);
-		free(b1);
+		tree->sposeOps[3].pose_in[0] = tree->sposeOps[1].pose_out;
+		tree->sposeOps[3].pose_in[1] = tree->sposeOps[2].pose_out;
+		tree->sposeOps[3].param[0] = data->param[0];
+
+		a3spatialPoseOpLERP(&tree->sposeOps[1], tree);
+		a3spatialPoseOpLERP(&tree->sposeOps[2], tree);
+		a3spatialPoseOpLERP(&tree->sposeOps[3], tree);
+
+		data->pose_out = tree->sposeOps[3].pose_out;
 
 		return 0;
 	}
@@ -355,21 +371,43 @@ inline a3ret a3spatialPoseBicubicBlend(a3_SpatialPoseBlendOp* data, a3_BlendTree
 		data->pose_in[8] && data->pose_in[9] && data->pose_in[10] && data->pose_in[11] &&
 		data->pose_in[12] && data->pose_in[13] && data->pose_in[14] && data->pose_in[15])
 	{
-		a3_SpatialPose* b0 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* b1 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* b2 = malloc(sizeof(a3_SpatialPose));
-		a3_SpatialPose* b3 = malloc(sizeof(a3_SpatialPose));
+		tree->sposeOps[1].pose_in[0] = data->pose_in[0];
+		tree->sposeOps[1].pose_in[1] = data->pose_in[1];
+		tree->sposeOps[1].pose_in[2] = data->pose_in[2];
+		tree->sposeOps[1].pose_in[3] = data->pose_in[3];
+		tree->sposeOps[1].param[0] = data->param[1];
 
-		a3spatialPoseCubicBlend(b0, data->pose_in[0], data->pose_in[1], data->pose_in[2], data->pose_in[3], data->param[0]);
-		a3spatialPoseCubicBlend(b1, data->pose_in[4], data->pose_in[5], data->pose_in[6], data->pose_in[7], data->param[1]);
-		a3spatialPoseCubicBlend(b2, data->pose_in[8], data->pose_in[9], data->pose_in[10], data->pose_in[11], data->param[2]);
-		a3spatialPoseCubicBlend(b3, data->pose_in[12], data->pose_in[13], data->pose_in[14], data->pose_in[15], data->param[3]);
-		a3spatialPoseCubicBlend(data->pose_out, b0, b1, b2, b3, data->param[4]);
+		tree->sposeOps[2].pose_in[0] = data->pose_in[4];
+		tree->sposeOps[2].pose_in[1] = data->pose_in[5];
+		tree->sposeOps[2].pose_in[2] = data->pose_in[6];
+		tree->sposeOps[2].pose_in[3] = data->pose_in[7];
+		tree->sposeOps[2].param[0] = data->param[2];
+		
+		tree->sposeOps[3].pose_in[0] = data->pose_in[8];
+		tree->sposeOps[3].pose_in[1] = data->pose_in[9];
+		tree->sposeOps[3].pose_in[2] = data->pose_in[10];
+		tree->sposeOps[3].pose_in[3] = data->pose_in[11];
+		tree->sposeOps[3].param[0] = data->param[3];
+		
+		tree->sposeOps[4].pose_in[0] = data->pose_in[12];
+		tree->sposeOps[4].pose_in[1] = data->pose_in[13];
+		tree->sposeOps[4].pose_in[2] = data->pose_in[14];
+		tree->sposeOps[4].pose_in[3] = data->pose_in[15];
+		tree->sposeOps[4].param[0] = data->param[4];
 
-		free(b0);
-		free(b1);
-		free(b2);
-		free(b3);
+		tree->sposeOps[5].pose_in[0] = tree->sposeOps[1].pose_out;
+		tree->sposeOps[5].pose_in[1] = tree->sposeOps[2].pose_out;
+		tree->sposeOps[5].pose_in[2] = tree->sposeOps[3].pose_out;
+		tree->sposeOps[5].pose_in[3] = tree->sposeOps[4].pose_out;
+		tree->sposeOps[5].param[0] = data->param[0];
+
+		a3spatialPoseCubicBlend(&tree->sposeOps[1], tree);
+		a3spatialPoseCubicBlend(&tree->sposeOps[2], tree);
+		a3spatialPoseCubicBlend(&tree->sposeOps[3], tree);
+		a3spatialPoseCubicBlend(&tree->sposeOps[4], tree);
+		a3spatialPoseCubicBlend(&tree->sposeOps[5], tree);
+
+		data->pose_out = tree->sposeOps[5].pose_out;
 
 		return 0;
 	}
@@ -386,7 +424,11 @@ inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data, a3_BlendTr
 	{
 		a3index i;
 		for (i = 0; i < data->nodeCount; ++i)
-			a3spatialPoseOpIdentity(data->pose_out->pose + i);
+		{
+			*tree->sposeOps[1].pose_in = data->pose_in[i];
+			*tree->sposeOps[1].param = &data->param_in[i];
+			a3spatialPoseOpIdentity(&tree->sposeOps[1], tree);
+		}
 		return 0;
 	}
 	return 1;
