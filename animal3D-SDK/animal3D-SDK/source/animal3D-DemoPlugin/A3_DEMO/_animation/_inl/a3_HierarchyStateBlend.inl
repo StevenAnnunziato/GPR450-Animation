@@ -558,94 +558,94 @@ inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data, a3_BlendTree* 
 
 inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data, a3_BlendTree* tree)
 {
-	//const a3_HierarchyPose* pose0 = &data->pose_in[0]; // Local space Hierarchy Pose
+	const a3_HierarchyPose* pose0 = &data->pose_in[0]; // Local space Hierarchy Pose
 
-	//const a3real target_index = data->param_in[0];
-	//const a3real x = data->param_in[1];
-	//const a3real y = data->param_in[2];
-	//const a3real z = data->param_in[3];
+	const a3real target_index = data->param_in[0];
+	const a3real x = data->param_in[1];
+	const a3real y = data->param_in[2];
+	const a3real z = data->param_in[3];
 
 	//a3_HierarchyPose* poseObjInv = malloc(sizeof(a3_HierarchyPose));
 
-	//if (data->pose_out && pose0 && data->hierarchyState) {
+	if (data->pose_out && pose0 && data->hierarchyState) {
 
-	//	// Solve object space for effector and heierarchy; a3kinematicsSolveForward;
-	//	const a3_HierarchyNode* itr = data->hierarchyState->hierarchy->nodes + (a3ui32)target_index;
-	//	const a3_HierarchyNode* const end = itr + data->hierarchyState->hierarchy->numNodes;
-	//	for (; itr < end; ++itr)
-	//	{
-	//		if (itr->parentIndex >= 0)
-	//			a3real4x4Product(data->pose_out->pose[itr->index].transformMat.m,
-	//				data->pose_out->pose[itr->parentIndex].transformMat.m,
-	//				pose0->pose[itr->index].transformMat.m);
-	//		else
-	//			data->pose_out->pose[itr->index] = pose0->pose[itr->index];
-	//	}
+		// Solve object space for effector and heierarchy; a3kinematicsSolveForward;
+		const a3_HierarchyNode* itr = data->hierarchyState->hierarchy->nodes + (a3ui32)target_index;
+		const a3_HierarchyNode* const end = itr + data->hierarchyState->hierarchy->numNodes;
+		for (; itr < end; ++itr)
+		{
+			if (itr->parentIndex >= 0)
+				a3real4x4Product(data->hierarchyState->objectSpace->pose[itr->index].transformMat.m,
+					data->hierarchyState->objectSpace->pose[itr->parentIndex].transformMat.m,
+					data->hierarchyState->localSpace->pose[itr->index].transformMat.m);
+			else
+				data->hierarchyState->objectSpace->pose[itr->index] = data->hierarchyState->localSpace->pose[itr->index];
+		}
 
-	//	//Get Object-Space Inverse for IK later
-	//	a3index i;
-	//	for (i = 0; i < data->hierarchyState->hierarchy->numNodes; ++i)
-	//		a3real4x4TransformInverse(poseObjInv->pose[i].transformMat.m,
-	//			data->pose_out->pose[i].transformMat.m);
+		////Get Object-Space Inverse for IK later
+		//a3index i;
+		//for (i = 0; i < data->hierarchyState->hierarchy->numNodes; ++i)
+		//	a3real4x4TransformInverse(poseObjInv->pose[i].transformMat.m,
+		//		data->pose_out->pose[i].transformMat.m);
 
-	//	/*
-	//	//Perform look at
-	//	a3vec3 target;
-	//	target.x = x;
-	//	target.y = y;
-	//	target.z = z;
+		
+		//Perform look at
+		a3real3 target;
+		target[0] = x;
+		target[1] = y;
+		target[2] = z;
 
-	//	//Should I be calling a spacialPoseConvert to get node to matrix and then restore later?
-	//	a3vec3 neck;
-	//	neck.x = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.x;
-	//	neck.y = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.y;
-	//	neck.z = pose0->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate.z;
+		//Should I be calling a spacialPoseConvert to get node to matrix and then restore later?
+		a3real3 neck;
+		neck[0] = pose0->pose[(data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index].rotate.x;
+		neck[1] = pose0->pose[(data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index].rotate.y;
+		neck[2] = pose0->pose[(data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index].rotate.z;
 
-	//	a3vec3 dir;
-	//	dir.x = target.x - neck.x;
-	//	dir.y = target.y - neck.y;
-	//	dir.z = target.z - neck.z;
+		a3real3 dir;
 
-	//	a3vec3 vx, vy, vz;
+		a3real3Diff(dir, target, neck);
 
-	//	vz = normalize(dir);
+		a3real3 vx, vy, vz;
 
-	//	a3vec3 up;
+		a3real3SetReal3(vz, dir);
+		a3real3Normalize(vz);
 
-	//	vx = cross(up, vz);
+		a3real3 up;
+		a3real3Set(up, 0, 1, 0);
 
-	//	vx = normalize(vx);
+		a3real3Cross(vx, up, vz);
 
-	//	vy = cross(vz, vx);
+		a3real3Normalize(vx);
 
-	//	pose_out->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate = R[vx, vy, vz];
-	//	*/
+		a3real3Cross(vy, vz, vx);
+
+		//pose_out->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate = R[vx, vy, vz];
+		
 
 
-	//	/*
-	//	* 1) solve above: gives matrix in this form:
-	//	*	[vx, vy, vz, t]
-	//	* 2) IK: my local = parent object inv * my object (the thing solved above)
-	//	*
-	//	*/
+		/*
+		* 1) solve above: gives matrix in this form:
+		*	[vx, vy, vz, t]
+		* 2) IK: my local = parent object inv * my object (the thing solved above)
+		*
+		*/
 
-	//	a3_SpatialPose* affectedPose = data->pose_out->pose + (data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index;
-	//	//affectedPose->
+		a3_SpatialPose* affectedPose = data->pose_out->pose + (data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index;
 
-	//	// Solve for world space; a3kinematicsSolveInversePartial
-	//	const a3_HierarchyNode* itr = data->hierarchyState->hierarchy->nodes + (a3ui32)target_index;
-	//	const a3_HierarchyNode* const end = itr + data->hierarchyState->hierarchy->numNodes;
-	//	for (; itr < end; ++itr)
-	//	{
-	//		if (itr->parentIndex >= 0)
-	//			a3real4x4Product(pose0->pose[itr->index].transformMat.m,
-	//				poseObjInv->pose[itr->parentIndex].transformMat.m,
-	//				data->pose_out->pose[itr->index].transformMat.m);
-	//		else
-	//			pose0->pose[itr->index] = data->pose_out->pose[itr->index];
-	//	}
-	//	return 0;
-	//}
+		// Solve for world space; a3kinematicsSolveInversePartial
+		const a3_HierarchyNode* itr = data->hierarchyState->hierarchy->nodes + (a3ui32)target_index;
+		const a3_HierarchyNode* const end = itr + data->hierarchyState->hierarchy->numNodes;
+		for (; itr < end; ++itr)
+		{
+			if (itr->parentIndex >= 0)
+				a3real4x4Product(data->hierarchyState->localSpace->pose[itr->index].transformMat.m,
+					data->hierarchyState->objectSpaceInv->pose[itr->parentIndex].transformMat.m,
+					data->hierarchyState->objectSpace->pose[itr->index].transformMat.m);
+			else
+				data->hierarchyState->localSpace->pose[itr->index] = data->hierarchyState->objectSpace->pose[itr->index];
+		}
+		return 0;
+	}
 	return 1;
 }
 
