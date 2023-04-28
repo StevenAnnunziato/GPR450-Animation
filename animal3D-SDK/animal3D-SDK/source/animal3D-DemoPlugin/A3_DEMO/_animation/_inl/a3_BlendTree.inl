@@ -18,17 +18,16 @@ inline a3ui32 a3maskNode(a3_BlendTreeNode* node_inout)
 	return 0;
 }
 
-inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 clipCount, a3ui32 hierarchyNodes, a3_Hierarchy* hierarchy)
+inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hierarchy* hierarchy)
 {
-	blend_out->nodeCount = 7;
-	blend_out->clipCount = 4;
+	blend_out->nodeCount = nodeCount;
 	blend_out->poses = (a3_HierarchyPose*)malloc(sizeof(a3_HierarchyPose) * blend_out->nodeCount);
 
-	blend_out->poses->pose = (a3_SpatialPose*)malloc(sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchyNodes); 		// set up nodes to be use with outpose's
+	blend_out->poses->pose = (a3_SpatialPose*)malloc(sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes); 		// set up nodes to be use with outpose's
 
 	// Resets pose data with identity matrix
 	for (a3ui32 i = 0; i < blend_out->nodeCount; ++i) {
-		blend_out->poses[i].pose = blend_out->poses[0].pose + hierarchyNodes * i;
+		blend_out->poses[i].pose = blend_out->poses[0].pose + hierarchy->numNodes * i;
 		a3hierarchyPoseReset(&blend_out->poses[i], blend_out->nodeCount, NULL, NULL);
 		blend_out->nodes[i].outPose = &blend_out->poses[i];
 	}
