@@ -178,16 +178,16 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 			break;
 		}
 		case 2:		//IK_SOLVER
-			tree->ikOps[0].pose_out = node->outPose->pose;
-			tree->ikOps[0].pose_in[0] = inPosePtr->pose;
-			tree->ikOps[0].param_in[0] = node->opParams;
+			tree->ikOps[0].pose_out = node->outPose;
+			tree->ikOps[0].pose_in[0] = inPosePtr;
+			tree->ikOps[0].param_in = node->opParams;
 
 			node->poseOp(&tree->ikOps[0], tree);
 			break;
 		case 5:		// hpose
-			tree->hposeOps[0].pose_out = node->outPose->pose;
-			tree->hposeOps[0].pose_in[0] = inPosePtr->pose;
-			tree->hposeOps[0].param_in[0] = node->opParams;
+			tree->hposeOps[0].pose_out = node->outPose;
+			tree->hposeOps[0].pose_in[0] = inPosePtr;
+			tree->hposeOps[0].param_in = node->opParams;
 
 			node->poseOp(&tree->hposeOps[0], tree);
 			break;
@@ -197,8 +197,11 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 
 		//node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams);
 	}
-	//else // no operations on this node, so just copy the in pose into the out pose.
-		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
+	else if (node->opType == 0) {
+
+	}
+	else// no operations on this node, so just copy the in pose into the out pose.
+		a3hierarchyPoseCopy(node->outPose, &inPoses[0], heierarchy->numNodes); // take the in pose directly
 
 	free(inPoses[0].pose);
 
