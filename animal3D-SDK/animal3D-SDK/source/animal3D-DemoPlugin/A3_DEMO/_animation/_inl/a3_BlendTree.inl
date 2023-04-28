@@ -37,7 +37,8 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +			// sposeOps
 					sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS +					// outPoses for sposeOps
 					sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS +				// hposeOps
-					sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS +	// outPoses for hposeOps
+					sizeof(a3_HierarchyPose) * NUM_TEMPS +						// outPoses for hposeOps
+					sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS +	// spatial poses for hposeOps' outPoses
 					sizeof(a3_HierarchyStateBlendOp) * NUM_TEMPS;				// ikOps
 
 	// malloc all data
@@ -55,6 +56,13 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)ptr;
 
 	// assign outPoses of hposeOps
+	ptr += sizeof(a3_HierarchyPose) * NUM_TEMPS;
+	for (a3ui32 i = 0; i < NUM_TEMPS; i++)
+	{
+		blend_out->hposeOps[i].pose_out = (a3_HierarchyPose*)ptr;
+	}
+
+	// assign spatial poses for hposeOps' outPoses
 	ptr += sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS; // cache where the hposeOps' outPoses begin
 	for (a3ui32 i = 0; i < NUM_TEMPS; i++)
 	{
