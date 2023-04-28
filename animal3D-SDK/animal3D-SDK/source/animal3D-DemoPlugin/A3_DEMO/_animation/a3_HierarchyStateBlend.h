@@ -27,14 +27,6 @@
 #ifndef __ANIMAL3D_HIERARCHYSTATEBLEND_H
 #define __ANIMAL3D_HIERARCHYSTATEBLEND_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#else	// !__cplusplus
-typedef struct a3_BlendTreeNode				a3_BlendTreeNode;
-typedef struct a3_BlendTree					a3_BlendTree;
-#endif	// __cplusplus
-
 //#include "a3_HierarchyState.h"
 #include "a3_KeyframeAnimationController.h"
 
@@ -47,7 +39,8 @@ typedef struct a3_BlendTree					a3_BlendTree;
 extern "C"
 {
 #else	// !__cplusplus
-
+typedef struct a3_BlendTreeNode				a3_BlendTreeNode;
+typedef struct a3_BlendTree					a3_BlendTree;
 #endif	// __cplusplus
 	
 

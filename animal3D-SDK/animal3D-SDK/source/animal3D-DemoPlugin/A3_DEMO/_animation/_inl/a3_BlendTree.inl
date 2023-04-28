@@ -110,7 +110,7 @@ a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode* node,
 	// create an array of all input poses
 	a3_HierarchyPose inPoses[8];
 	a3_HierarchyPose* inPosePtr; // 8 max inputs
-	inPoses[0].pose = malloc(sizeof(a3_SpatialPose) * heierarchy->numNodes * numOfInputs);
+	inPoses[0].pose = (a3_SpatialPose*)malloc(sizeof(a3_SpatialPose) * heierarchy->numNodes * numOfInputs);
 	inPosePtr = inPoses;
 
 	// if we rely on any additional inputs...
