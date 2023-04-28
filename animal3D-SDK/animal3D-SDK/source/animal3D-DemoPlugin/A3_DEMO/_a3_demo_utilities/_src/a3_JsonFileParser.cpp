@@ -69,6 +69,7 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 				//Checks if input node else treat input like a float
 				switch (nodeType) {
 				case 2:
+				{
 					demoMode->blendTree->nodes[i].opType = Operation::NONE;
 					a3byte* param = (a3byte*)data["Clips"][i]["params"][j].get<std::string>().c_str();
 					a3ui32 k = a3clipGetIndexInPool(demoMode->clipPool, param);
@@ -76,16 +77,17 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 
 					demoMode->blendTree->nodes[i].myClipController = &demoMode->blendTree->clipControllers[numOfClipControllers];
 					numOfClipControllers++;
-
+				}
 					break;
 				case 3:
-					demoMode->blendTree->nodes[i].opType = Operation::IK;
+					demoMode->blendTree->nodes[i].opType = Operation::IK_SOLVER;
 					break;
 				default:
-					demoMode->blendTree->nodes[i].opType = Operation::SPATIAL;
-					a3real param = data["Clips"][i]["params"][j].get<a3real>();
+				{
+					demoMode->blendTree->nodes[i].opType = Operation::SPOSE;
+					a3real param = (a3real)data["Clips"][i]["params"][j].get<a3real>();
 					// out_pool->nodes[i].opParams[j] = param; 
-
+				}
 					break;
 				}
 			}		

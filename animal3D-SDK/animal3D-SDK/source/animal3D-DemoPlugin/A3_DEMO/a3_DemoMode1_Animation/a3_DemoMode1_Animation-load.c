@@ -33,6 +33,8 @@
 #include "../a3_DemoState.h"
 #include "../animal3D-DemoPlugin/A3_DEMO/_animation/a3_BlendTree.h"
 
+#include "A3_DEMO/_a3_demo_utilities/a3_JsonFileParser.h"
+
 
 //-----------------------------------------------------------------------------
 

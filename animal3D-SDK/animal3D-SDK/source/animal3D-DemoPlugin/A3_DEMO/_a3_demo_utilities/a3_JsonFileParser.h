@@ -19,10 +19,14 @@
 #ifdef __cplusplus
 extern "C"
 {
+
+
 #else	// !__cplusplus
 
 
 #endif	// __cplusplus
+
+struct a3_BlendTree;
 enum
 {
 	a3BlendName_nameLenMax = 32,

@@ -6,6 +6,9 @@
 #ifdef __cplusplus
 extern "C"
 {
+
+
+
 #else	// !__cplusplus
 typedef struct a3_BlendTreeNode				a3_BlendTreeNode;
 typedef struct a3_BlendTree					a3_BlendTree;
@@ -28,7 +31,7 @@ typedef enum {
 	SPOSE = 1, 
 	IK_SOLVER = 2, 
 	KINEMATICS = 3, 
-	FLOAT = 4, 
+	FLOAT_OP = 4, 
 	HPOSE = 5 
 } Operation;
 
