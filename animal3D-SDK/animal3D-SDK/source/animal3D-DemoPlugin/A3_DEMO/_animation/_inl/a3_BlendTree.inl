@@ -64,6 +64,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	// assign ikOps
 	ptr += sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS; // cache where the ikOps begin
 	blend_out->ikOps = (a3_HierarchyStateBlendOp*)ptr;
+	return 0;
 }
 
 inline a3ret a3freeBlendTree(a3_BlendTree* blend_in)

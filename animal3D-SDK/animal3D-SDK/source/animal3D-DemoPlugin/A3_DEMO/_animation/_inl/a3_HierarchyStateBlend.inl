@@ -625,7 +625,7 @@ inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data, a3_BlendTre
 
 		//pose_out->pose[(hierarchyPose->nodes + (a3ui32)target_index)->index].rotate = R[vx, vy, vz];
 
-		data->hierarchyState->objectSpace[(data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index].pose->transformMat.m[0] = lookAt;
+		//data->hierarchyState->objectSpace[(data->hierarchyState->hierarchy->nodes + (a3ui32)target_index)->index].pose->transformMat.m[0] = lookAt;
 		
 
 
