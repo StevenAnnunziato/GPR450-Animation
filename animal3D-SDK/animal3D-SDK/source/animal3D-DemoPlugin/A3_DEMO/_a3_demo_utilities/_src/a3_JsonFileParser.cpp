@@ -33,18 +33,8 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 		*
 		* a3createBlendTree(out_pool, numOfBlendNodes, demoMode);
 		*/
-		out_blendTree->nodeCount = numOfBlendNodes;
-		out_blendTree->poses = (a3_HierarchyPose*)malloc(sizeof(a3_HierarchyPose) * out_blendTree->nodeCount);
-		out_blendTree->poses->pose = (a3_SpatialPose*)malloc(sizeof(a3_SpatialPose) * out_blendTree->nodeCount * demoMode->hierarchyState_skel->hierarchy->numNodes); 		// set up nodes to be use with outpose's
+		a3initBlendTree(out_blendTree, numOfBlendNodes, demoMode->hierarchy_skel);
 
-		// Resets pose data with identity matrix
-		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; ++i) {
-			a3ui32 id = (a3ui32)stoi(data["nodes"][i]["id"].get<std::string>());
-
-			demoMode->blendTree->poses[id].pose = demoMode->blendTree->poses[0].pose + demoMode->hierarchyState_skel->hierarchy->numNodes * id;
-			a3hierarchyPoseReset(&demoMode->blendTree->poses[id], demoMode->blendTree->nodeCount, NULL, NULL);
-			demoMode->blendTree->nodes[id].outPose = &demoMode->blendTree->poses[id];
-		}
 
 		/*
 		* Init root node
