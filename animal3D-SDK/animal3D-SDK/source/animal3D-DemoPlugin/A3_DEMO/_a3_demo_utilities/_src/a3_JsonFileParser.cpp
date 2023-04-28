@@ -5,6 +5,7 @@
 #include <animal3D/a3/a3types_integer.h>
 #include <A3_DEMO/_animation/a3_BlendTree.h>
 #include <A3_DEMO/a3_DemoMode1_Animation.h>
+
 using json = nlohmann::json;
 
 #define A3_DEMO_RES_DIR	"../../../../resource/"
@@ -13,8 +14,9 @@ using json = nlohmann::json;
 a3ui32 const rate = 24;
 a3f64 const fps = (a3f64)rate;
 
-void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[a3BlendName_nameLenMax], a3_DemoMode1_Animation* demoMode)
+void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[a3keyframeAnimation_nameLenMax], a3_DemoMode1_Animation* demoMode)
 {
+
 	static a3ui32 numOfClipControllers = 0;
 	std::string filepath = std::string(A3_DEMO_ANIM) + std::string(fileName);
 	std::ifstream f(filepath);
@@ -28,7 +30,7 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 
 		/*
 		* Create Blend Tree
-		* 
+		*
 		* a3createBlendTree(out_pool, numOfBlendNodes, demoMode);
 		*/
 		out_blendTree->nodeCount = numOfBlendNodes;
@@ -44,28 +46,28 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 
 		/*
 		* Init Blend Nodes
-		* 
-		* 
+		*
+		*
 		*/
-		for (a3ui32 i = 0; i < numOfBlendNodes; i++) 
+		for (a3ui32 i = 0; i < numOfBlendNodes; i++)
 		{
-			a3ui32 id			= data["Clips"][i]["id"].get<a3ui32>();
-			a3ui32 nodeType		= data["Clips"][i]["data"]["value"].get<a3ui32>();
-			a3ui32 numInputs	= data["Clips"][i]["data"]["inputs"].get<a3ui32>();
-			a3ui32 numParams	= data["Clips"][i]["data"]["params"].get<a3ui32>();
+			a3ui32 id = data["Clips"][i]["id"].get<a3ui32>();
+			a3ui32 nodeType = data["Clips"][i]["data"]["value"].get<a3ui32>();
+			a3ui32 numInputs = data["Clips"][i]["data"]["inputs"].get<a3ui32>();
+			a3ui32 numParams = data["Clips"][i]["data"]["params"].get<a3ui32>();
 
 			// a3createBlendNode(&out_pool->nodes[i], nodeType, numInputs, numParams)
 
 			// Set up graph connections with inputs
 			for (a3ui32 j = 0; j < numInputs; j++) {
 				a3ui32 targetID = data["Clips"][i]["inputs"][j]["index"].get<a3ui32>();
-				
+
 				// out_pool->nodes[i].inputNodes[j] = out_pool->nodes[targetID]; // TargetID may not corrospond correctly to array index
 			}
 
 			// Loop over params
 			for (a3ui32 j = 0; j < numParams; j++) {
-				
+
 				//Checks if input node else treat input like a float
 				switch (nodeType) {
 				case 2:
@@ -78,7 +80,7 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 					demoMode->blendTree->nodes[i].myClipController = &demoMode->blendTree->clipControllers[numOfClipControllers];
 					numOfClipControllers++;
 				}
-					break;
+				break;
 				case 3:
 					demoMode->blendTree->nodes[i].opType = Operation::IK_SOLVER;
 					break;
@@ -88,9 +90,9 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 					a3real param = (a3real)data["Clips"][i]["params"][j].get<a3real>();
 					// out_pool->nodes[i].opParams[j] = param; 
 				}
-					break;
+				break;
 				}
-			}		
+			}
 			out_blendTree->clipCount = numOfClipControllers;
 		}
 	}
@@ -127,7 +129,7 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 			printf((data["Clips"][i]["name"].get<std::string>()).c_str());
 			printf(std::to_string(data["Clips"][i]["firstKeyframeIndex"].get<a3ui32>()).c_str());
 			printf(std::to_string(data["Clips"][i]["lastKeyframeIndex"].get<a3ui32>()).c_str());
-			
+
 			a3clipInit(&out_pool->clip[i],
 				(a3byte*)data["Clips"][i]["name"].get<std::string>().c_str(),
 				(keypool),
