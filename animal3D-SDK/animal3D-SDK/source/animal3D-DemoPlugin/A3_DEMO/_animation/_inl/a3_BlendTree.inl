@@ -34,8 +34,12 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 c
 	}
 
 	// allocate temp operation data structures
+	const a3ui32 NUM_TEMPS = 1;
 	a3ui32 memreq = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +			// sposeOps
-					sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS;					// outPoses for sposeOps
+					sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS +					// outPoses for sposeOps
+					sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS +				// hposeOps
+					sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS +	// outPoses for hposeOps
+					sizeof(a3_HierarchyStateBlendOp) * NUM_TEMPS;				// ikOps
 
 	// malloc all data
 	blend_out->sposeOps = (a3_SpatialPoseBlendOp*)malloc(memreq);
@@ -46,6 +50,21 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3ui32 c
 	{
 		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(ptr + sizeof(a3_SpatialPose) * i);
 	}
+
+	// assign pointers to hposeOps outPoses
+	ptr += sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS; // cache where the hposeOps begin
+	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)ptr;
+
+	// assign outPoses of hposeOps
+	ptr += sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS; // cache where the hposeOps' outPoses begin
+	for (a3ui32 i = 0; i < NUM_TEMPS; i++)
+	{
+		blend_out->hposeOps[i].pose_out->pose = (a3_SpatialPose*)(ptr + sizeof(a3_SpatialPose) * hierarchy->numNodes * i);
+	}
+
+	// assign ikOps
+	ptr += sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS; // cache where the ikOps begin
+	blend_out->ikOps = (a3_HierarchyStateBlendOp*)ptr;
 }
 
 inline a3ret a3freeBlendTree(a3_BlendTree* blend_in)
@@ -156,12 +175,21 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 			tree->sposeOps[0].param[0] = node->opParams;
 
 			node->poseOp(&tree->sposeOps[0], tree);
-
 			break;
 		}
 		case 2:		//IK_SOLVER
+			tree->ikOps[0].pose_out = node->outPose->pose;
+			tree->ikOps[0].pose_in[0] = inPosePtr->pose;
+			tree->ikOps[0].param_in[0] = node->opParams;
+
+			node->poseOp(&tree->ikOps[0], tree);
 			break;
 		case 5:		// hpose
+			tree->hposeOps[0].pose_out = node->outPose->pose;
+			tree->hposeOps[0].pose_in[0] = inPosePtr->pose;
+			tree->hposeOps[0].param_in[0] = node->opParams;
+
+			node->poseOp(&tree->hposeOps[0], tree);
 			break;
 		default:
 			break;
