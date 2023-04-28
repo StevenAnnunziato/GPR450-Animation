@@ -123,7 +123,7 @@ typedef struct a3_HierarchyPoseBlendOp
 	a3_HierarchyPose* pose_out;
 	a3ui32  nodeCount;
 	a3_HierarchyPose const* pose_in[POSE_IN_MAX];
-	a3real const* param_in[PARAM_MAX];
+	a3real const* param_in;
 } a3_HierarchyPoseBlendOp;
 
 // struct for look at and chain inputs
@@ -131,7 +131,7 @@ typedef struct a3_HierarchyStateBlendOp
 {
 	a3_HierarchyPose* pose_out;
 	a3_HierarchyPose const* pose_in[POSE_IN_MAX];
-	a3real const* param_in[PARAM_MAX];
+	a3real const* param_in;
 	a3_HierarchyState const* hierarchyState;
 } a3_HierarchyStateBlendOp;
 

@@ -558,7 +558,7 @@ inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data, a3_BlendTree* 
 
 inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data, a3_BlendTree* tree)
 {
-	const a3_HierarchyPose* pose0 = &data->pose_in[0]; // Local space Hierarchy Pose
+	const a3_HierarchyPose* pose0 = data->pose_in[0]; // Local space Hierarchy Pose
 
 	const a3real target_index = data->param_in[0];
 	const a3real x = data->param_in[1];
