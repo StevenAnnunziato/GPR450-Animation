@@ -437,9 +437,9 @@ inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data, a3_BlendTr
 
 inline a3ret a3hierarchyPoseConstruct(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
-	const a3vec4	eulers = (a3vec4){ data->param_in[0],data->param_in[1],data->param_in[2],data->param_in[3] },
-		scale = (a3vec4){ data->param_in[4],data->param_in[5],data->param_in[6],data->param_in[7] },
-		translate = (a3vec4){ data->param_in[8],data->param_in[9],data->param_in[10],data->param_in[11] };
+	const a3vec4	eulers = { data->param_in[0],data->param_in[1],data->param_in[2],data->param_in[3] },
+		scale = { data->param_in[4],data->param_in[5],data->param_in[6],data->param_in[7] },
+		translate = { data->param_in[8],data->param_in[9],data->param_in[10],data->param_in[11] };
 	if (data->pose_out && data->nodeCount)
 	{
 		a3index i;
