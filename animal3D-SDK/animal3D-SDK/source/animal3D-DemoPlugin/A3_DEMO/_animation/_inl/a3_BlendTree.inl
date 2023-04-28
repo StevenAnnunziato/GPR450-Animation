@@ -169,8 +169,11 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 
 		//node->poseOp(node->outPose, heierarchy->numNodes, inPosePtr, node->opParams);
 	}
-	//else // no operations on this node, so just copy the in pose into the out pose.
-		//a3hierarchyPoseCopy(node->outPose, &inPoses[0], nodeCount); // take the in pose directly
+	else if (node->opType == 0) {
+
+	}
+	else// no operations on this node, so just copy the in pose into the out pose.
+		a3hierarchyPoseCopy(node->outPose, &inPoses[0], heierarchy->numNodes); // take the in pose directly
 
 	free(inPoses[0].pose);
 

@@ -1,0 +1,124 @@
+{
+  "nodes": 
+    [
+      {
+        "id": "1",
+        "data": {
+          "value": 1,
+          "label": "Lerp",
+          "inputs": 2,
+          "params": 1
+        },
+        "params": [
+          "1.0"
+        ],
+        "inputs": [
+          {
+            "index": "2"
+          },
+          {
+            "index": "3"
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "data": {
+          "value": 2,
+          "label": "Input Node",
+          "inputs": 0,
+          "params": 1
+        },
+        "params": [
+          "xbot_idle_pistol"
+        ],
+        "inputs": []
+      },
+      {
+        "id": "3",
+        "data": {
+          "value": 2,
+          "label": "Input Node",
+          "inputs": 0,
+          "params": 1
+        },
+        "params": [
+          "xbot_ymca"
+        ],
+        "inputs": []
+      },
+      {
+        "id": "0",
+        "params": [],
+        "inputs": [
+          {
+            "index": "8"
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "data": {
+          "value": 2,
+          "label": "Input Node",
+          "inputs": 0,
+          "params": 1
+        },
+        "params": [
+          "xbot_walk_m"
+        ],
+        "inputs": []
+      },
+      {
+        "id": "6",
+        "data": {
+          "value": 2,
+          "label": "Input Node",
+          "inputs": 0,
+          "params": 1
+        },
+        "params": [
+          "xbot_idle_m"
+        ],
+        "inputs": []
+      },
+      {
+        "id": "7",
+        "data": {
+          "value": 1,
+          "label": "Lerp",
+          "inputs": 2,
+          "params": 1
+        },
+        "params": [
+          "1.0"
+        ],
+        "inputs": [
+          {
+            "index": "6"
+          },
+          {
+            "index": "5"
+          }
+        ]
+      },
+      {
+        "id": "8",
+        "data": {
+          "value": 0,
+          "label": "Concat",
+          "inputs": 2,
+          "params": 0
+        },
+        "params": [],
+        "inputs": [
+          {
+            "index": "1"
+          },
+          {
+            "index": "7"
+          }
+        ]
+      }
+    ]
+}
