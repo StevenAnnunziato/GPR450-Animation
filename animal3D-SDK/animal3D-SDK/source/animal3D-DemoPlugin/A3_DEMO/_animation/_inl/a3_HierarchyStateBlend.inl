@@ -424,10 +424,10 @@ inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data, a3_BlendTr
 		a3index i;
 		for (i = 0; i < data->nodeCount; ++i)
 		{
-			tree->sposeOps[1].pose_out = data->pose_out->pose + i;
-			tree->sposeOps[1].pose_in[0] = data->pose_in[0]->pose + i;
+			tree->sposeOps[1].pose_in[0] = &data->pose_in[0]->pose[i];
 			tree->sposeOps[1].param[0] = &data->param_in[i];
 			a3spatialPoseOpIdentity(&tree->sposeOps[1], tree);
+			a3spatialPoseCopy(&data->pose_out->pose[i], tree->sposeOps[1].pose_out);
 		}
 		return 0;
 	}
