@@ -25,48 +25,53 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 
 	// allocate temp operation data structures
 	const a3ui32 NUM_TEMPS = 1;
-	a3ui32 memreq = sizeof(a3_HierarchyPose) * blend_out->nodeCount +						// for blend_out->poses
-					sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes +	// for blend_out->poses' poses
-					sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes * POSE_IN_MAX +	// for blend node input poses
-					sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +						// sposeOps
-					sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS +								// outPoses for sposeOps
-					sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS +							// hposeOps
-					sizeof(a3_HierarchyPose) * NUM_TEMPS +									// outPoses for hposeOps
-					sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS +				// spatial poses for hposeOps' outPoses
-					sizeof(a3_HierarchyStateBlendOp) * NUM_TEMPS;							// ikOps
+
+	a3ui32 outPoseSize = sizeof(a3_HierarchyPose) * blend_out->nodeCount;									// for blend_out->poses
+	a3ui32 outPosePoseSize = sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes; 			// for blend_out->poses' poses
+	a3ui32 nodesSize = sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes * POSE_IN_MAX; 	// for blend node input poses
+	a3ui32 sPoseOpsSize = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS; 								// sposeOps
+	a3ui32 sPoseOpsOutSize = sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS; 									// outPoses for sposeOps
+	a3ui32 hPoseOpsSize = sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS; 										// hposeOps
+	a3ui32 hPoseOpsOutSize = sizeof(a3_HierarchyPose) * NUM_TEMPS; 											// outPoses for hposeOps
+	a3ui32 hPoseOpsOutSPoseSize = sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS; 				// spatial poses for hposeOps' outPoses
+	a3ui32 ikOpsSize = sizeof(a3_HierarchyStateBlendOp) * NUM_TEMPS;										// ikOps
+
+	a3ui32 memreq = outPoseSize +						// for blend_out->poses
+					outPosePoseSize +	// for blend_out->poses' poses
+					nodesSize +			// for blend node input poses
+					sPoseOpsSize +						// sposeOps
+					sPoseOpsOutSize +								// outPoses for sposeOps
+					hPoseOpsSize +							// hposeOps
+					hPoseOpsOutSize +									// outPoses for hposeOps
+					hPoseOpsOutSPoseSize +				// spatial poses for hposeOps' outPoses
+					ikOpsSize;							// ikOps
 
 	// malloc all data
 	blend_out->poses = (a3_HierarchyPose*)malloc(memreq);
 
 	// assign poses' spatial poses
-	a3_HierarchyPose* ptr = blend_out->poses + sizeof(a3_HierarchyPose) * blend_out->nodeCount;
-	blend_out->poses->pose = (a3_SpatialPose*)ptr;
+	blend_out->poses->pose = (a3_SpatialPose*)blend_out->poses + outPoseSize;
 
 	// Resets pose data with identity matrix
 	for (a3ui32 i = 0; i < blend_out->nodeCount; ++i) {
 		blend_out->poses[i].pose = blend_out->poses[0].pose + hierarchy->numNodes * i;
 		a3hierarchyPoseReset(&blend_out->poses[i], blend_out->nodeCount, NULL, NULL);
 		blend_out->nodes[i].outPose = &blend_out->poses[i];
-
-
 	}
 
-	ptr += sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes;
+	// allocate blend node input poses
 	for (a3ui32 i = 0; i < blend_out->nodeCount; ++i) {
-		for (a3ui32 j = 0; j < 16; j++)
-			blend_out->nodes[i].inputPoses->pose = (a3_SpatialPose*)ptr + sizeof(a3_SpatialPose) * hierarchy->numNodes * j;
+		blend_out->nodes[i].inputPoses->pose = blend_out->poses->pose + outPosePoseSize + (sizeof(a3_SpatialPose) * hierarchy->numNodes * i); // IFFY
 	}
-
 
 	// assign sposeOps
-	ptr += sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes * 16;
-	blend_out->sposeOps = (a3_SpatialPoseBlendOp*)ptr;
+	blend_out->sposeOps = (a3_SpatialPoseBlendOp*)(blend_out->nodes->inputPoses->pose + nodesSize);
 
 	// assign pointers to sposeOps outPoses
-	ptr += (sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // cache where the hposeOps end
 	for (a3ui32 i = 0; i < NUM_TEMP_STRUCTS; i++)
 	{
-		blend_out->sposeOps[i].pose_out = ((a3_SpatialPose*)ptr + sizeof(a3_SpatialPose) * i);
+		//blend_out->sposeOps[i].pose_out = ((a3_SpatialPose*)ptr + sizeof(a3_SpatialPose) * i);
+		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(blend_out->sposeOps + sPoseOpsSize + (sizeof(a3_SpatialPose) * i)); // IFFY
 		blend_out->sposeOps[i].pose_out->transformMat = a3mat4_identity;
 		blend_out->sposeOps[i].pose_out->rotate = a3vec4_zero;
 		blend_out->sposeOps[i].pose_out->scale = a3vec4_one;
@@ -74,31 +79,25 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	}
 
 	// assign pointers to hposeOps outPoses
-	ptr += sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS; // cache where the hposeOps begin
-	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)ptr;
+	blend_out->hposeOps = (a3_HierarchyPoseBlendOp*)(blend_out->sposeOps->pose_out + sPoseOpsOutSize);
 
 	// assign outPoses of hposeOps
-	ptr += sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS;
 	for (a3ui32 i = 0; i < NUM_TEMPS; i++)
 	{
-		blend_out->hposeOps[i].pose_out = (a3_HierarchyPose*)(ptr + sizeof(a3_HierarchyPose) * i);
+		blend_out->hposeOps[i].pose_out = (a3_HierarchyPose*)(blend_out->hposeOps + hPoseOpsSize + sizeof(a3_HierarchyPose) * i); // IFFY
 	}
 
 	// assign spatial poses for hposeOps' outPoses
-	ptr += sizeof(a3_HierarchyPose) * NUM_TEMPS; // cache where the hposeOps' outPoses begin
 	for (a3ui32 i = 0; i < NUM_TEMPS; i++)
 	{
-		ptr += sizeof(a3_SpatialPose) * hierarchy->numNodes * i;
-
-		blend_out->hposeOps[i].pose_out->pose = (a3_SpatialPose*)(ptr);
+		blend_out->hposeOps[i].pose_out->pose = (a3_SpatialPose*)(blend_out->hposeOps->pose_out + hPoseOpsOutSize + (sizeof(a3_SpatialPose) * hierarchy->numNodes * i)); // IFFY
 
 		// zero out all data for these spatial poses
 		a3hierarchyPoseReset(blend_out->hposeOps[i].pose_out, hierarchy->numNodes, NULL, NULL);
 	}
 
 	// assign ikOps
-	ptr += sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS; // cache where the ikOps begin
-	blend_out->ikOps = (a3_HierarchyStateBlendOp*)ptr;
+	blend_out->ikOps = (a3_HierarchyStateBlendOp*)(blend_out->hposeOps->pose_out->pose + hPoseOpsOutSPoseSize);
 	return 0;
 }
 
