@@ -71,11 +71,9 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	ptr += sizeof(a3_HierarchyPose) * NUM_TEMPS; // cache where the hposeOps' outPoses begin
 	for (a3ui32 i = 0; i < NUM_TEMPS; i++)
 	{
-		// assign spatial poses for hposeOps' outPoses
-		for (a3ui32 j = 0; j < hierarchy->numNodes; j++)
-		{
-			blend_out->hposeOps[i].pose_out->pose = (a3_SpatialPose*)(ptr + sizeof(a3_SpatialPose) * hierarchy->numNodes * i);
-		}
+		ptr += sizeof(a3_SpatialPose) * hierarchy->numNodes * i;
+
+		blend_out->hposeOps[i].pose_out->pose = (a3_SpatialPose*)(ptr);
 
 		// zero out all data for these spatial poses
 		a3hierarchyPoseReset(blend_out->hposeOps[i].pose_out, hierarchy->numNodes, NULL, NULL);
@@ -183,35 +181,38 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 	//operate on all inputs
 	if (node->poseOp != 0)
 	{
-		// TODO: pick the right struct based on node type,
-		//       and pass the right struct to the operation
+		// pick the right struct based on node type,
+		// and pass the right struct to the operation
 		//	 a3_SpatialPoseBlendOp
-			//a3_HierarchyStateBlendOp
-			//a3_HierarchyPoseBlendOp
+		//	 a3_HierarchyStateBlendOp
+		//	 a3_HierarchyPoseBlendOp
 		switch (node->opType)
 		{
 		case 1:		// spose
 		{
-			tree->sposeOps[0].pose_out = node->outPose->pose;
 			tree->sposeOps[0].pose_in[0] = inPosePtr->pose;
 			tree->sposeOps[0].param[0] = node->opParams;
 
 			node->poseOp(&tree->sposeOps[0], tree);
+			node->outPose->pose = tree->sposeOps[0].pose_out;
 			break;
 		}
 		case 2:		//IK_SOLVER
-			tree->ikOps[0].pose_out = node->outPose;
 			tree->ikOps[0].pose_in[0] = inPosePtr;
 			tree->ikOps[0].param_in = node->opParams;
 
 			node->poseOp(&tree->ikOps[0], tree);
+			node->outPose = tree->ikOps[0].pose_out;
 			break;
 		case 5:		// hpose
-			tree->hposeOps[0].pose_out = node->outPose;
-			tree->hposeOps[0].pose_in[0] = inPosePtr;
+			//tree->hposeOps[0].pose_out = node->outPose;
+			tree->hposeOps[0].pose_in[0] = &inPosePtr[0];
+			tree->hposeOps[0].pose_in[1] = &inPosePtr[1];
 			tree->hposeOps[0].param_in = node->opParams;
+			tree->hposeOps[0].nodeCount = heierarchy->numNodes;
 
 			node->poseOp(&tree->hposeOps[0], tree);
+			node->outPose = tree->hposeOps[0].pose_out;
 			break;
 		default:
 			break;

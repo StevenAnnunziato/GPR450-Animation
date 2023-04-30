@@ -81,45 +81,51 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 			}
 
 			// Loop over params
-			for (a3ui32 j = 0; j < numParams; j++) {
+			
 
 				//Checks if input node else treat input like a float
 				switch (nodeType) {
 				case -1:
 					demoMode->blendTree->nodes[id].opType = Operation::NONE;
 					break;
-				case 1:
+				case 0:// concat
 				{
 					demoMode->blendTree->nodes[id].opType = Operation::HPOSE;
 
-					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseOpLERP, &demoMode->blendTree);
-					a3real param = (a3real)stof(data["nodes"][i]["params"][j].get<std::string>());
-					out_blendTree->nodes[id].opParams[j] = param;
-				}
+					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseMerge);
 					break;
-				case 2:
+				}
+				case 1: // lerp
+				{
+					demoMode->blendTree->nodes[id].opType = Operation::HPOSE;
+
+					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseOpLERP);
+					for (a3ui32 j = 0; j < numParams; j++) {
+						a3real param = (a3real)stof(data["nodes"][i]["params"][j].get<std::string>());
+						out_blendTree->nodes[id].opParams[j] = param;
+
+					}
+					break;
+				}
+				case 2: // input / sample animation, no BlendFunc required
 				{
 					demoMode->blendTree->nodes[id].opType = Operation::NONE;
-					std::string str = data["nodes"][i]["params"][j].get<std::string>();
+					std::string str = data["nodes"][i]["params"][0].get<std::string>();
 					a3byte* param = (a3byte*)str.c_str();
 					a3ui32 k = a3clipGetIndexInPool(demoMode->clipPool, param);
 					a3clipControllerInit(&demoMode->blendTree->clipControllers[numOfClipControllers], "xbot_ctrl", demoMode->clipPool, k, rate, fps);
-
 					demoMode->blendTree->nodes[id].myClipController = &demoMode->blendTree->clipControllers[numOfClipControllers];
 					numOfClipControllers++;
+					break;
 				}
-				break;
-				case 3:
+				case 3: // IK
 					demoMode->blendTree->nodes[id].opType = Operation::IK_SOLVER;
 					break;
 				default:
 				{
-					demoMode->blendTree->nodes[id].opType = Operation::SPOSE;
-					a3real param = (a3real)stof(data["nodes"][i]["params"][j].get<std::string>());
-					out_blendTree->nodes[id].opParams[j] = param;
 
-				}
-				break;
+					break;
+				
 				}
 			}
 			out_blendTree->clipCount = numOfClipControllers;

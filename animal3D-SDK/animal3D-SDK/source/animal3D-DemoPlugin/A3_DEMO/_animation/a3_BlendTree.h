@@ -33,7 +33,7 @@ typedef a3ret (*a3_BlendFunc) (void* data, a3_BlendTree* tree);
 #define POSE_IN_MAX 16
 #define PARAM_MAX 5
 #define VALUE_IN_MAX 2 // for float ops
-#define NUM_TEMP_STRUCTS 8
+#define NUM_TEMP_STRUCTS 16
 
 // identity (0 or 1) [out] - single
 // copy (unary +) [out, in0] - single

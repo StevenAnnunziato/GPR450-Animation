@@ -62,8 +62,8 @@ inline a3i32 a3hierarchyPoseReset(
 	if (pose_out && nodeCount)
 	{
 		a3index i;
-		for (i = 0; i < nodeCount; ++i)
-			a3spatialPoseReset(pose_out->pose + i);
+		for (i = 0; i < nodeCount; i++)
+			a3spatialPoseReset(&pose_out->pose[i]);
 		return i;
 	}
 	return -1;
