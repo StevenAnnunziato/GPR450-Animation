@@ -27,7 +27,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	const a3ui32 NUM_TEMPS = 1;
 	a3ui32 memreq = sizeof(a3_HierarchyPose) * blend_out->nodeCount +						// for blend_out->poses
 					sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes +	// for blend_out->poses' poses
-					sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes * 16 +	// for blend node input poses
+					sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes * POSE_IN_MAX +	// for blend node input poses
 					sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS +						// sposeOps
 					sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS +								// outPoses for sposeOps
 					sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS +							// hposeOps
@@ -66,7 +66,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	ptr += (sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS); // cache where the hposeOps end
 	for (a3ui32 i = 0; i < NUM_TEMP_STRUCTS; i++)
 	{
-		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(ptr + sizeof(a3_SpatialPose) * i);
+		blend_out->sposeOps[i].pose_out = ((a3_SpatialPose*)ptr + sizeof(a3_SpatialPose) * i);
 		blend_out->sposeOps[i].pose_out->transformMat = a3mat4_identity;
 		blend_out->sposeOps[i].pose_out->rotate = a3vec4_zero;
 		blend_out->sposeOps[i].pose_out->scale = a3vec4_one;
