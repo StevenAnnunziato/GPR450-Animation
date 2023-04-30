@@ -495,12 +495,12 @@ inline a3ret a3hierarchyPoseMerge(a3_HierarchyPoseBlendOp* data, a3_BlendTree* t
 		a3index i;
 		for (i = 0; i < data->nodeCount; ++i)
 		{
-			tree->sposeOps[1].pose_out = data->pose_out->pose + i;
-			tree->sposeOps[1].pose_in[0] = lhs->pose + i;
-			tree->sposeOps[1].pose_in[1] = rhs->pose + i;
+			tree->sposeOps[1].pose_in[0] = &lhs->pose[i];
+			tree->sposeOps[1].pose_in[1] = &rhs->pose[i];
 
-			//a3spatialPoseMerge(data->pose_out->pose + i, lhs->pose + i, rhs->pose + i);
 			a3spatialPoseMerge(&tree->sposeOps[1], tree);
+
+			a3spatialPoseCopy(&data->pose_out->pose[i], tree->sposeOps[1].pose_out);
 		}
 		return 0;
 	}
@@ -542,13 +542,13 @@ inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data, a3_BlendTree* 
 		a3index i;
 		for (i = 0; i < data->nodeCount; ++i)
 		{
-			tree->sposeOps[1].pose_out = data->pose_out->pose + i;
-			tree->sposeOps[1].pose_in[0] = pose0->pose + i;
-			tree->sposeOps[1].pose_in[1] = pose1->pose + i;
+			tree->sposeOps[1].pose_in[0] = &pose0->pose[i];
+			tree->sposeOps[1].pose_in[1] = &pose1->pose[i];
 			tree->sposeOps[1].param[0] = &blendParam;
 
-			//a3spatialPoseLerp(data->pose_out->pose + i, pose0->pose + i, pose1->pose + i, blendParam);
 			a3spatialPoseOpLERP(&tree->sposeOps[1], tree);
+
+			a3spatialPoseCopy(&data->pose_out->pose[i], tree->sposeOps[1].pose_out);
 		}
 		return 0;
 	}
