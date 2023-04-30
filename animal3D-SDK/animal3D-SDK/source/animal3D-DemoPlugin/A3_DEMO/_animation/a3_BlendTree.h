@@ -165,6 +165,7 @@ struct a3_BlendTreeNode
 
 	// child blend nodes in the tree which this node relies on for input
 	a3_BlendTreeNode* inputNodes[16];
+	a3_HierarchyPose inputPoses[16];
 	a3ui32 numInputs;
 
 	// clip controller for nodes with no additional input
