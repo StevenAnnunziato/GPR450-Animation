@@ -145,37 +145,8 @@ void a3animation_update(a3_DemoState* demoState, a3_DemoMode1_Animation* demoMod
 	{
 		a3real const dtr = (a3real)dt;
 
-		// update blend tree
-		//a3blendTreeUpdate(demoMode, dtr);
+		a3updateBlendTree(demoMode->blendTree, demoMode->hierarchyPoseGroup_skel, demoMode->hierarchy_skel, dtr);
 
-		// Update clip controllers in the blend tree
-		for (a3ui32 i = 0; i < demoMode->blendTree->clipCount; i++)
-		{
-			a3clipControllerUpdate(&demoMode->blendTree->clipControllers[i], dt);
-		}
-
-		/*
-			first update the nodes which have no inputs and just sample from a clip
-			for each node in the blend tree...
-		*/
-		for (a3ui32 i = 0; i < demoMode->blendTree->nodeCount; i++)
-		{
-			// if the node is a clip node...
-			if (demoMode->blendTree->nodes[i].numInputs <= 0)
-			{
-				// get the clip controller
-				// copy the pose from the clip controller to the node's out pose
-				a3hierarchyPoseCopy(demoMode->blendTree->nodes[i].outPose,
-					demoMode->hierarchyPoseGroup_skel->hpose + demoMode->blendTree->nodes[i].myClipController->keyframeIndex, // get deltas of a pose in frame keyframeIndex
-					demoMode->hierarchy_skel->numNodes);
-			}
-		}
-		/*
-			finally execute the nodes of the blend tree in order
-		*/
-		const a3ui32 rootIndex = 0; // note: root index is assumed to be zero
-		a3executeBlendTree(demoMode->blendTree, &demoMode->blendTree->nodes[rootIndex], demoMode->blendTree->nodes[rootIndex].numInputs, demoMode->blendTree->nodeCount, demoMode->hierarchy_skel);
-		
 		// FK pipeline
 		/*a3_HierarchyPose fkInputs[2] = (a3_HierarchyPose[]){
 			baseHS->localSpace, // holds base pose

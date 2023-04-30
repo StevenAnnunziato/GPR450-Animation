@@ -38,7 +38,6 @@ inline a3ret a3spatialPoseOpIdentity(a3_SpatialPoseBlendOp* data, a3_BlendTree* 
 	if (data->pose_out)
 	{
 		data->pose_out->transformMat = a3mat4_identity;
-		data->pose_out->rotate = a3vec4_one;
 		data->pose_out->rotate = a3vec4_zero;
 		data->pose_out->scale = a3vec4_one;
 		data->pose_out->translate = a3vec4_zero;
