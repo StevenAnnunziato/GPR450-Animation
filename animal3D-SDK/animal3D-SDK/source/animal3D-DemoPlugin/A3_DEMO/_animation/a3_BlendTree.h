@@ -31,6 +31,7 @@ typedef enum {
 typedef a3ret (*a3_BlendFunc) (void* data, a3_BlendTree* tree);
 
 #define POSE_IN_MAX 16
+#define NODE_IN_MAX 16
 #define PARAM_MAX 5
 #define VALUE_IN_MAX 2 // for float ops
 #define NUM_TEMP_STRUCTS 16
@@ -164,8 +165,8 @@ struct a3_BlendTreeNode
 	a3_HierarchyPose* outPose;
 
 	// child blend nodes in the tree which this node relies on for input
-	a3_BlendTreeNode* inputNodes[16];
-	a3_HierarchyPose inputPoses[16];
+	a3_BlendTreeNode* inputNodes[NODE_IN_MAX];
+	a3_HierarchyPose inputPoses[POSE_IN_MAX];
 	a3ui32 numInputs;
 
 	// clip controller for nodes with no additional input
