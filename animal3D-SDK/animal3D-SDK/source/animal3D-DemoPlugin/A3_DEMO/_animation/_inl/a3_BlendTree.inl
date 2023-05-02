@@ -75,11 +75,34 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	p[i] === *(p + i)
 	*/
 
+// pointers needed:
+	// for blend_out->poses
+	// for blend_out->poses' poses
+	// for blend node input poses
+	// sposeOps
+	// outPoses for sposeOps
+	// hposeOps
+	// outPoses for hposeOps
+	// spatial poses for hposeOps' outPoses
+	// ikOps
+
 	// malloc all data
-	blend_out->poses = (a3_HierarchyPose*)malloc(memreq);
+	void* ptr = malloc(memreq);
+	a3_HierarchyPose* hPosePtr = (a3_HierarchyPose*)ptr + 0;   // this is the first element - nothing before this
+	a3_SpatialPose* sPosePtr = (a3_SpatialPose*)hPosePtr + outPoseCount;
+	a3_SpatialPose* nodePtr = (a3_SpatialPose*)sPosePtr + outPosePoseCount;
+	a3_SpatialPoseBlendOp* sPoseOpsPtr = (a3_SpatialPoseBlendOp*)nodePtr + nodesCount;
+	a3_SpatialPose* sPoseOpsOutPtr = (a3_SpatialPose*)sPoseOpsPtr + sPoseOpsCount;
+	a3_HierarchyPoseBlendOp* hPoseOpsPtr = (a3_HierarchyPoseBlendOp*)sPoseOpsOutPtr + sPoseOpsOutCount;
+	a3_HierarchyPose* hPoseOpsOutPtr = (a3_HierarchyPose*)hPoseOpsPtr + hPoseOpsCount;
+	a3_SpatialPose* hPoseOpsOutSPosePtr = (a3_SpatialPose*)hPoseOpsOutPtr + hPoseOpsOutCount;
+	a3_HierarchyStateBlendOp* ikOpsPtr = (a3_HierarchyStateBlendOp*)hPoseOpsOutSPosePtr + hPoseOpsOutSPoseCount;
+
+	// assign pointers
+	blend_out->poses = hPosePtr;
 
 	// assign poses' spatial poses
-	blend_out->poses->pose = (a3_SpatialPose*)blend_out->poses + outPoseCount; //Want to be using count not size - EVERYWHERE
+	blend_out->poses->pose = sPosePtr; //Want to be using count not size - EVERYWHERE
 
 	// Resets pose data with identity matrix
 	for (a3ui32 i = 0; i < outPoseCount; ++i) {
@@ -89,26 +112,26 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	}
 
 	// allocate blend node input poses
-	//blend_out->nodes[0].inputPoses[0].pose = (a3_SpatialPose*)blend_out->poses->pose + (POSE_IN_MAX * outPoseCount); // needs fix
-	//for (a3ui32 i = 0; i < POSE_IN_MAX; ++i) {
-	//	blend_out->nodes[i].inputPoses[j].pose = (a3_SpatialPose*)blend_out->poses->pose + (j * i); // needs fix
-	//}
-
-	// allocate blend node input poses
-	for (a3ui32 i = 0; i < POSE_IN_MAX; ++i) // for pose
+	for (a3ui32 i = 0; i < MAX_NODES; ++i) // for each node
 	{
-		// assign pointers for this pose's spatial poses
-		blend_out->nodes[i].inputPoses->pose = (a3_SpatialPose*)blend_out->poses + outPosePoseCount + i; // needs fix
+		for (a3ui32 j = 0; j < POSE_IN_MAX; ++j)
+		{
+			// assign pointers for this pose's spatial poses
+			blend_out->nodes[i].inputPoses[j].pose = nodePtr++; // increment by one spatial pose
+		}
 	}
 
 	// assign sposeOps
-	blend_out->sposeOps = (a3_SpatialPoseBlendOp*)(blend_out->nodes + nodesCount); // possibly needs fix
+	blend_out->sposeOps = sPoseOpsPtr;
+
+	/// fixed ^
+	/// needs fixing \/
 
 	// assign pointers to sposeOps outPoses
 	for (a3ui32 i = 0; i < sPoseOpsCount; i++)
 	{
 		// assign pointer
-		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(blend_out->sposeOps + i); // possibly needs fix
+		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(blend_out->sposeOps + sPoseOpsCount) + i;
 
 		// init pose out
 		blend_out->sposeOps[i].pose_out->transformMat = a3mat4_identity;
@@ -212,7 +235,7 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 		for (a3ui32 i = 0; i < numOfInputs; i++)
 		{
 			// allocate space for the input poses
-			node->inputPoses[i].pose = node->inputPoses[0].pose + heierarchy->numNodes * i;
+			node->inputPoses[i].pose = node->inputPoses[0].pose + heierarchy->numNodes * i; // TODO: REMOVE
 			a3hierarchyPoseReset(&node->inputPoses[i], heierarchy->numNodes, NULL, NULL);
 
 			// if there is an input node...
