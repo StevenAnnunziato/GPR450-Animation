@@ -37,20 +37,37 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	a3ui32 ikOpsSize = sizeof(a3_HierarchyStateBlendOp) * NUM_TEMPS;										// ikOps
 
 	a3ui32 memreq = outPoseSize +						// for blend_out->poses
-					outPosePoseSize +	// for blend_out->poses' poses
-					nodesSize +			// for blend node input poses
+					outPosePoseSize +					// for blend_out->poses' poses
+					nodesSize +							// for blend node input poses
 					sPoseOpsSize +						// sposeOps
-					sPoseOpsOutSize +								// outPoses for sposeOps
-					hPoseOpsSize +							// hposeOps
-					hPoseOpsOutSize +									// outPoses for hposeOps
+					sPoseOpsOutSize +					// outPoses for sposeOps
+					hPoseOpsSize +						// hposeOps
+					hPoseOpsOutSize +					// outPoses for hposeOps
 					hPoseOpsOutSPoseSize +				// spatial poses for hposeOps' outPoses
 					ikOpsSize;							// ikOps
+
+	/*
+	T *p;
+	struct BigStruct_t *item = new BigStruct_t[256];
+
+	item[1];
+
+	item + 0      item + 1	    item + 2
+	item[0]       item[1]	    item[2]
+	v	          v		        v
+	+-------------+-------------+-------------+
+	|sizeof(*item)|
+
+	p[5] === *(p + 5)
+
+	p[i] === *(p + i)
+	*/
 
 	// malloc all data
 	blend_out->poses = (a3_HierarchyPose*)malloc(memreq);
 
 	// assign poses' spatial poses
-	blend_out->poses->pose = (a3_SpatialPose*)blend_out->poses + outPoseSize;
+	blend_out->poses->pose = (a3_SpatialPose*)blend_out->poses + outPoseSize; //Want to be using count not size - EVERYWHERE
 
 	// Resets pose data with identity matrix
 	for (a3ui32 i = 0; i < blend_out->nodeCount; ++i) {
@@ -65,7 +82,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	}
 
 	// assign sposeOps
-	blend_out->sposeOps = (a3_SpatialPoseBlendOp*)(blend_out->nodes->inputPoses->pose + nodesSize);
+	blend_out->sposeOps = (a3_SpatialPoseBlendOp*)(blend_out->nodes + blend_out->nodeCount);
 
 	// assign pointers to sposeOps outPoses
 	for (a3ui32 i = 0; i < NUM_TEMP_STRUCTS; i++)
