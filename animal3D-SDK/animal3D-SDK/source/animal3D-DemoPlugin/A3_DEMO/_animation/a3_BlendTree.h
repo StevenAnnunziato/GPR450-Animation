@@ -32,6 +32,8 @@ typedef a3ret (*a3_BlendFunc) (void* data, a3_BlendTree* tree);
 
 #define POSE_IN_MAX 16
 #define NODE_IN_MAX 16
+#define MAX_NODES 32
+#define MAX_CLIP_CONTROLLERS 16
 #define PARAM_MAX 5
 #define VALUE_IN_MAX 2 // for float ops
 #define NUM_TEMP_STRUCTS 16
@@ -185,12 +187,12 @@ struct a3_BlendTree
 	a3_HierarchyPose* poses;
 
 	// keyframe animation controllers to update each animation used for blending
-	a3_ClipController clipControllers[16];
+	a3_ClipController clipControllers[MAX_CLIP_CONTROLLERS];
 	a3ui32 clipCount;
 
 	// hierarchy of nodes defined by the animator
 	// root is the final output pose
-	a3_BlendTreeNode nodes[32];
+	a3_BlendTreeNode nodes[MAX_NODES];
 	a3ui32 nodeCount;
 
 	// temp data for intermediate calculations
