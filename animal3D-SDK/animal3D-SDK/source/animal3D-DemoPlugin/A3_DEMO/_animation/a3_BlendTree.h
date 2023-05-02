@@ -183,7 +183,6 @@ struct a3_BlendTree
 {
 	// pose 0 is the base pose
 	// all further poses are used for intermediate blending
-	// TODO: the number of poses in here will be determined at runtime based on how many nodes the animator uses
 	a3_HierarchyPose* poses;
 
 	// keyframe animation controllers to update each animation used for blending

@@ -47,7 +47,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	a3ui32 hPoseOpsOutSPoseCount = hierarchy->numNodes * NUM_TEMPS; 										// spatial poses for hposeOps' outPoses
 	a3ui32 ikOpsCount = NUM_TEMPS;																			// ikOps
 
-	// ONE MALLOC
+	// get total memory requirements
 	a3ui32 memreq = outPoseSize +						// for blend_out->poses
 					outPosePoseSize +					// for blend_out->poses' poses
 					nodesSize +							// for blend node input poses
@@ -92,7 +92,6 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	//blend_out->nodes[0].inputPoses[0].pose = (a3_SpatialPose*)blend_out->poses->pose + (POSE_IN_MAX * outPoseCount); // needs fix
 	//for (a3ui32 i = 0; i < POSE_IN_MAX; ++i) {
 	//	blend_out->nodes[i].inputPoses[j].pose = (a3_SpatialPose*)blend_out->poses->pose + (j * i); // needs fix
-
 	//}
 
 	// allocate blend node input poses
@@ -108,7 +107,10 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	// assign pointers to sposeOps outPoses
 	for (a3ui32 i = 0; i < sPoseOpsCount; i++)
 	{
+		// assign pointer
 		blend_out->sposeOps[i].pose_out = (a3_SpatialPose*)(blend_out->sposeOps + i); // possibly needs fix
+
+		// init pose out
 		blend_out->sposeOps[i].pose_out->transformMat = a3mat4_identity;
 		blend_out->sposeOps[i].pose_out->rotate = a3vec4_zero;
 		blend_out->sposeOps[i].pose_out->scale = a3vec4_one;
@@ -182,7 +184,7 @@ inline a3ret a3updateBlendTree(a3_BlendTree* blendTree, a3_HierarchyPoseGroup co
 		{
 			if (blendTree->nodes[i].myClipController) {
 				// get the clip controller
-		// copy the pose from the clip controller to the node's out pose
+				// copy the pose from the clip controller to the node's out pose
 				a3hierarchyPoseCopy(blendTree->nodes[i].outPose,
 					hierarchyPoseGroup_skel->hpose + blendTree->nodes[i].myClipController->keyframeIndex, // get deltas of a pose in frame keyframeIndex
 					hierarchy_skel->numNodes);
@@ -212,7 +214,6 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 			// allocate space for the input poses
 			node->inputPoses[i].pose = node->inputPoses[0].pose + heierarchy->numNodes * i;
 			a3hierarchyPoseReset(&node->inputPoses[i], heierarchy->numNodes, NULL, NULL);
-
 
 			// if there is an input node...
 			if (node->inputNodes[i]) {
@@ -272,8 +273,6 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 	else if(node->numInputs > 0) {
 		a3hierarchyPoseCopy( node->outPose, &node->inputPoses[0], heierarchy->numNodes); // copy children blend into temp data to be operated on
 	}
-	//else// no operations on this node, so just copy the in pose into the out pose.
-	//a3hierarchyPoseCopy(node->outPose, &inPoses[0], heierarchy->numNodes); // take the in pose directly
 
 	// mask the animation
 	a3maskNode(node);
