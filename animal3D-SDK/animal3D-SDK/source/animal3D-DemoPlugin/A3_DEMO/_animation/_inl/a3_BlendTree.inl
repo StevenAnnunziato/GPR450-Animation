@@ -58,23 +58,6 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 					hPoseOpsOutSPoseSize +				// spatial poses for hposeOps' outPoses
 					ikOpsSize;							// ikOps
 
-	/*
-	T *p;
-	struct BigStruct_t *item = new BigStruct_t[256];
-
-	item[1];
-
-	item + 0      item + 1	    item + 2
-	item[0]       item[1]	    item[2]
-	v	          v		        v
-	+-------------+-------------+-------------+
-	|sizeof(*item)|
-
-	p[5] === *(p + 5)
-
-	p[i] === *(p + i)
-	*/
-
 	// malloc all data
 	void* ptr = malloc(memreq);
 
@@ -103,18 +86,16 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	}
 
 	// allocate blend node input poses
-	for (a3ui32 i = 0; i < MAX_NODES; ++i) // for each node
+	for (a3ui32 i = 0; i < blend_out->nodeCount; ++i) // for each node
 	{
 		for (a3ui32 j = 0; j < POSE_IN_MAX; ++j) // for each hPose in the node
 		{
-			for (a3ui32 k = 0; k < hierarchy->numNodes; ++k) // for each sPose in the hPose
-			{
-				// assign pointers for this pose's spatial poses
-				blend_out->nodes[i].inputPoses[j].pose = nodePtr + k; // increment by k spatial poses
+			// assign pointers for this pose's spatial poses
+			blend_out->nodes[i].inputPoses[j].pose = nodePtr;
+			nodePtr += hierarchy->numNodes;
 
-				// zero out all data for these spatial poses
-				a3hierarchyPoseReset(&blend_out->nodes[i].inputPoses[j], hierarchy->numNodes, NULL, NULL);
-			}
+			// zero out all data for these spatial poses
+			a3hierarchyPoseReset(&blend_out->nodes[i].inputPoses[j], hierarchy->numNodes, NULL, NULL);
 		}
 	}
 
@@ -128,10 +109,7 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 		blend_out->sposeOps[i].pose_out = sPoseOpsOutPtr++; // increment by one spatial pose
 
 		// init pose out
-		blend_out->sposeOps[i].pose_out->transformMat = a3mat4_identity;
-		blend_out->sposeOps[i].pose_out->rotate = a3vec4_zero;
-		blend_out->sposeOps[i].pose_out->scale = a3vec4_one;
-		blend_out->sposeOps[i].pose_out->translate = a3vec4_zero;
+		a3spatialPoseReset(blend_out->sposeOps[i].pose_out);
 	}
 
 	// assign pointers to hposeOps
@@ -146,16 +124,8 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	// assign spatial poses for hposeOps' outPoses
 	for (a3ui32 i = 0; i < hPoseOpsCount; i++) // for each hPose; this is equal to for each hPoseOp
 	{
-		for (a3ui32 j = 0; j < hierarchy->numNodes; ++j) // for each sPose in the hPose
-		{
-			blend_out->hposeOps[i].pose_out->pose = hPoseOpsOutSPosePtr + j; // increment by one spatial pose
-
-			// init pose out
-			blend_out->hposeOps[i].pose_out->pose->transformMat = a3mat4_identity;
-			blend_out->hposeOps[i].pose_out->pose->rotate = a3vec4_zero;
-			blend_out->hposeOps[i].pose_out->pose->scale = a3vec4_one;
-			blend_out->hposeOps[i].pose_out->pose->translate = a3vec4_zero;
-		}
+		blend_out->hposeOps[i].pose_out->pose = hPoseOpsOutSPosePtr;
+		hPoseOpsOutSPosePtr += hierarchy->numNodes;
 
 		// zero out all data for these spatial poses
 		a3hierarchyPoseReset(blend_out->hposeOps[i].pose_out, hierarchy->numNodes, NULL, NULL);
