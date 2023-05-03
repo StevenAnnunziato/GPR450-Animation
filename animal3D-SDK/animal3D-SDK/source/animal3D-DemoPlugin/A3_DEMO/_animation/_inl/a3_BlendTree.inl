@@ -26,26 +26,26 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	// allocate temp operation data structures
 	const a3ui32 NUM_TEMPS = 1;
 
-	a3ui32 outPoseSize = sizeof(a3_HierarchyPose) * blend_out->nodeCount;									// for blend_out->poses
-	a3ui32 outPosePoseSize = sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes; 			// for blend_out->poses' poses
-	a3ui32 nodesSize = sizeof(a3_SpatialPose) * blend_out->nodeCount * hierarchy->numNodes * POSE_IN_MAX; 	// for blend node input poses
-	a3ui32 sPoseOpsSize = sizeof(a3_SpatialPoseBlendOp) * NUM_TEMP_STRUCTS; 								// sposeOps
-	a3ui32 sPoseOpsOutSize = sizeof(a3_SpatialPose) * NUM_TEMP_STRUCTS; 									// outPoses for sposeOps
-	a3ui32 hPoseOpsSize = sizeof(a3_HierarchyPoseBlendOp) * NUM_TEMPS; 										// hposeOps
-	a3ui32 hPoseOpsOutSize = sizeof(a3_HierarchyPose) * NUM_TEMPS; 											// outPoses for hposeOps
-	a3ui32 hPoseOpsOutSPoseSize = sizeof(a3_SpatialPose) * hierarchy->numNodes * NUM_TEMPS; 				// spatial poses for hposeOps' outPoses
-	a3ui32 ikOpsSize = sizeof(a3_HierarchyStateBlendOp) * NUM_TEMPS;										// ikOps
-
 	// counts of each struct to be used in pointer arithmatic
 	a3ui32 outPoseCount = blend_out->nodeCount;																// for blend_out->poses (these are hpose)
 	a3ui32 outPosePoseCount = blend_out->nodeCount * hierarchy->numNodes; 									// for blend_out->poses' poses (these are spose)
-	a3ui32 nodesCount = blend_out->nodeCount * hierarchy->numNodes * POSE_IN_MAX; 							// for blend node input poses
+	a3ui32 nodesCount = blend_out->nodeCount * POSE_IN_MAX * hierarchy->numNodes; 							// for blend node input poses
 	a3ui32 sPoseOpsCount = NUM_TEMP_STRUCTS; 																// sposeOps
 	a3ui32 sPoseOpsOutCount = NUM_TEMP_STRUCTS; 															// outPoses for sposeOps
 	a3ui32 hPoseOpsCount = NUM_TEMPS; 																		// hposeOps
 	a3ui32 hPoseOpsOutCount = NUM_TEMPS; 																	// outPoses for hposeOps
 	a3ui32 hPoseOpsOutSPoseCount = hierarchy->numNodes * NUM_TEMPS; 										// spatial poses for hposeOps' outPoses
 	a3ui32 ikOpsCount = NUM_TEMPS;																			// ikOps
+
+	a3ui32 outPoseSize = sizeof(a3_HierarchyPose) * outPoseCount;											// for blend_out->poses
+	a3ui32 outPosePoseSize = sizeof(a3_SpatialPose) * outPosePoseCount; 									// for blend_out->poses' poses
+	a3ui32 nodesSize = sizeof(a3_SpatialPose) * nodesCount;												 	// for blend node input poses
+	a3ui32 sPoseOpsSize = sizeof(a3_SpatialPoseBlendOp) * sPoseOpsCount; 									// sposeOps
+	a3ui32 sPoseOpsOutSize = sizeof(a3_SpatialPose) * sPoseOpsOutCount; 									// outPoses for sposeOps
+	a3ui32 hPoseOpsSize = sizeof(a3_HierarchyPoseBlendOp) * hPoseOpsCount; 									// hposeOps
+	a3ui32 hPoseOpsOutSize = sizeof(a3_HierarchyPose) * hPoseOpsOutCount; 									// outPoses for hposeOps
+	a3ui32 hPoseOpsOutSPoseSize = sizeof(a3_SpatialPose) * hPoseOpsOutSPoseCount; 							// spatial poses for hposeOps' outPoses
+	a3ui32 ikOpsSize = sizeof(a3_HierarchyStateBlendOp) * ikOpsCount;										// ikOps
 
 	// get total memory requirements
 	a3ui32 memreq = outPoseSize +						// for blend_out->poses
@@ -116,13 +116,13 @@ inline a3ret a3initBlendTree(a3_BlendTree* blend_out, a3ui32 nodeCount, a3_Hiera
 	blend_out->hposeOps = hPoseOpsPtr;
 
 	// assign outPoses of hposeOps
-	for (a3ui32 i = 0; i < hPoseOpsCount; i++)
+	for (a3ui32 i = 0; i < hPoseOpsCount; ++i)
 	{
 		blend_out->hposeOps[i].pose_out = hPoseOpsOutPtr++; // increment by one hierarchy pose
 	}
 
 	// assign spatial poses for hposeOps' outPoses
-	for (a3ui32 i = 0; i < hPoseOpsCount; i++) // for each hPose; this is equal to for each hPoseOp
+	for (a3ui32 i = 0; i < hPoseOpsCount; ++i) // for each hPose; this is equal to for each hPoseOp
 	{
 		blend_out->hposeOps[i].pose_out->pose = hPoseOpsOutSPosePtr;
 		hPoseOpsOutSPosePtr += hierarchy->numNodes;
@@ -199,8 +199,6 @@ inline a3ret a3updateBlendTree(a3_BlendTree* blendTree, a3_HierarchyPoseGroup co
 
 inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode* node, const a3ui32 numOfInputs, const a3ui32 blendNodeCount, const a3_Hierarchy* heierarchy)
 {
-	a3_HierarchyPose*  inPosePtr = node->inputPoses;
-
 	// if we rely on any additional inputs...
 	if (node->numInputs > 0)
 	{
@@ -237,7 +235,7 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 		{
 		case 1:		// spose
 		{
-			tree->sposeOps[0].pose_in[0] = inPosePtr->pose;
+			tree->sposeOps[0].pose_in[0] = node->inputPoses->pose;
 			tree->sposeOps[0].param[0] = node->opParams;
 
 			node->poseOp(&tree->sposeOps[0], tree);
@@ -245,7 +243,7 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 			break;
 		}
 		case 2:		//IK_SOLVER
-			tree->ikOps[0].pose_in[0] = inPosePtr;
+			tree->ikOps[0].pose_in[0] = node->inputPoses;
 			tree->ikOps[0].param_in[0] = node->opParams;
 
 			node->poseOp(&tree->ikOps[0], tree);
@@ -253,12 +251,12 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 			break;
 		case 5:		// hpose
 			//tree->hposeOps[0].pose_out = node->outPose;
-			tree->hposeOps[0].pose_in[0] = &inPosePtr[0];
-			tree->hposeOps[0].pose_in[1] = &inPosePtr[1];
-			tree->hposeOps[0].param_in[0] = node->opParams;
-			//printf("%p", tree->hposeOps[0].pose_out->pose);
+			printf("%p", tree->hposeOps[0].pose_out->pose);
 			tree->hposeOps[0].nodeCount = heierarchy->numNodes;
-			//printf("%p", tree->hposeOps[0].pose_out->pose);
+			printf("%p", tree->hposeOps[0].pose_out->pose);
+			tree->hposeOps[0].pose_in[0] = &node->inputPoses[0];
+			tree->hposeOps[0].pose_in[1] = &node->inputPoses[1];
+			tree->hposeOps[0].param_in[0] = node->opParams;
 
 			(*node->poseOp)(&tree->hposeOps[0], tree);
 			node->outPose = tree->hposeOps[0].pose_out;
