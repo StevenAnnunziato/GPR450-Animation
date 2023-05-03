@@ -20,160 +20,110 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 	static a3ui32 numOfClipControllers = 0;
 	std::string filepath = std::string(A3_DEMO_ANIM) + std::string(fileName);
 	std::ifstream f(filepath);
-	if (f.is_open()) {
+	if (f.is_open()) 
+	{
+		// Parse JSON
 		json data = json::parse(f);
-		std::string s = data.dump();
-		printf(std::to_string(data["nodes"].size()).c_str());
 
+		// Get blend tree init params
 		const a3ui32 numOfBlendNodes = (a3ui32)data["nodes"].size();
-
 
 		/*
 		* Create Blend Tree
 		*
-		* a3createBlendTree(out_pool, numOfBlendNodes, demoMode);
 		*/
 		a3initBlendTree(out_blendTree, numOfBlendNodes, demoMode->hierarchy_skel);
-
-
-		/*
-		* Init root node
-		* 
-		*/
-
 
 		/*
 		* Init Blend Nodes
 		*
-		*
 		*/
 		for (a3ui32 i = 0; i < numOfBlendNodes; i++)
 		{
-			a3ui32 id = (a3ui32)stoi(data["nodes"][i]["id"].get<std::string>());
-			a3ui32 nodeType;
-			a3ui32 numInputs;
-			a3ui32 numParams;
-			if (id == 0) {
+			// Read in node Data
+			a3ui32	id			= (a3ui32)stoi(data["nodes"][i]["id"].get<std::string>()), // Get Node ID
+					nodeType	,
+					numInputs	,
+					numParams	;
+
+			// Set node data
+			if (id == 0) 
+			{
 				// is root node
 				nodeType = -1;
 				numInputs = 1;
 				numParams = 0;
-			
 			}
-			else {
-				nodeType = data["nodes"][i]["data"]["value"].get<a3ui32>();
-				numInputs = data["nodes"][i]["data"]["inputs"].get<a3ui32>();
-				numParams = data["nodes"][i]["data"]["params"].get<a3ui32>();
-			}
-
-
-
-
-			out_blendTree->nodes[id].numInputs = numInputs;
-
-			// a3createBlendNode(&out_pool->nodes[i], nodeType, numInputs, numParams)
-
-			// Set up graph connections with inputs
-			for (a3ui32 j = 0; j < numInputs; j++) {
-				a3ui32 targetID = (a3ui32)stoi(data["nodes"][i]["inputs"][j]["index"].get<std::string>());
-
-				out_blendTree->nodes[id].inputNodes[j] = &out_blendTree->nodes[targetID]; // TargetID may not corrospond correctly to array index
+			else 
+			{
+				// Is not the root node
+				nodeType = data["nodes"][i]["data"]["value"].get<a3ui32>(); // Get Node Type
+				numInputs = data["nodes"][i]["data"]["inputs"].get<a3ui32>(); // Get Number of node Inputs
+				numParams = data["nodes"][i]["data"]["params"].get<a3ui32>(); // Get Number of node Params
 			}
 
-			// Loop over params
-			
+			// Init Common node data
+			out_blendTree->nodes[id].numInputs = numInputs; // Num of inputs
 
-				//Checks if input node else treat input like a float
-				switch (nodeType) {
-				case -1:
+			// Set up pointers to inputs nodes
+			for (a3ui32 j = 0; j < numInputs; j++) 
+			{
+				a3ui32 targetID = (a3ui32)stoi(data["nodes"][i]["inputs"][j]["index"].get<std::string>()); // Get Target Index
+				out_blendTree->nodes[id].inputNodes[j] = &out_blendTree->nodes[targetID]; // Set pointer to targeted inputs
+			}
+
+			// Handle node setup based on Node Type
+			switch (nodeType) 
+			{
+				case -1:	// UNKOWN Node
 					demoMode->blendTree->nodes[id].opType = Operation::NONE;
 					break;
-				case 0:// concat
+				case 0:		// CONCAT Node
 				{
-					demoMode->blendTree->nodes[id].opType = Operation::HPOSE;
-
-					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseMerge);
+					demoMode->blendTree->nodes[id].opType = Operation::HPOSE; // OpType
+					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseMerge); // Op Fucntion Pointer
 					break;
 				}
-				case 1: // lerp
+				case 1:		// LERP Node
 				{
-					demoMode->blendTree->nodes[id].opType = Operation::HPOSE;
+					demoMode->blendTree->nodes[id].opType = Operation::HPOSE; // OpType
+					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseOpLERP); // Op Function Pointer
 
-					demoMode->blendTree->nodes[id].poseOp = (a3_BlendFunc)(&a3hierarchyPoseOpLERP);
-					for (a3ui32 j = 0; j < numParams; j++) {
-						a3real param = (a3real)stof(data["nodes"][i]["params"][j].get<std::string>());
-						out_blendTree->nodes[id].opParams[j] = param;
-
+					// Init Op Parameters
+					for (a3ui32 j = 0; j < numParams; j++) 
+					{
+						a3real param = (a3real)stof(data["nodes"][i]["params"][j].get<std::string>()); // Get Param
+						out_blendTree->nodes[id].opParams[j] = param; // Set Op param
 					}
 					break;
 				}
-				case 2: // input / sample animation, no BlendFunc required
+				case 2:		// INPUT Node / sample animation, no BlendFunc required
 				{
-					demoMode->blendTree->nodes[id].opType = Operation::NONE;
-					std::string str = data["nodes"][i]["params"][0].get<std::string>();
+					demoMode->blendTree->nodes[id].opType = Operation::NONE; // No OpType for Input nodes
+
+					// Get Input Parameter(Animation Name)
+					std::string str = data["nodes"][i]["params"][0].get<std::string>(); 
 					a3byte* param = (a3byte*)str.c_str();
+					
+					// Init Clip
 					a3ui32 k = a3clipGetIndexInPool(demoMode->clipPool, param);
-					a3clipControllerInit(&demoMode->blendTree->clipControllers[numOfClipControllers], "xbot_ctrl", demoMode->clipPool, k, rate, fps);
-					demoMode->blendTree->nodes[id].myClipController = &demoMode->blendTree->clipControllers[numOfClipControllers];
+					a3clipControllerInit(&demoMode->blendTree->clipControllers[numOfClipControllers], "xbot_ctrl", demoMode->clipPool, k, rate, fps); // Init controller
+
+					// Set Pointer to ClipContoller on Node
+					demoMode->blendTree->nodes[id].myClipController = &demoMode->blendTree->clipControllers[numOfClipControllers]; 
+
 					numOfClipControllers++;
 					break;
 				}
-				case 3: // IK
+				case 3:		// IK Node
 					demoMode->blendTree->nodes[id].opType = Operation::IK_SOLVER;
 					break;
 				default:
-				{
-
 					break;
-				
-				}
 			}
-			out_blendTree->clipCount = numOfClipControllers;
 		}
+
+		// Relove clip count
+		out_blendTree->clipCount = numOfClipControllers;
 	}
-
-	/*printf("Clip pool init from file");
-	printf(fileName);
-
-	std::string filepath = std::string(A3_DEMO_ANIM) + std::string(fileName);
-	printf(filepath.c_str());
-
-
-	std::ifstream f(filepath);
-	if (f.is_open()) {
-		json data = json::parse(f);
-		std::string s = data.dump();
-		printf(std::to_string(data["Clips"].size()).c_str());
-		//printf(s.c_str());
-
-		a3clipPoolCreate(out_pool, (a3ui32)data["Clips"].size());
-
-		// create clip
-		for (int i = 0; i < (int)data["Clips"].size(); ++i)
-		{
-			a3_ClipTransition forward;
-			a3_ClipTransition backward;
-
-			forward.targetClipPool = out_pool;
-			forward.targetClipIndex = data["Clips"][i]["forwardTransition"]["nextClipName"].get<a3ui32>();
-			forward.playbackSpeed = data["Clips"][i]["forwardTransition"]["direction"].get<a3real>();
-			backward.targetClipPool = out_pool;
-			backward.targetClipIndex = data["Clips"][i]["backwardTransition"]["nextClipName"].get<a3ui32>();
-			backward.playbackSpeed = data["Clips"][i]["backwardTransition"]["direction"].get<a3real>();
-			out_pool->clip[i].index = i;
-			printf((data["Clips"][i]["name"].get<std::string>()).c_str());
-			printf(std::to_string(data["Clips"][i]["firstKeyframeIndex"].get<a3ui32>()).c_str());
-			printf(std::to_string(data["Clips"][i]["lastKeyframeIndex"].get<a3ui32>()).c_str());
-
-			a3clipInit(&out_pool->clip[i],
-				(a3byte*)data["Clips"][i]["name"].get<std::string>().c_str(),
-				(keypool),
-				data["Clips"][i]["firstKeyframeIndex"].get<a3ui32>(),
-				data["Clips"][i]["lastKeyframeIndex"].get<a3ui32>(),
-				&forward,
-				&backward);
-
-		}
-
-	}*/
 }
