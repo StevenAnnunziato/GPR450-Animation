@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <stdio.h>
 
 #ifdef __ANIMAL3D_BLENDTREE_H
 #ifndef __ANIMAL3D_BLENDTREE_INL
@@ -209,8 +209,8 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 		{
 			// TODO: FIX
 			// this resets data from the inputPoses, but this was set in init and should not be changed
-			node->inputPoses[i].pose = node->inputPoses[0].pose + heierarchy->numNodes * i; // TODO: REMOVE
-			a3hierarchyPoseReset(&node->inputPoses[i], heierarchy->numNodes, NULL, NULL);
+			//node->inputPoses[i].pose = node->inputPoses[0].pose + heierarchy->numNodes * i; // TODO: REMOVE
+			//a3hierarchyPoseReset(&node->inputPoses[i], heierarchy->numNodes, NULL, NULL);
 
 			// if there is an input node...
 			if (node->inputNodes[i]) {
@@ -246,7 +246,7 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 		}
 		case 2:		//IK_SOLVER
 			tree->ikOps[0].pose_in[0] = inPosePtr;
-			tree->ikOps[0].param_in = node->opParams;
+			tree->ikOps[0].param_in[0] = node->opParams;
 
 			node->poseOp(&tree->ikOps[0], tree);
 			node->outPose = tree->ikOps[0].pose_out;
@@ -255,10 +255,12 @@ inline a3_HierarchyPose* a3executeBlendTree(a3_BlendTree* tree, a3_BlendTreeNode
 			//tree->hposeOps[0].pose_out = node->outPose;
 			tree->hposeOps[0].pose_in[0] = &inPosePtr[0];
 			tree->hposeOps[0].pose_in[1] = &inPosePtr[1];
-			tree->hposeOps[0].param_in = node->opParams;
+			tree->hposeOps[0].param_in[0] = node->opParams;
+			//printf("%p", tree->hposeOps[0].pose_out->pose);
 			tree->hposeOps[0].nodeCount = heierarchy->numNodes;
+			//printf("%p", tree->hposeOps[0].pose_out->pose);
 
-			node->poseOp(&tree->hposeOps[0], tree);
+			(*node->poseOp)(&tree->hposeOps[0], tree);
 			node->outPose = tree->hposeOps[0].pose_out;
 			break;
 		default:

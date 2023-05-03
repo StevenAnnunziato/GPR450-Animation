@@ -425,7 +425,7 @@ inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data, a3_BlendTr
 		for (i = 0; i < data->nodeCount; ++i)
 		{
 			tree->sposeOps[1].pose_in[0] = &data->pose_in[0]->pose[i];
-			tree->sposeOps[1].param[0] = &data->param_in[i];
+			tree->sposeOps[1].param[0] = data->param_in[i];
 			a3spatialPoseOpIdentity(&tree->sposeOps[1], tree);
 			a3spatialPoseCopy(&data->pose_out->pose[i], tree->sposeOps[1].pose_out);
 		}
@@ -436,9 +436,9 @@ inline a3ret a3hierarchyPoseOpIdentity(a3_HierarchyPoseBlendOp* data, a3_BlendTr
 
 inline a3ret a3hierarchyPoseConstruct(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
-	const a3vec4	eulers = { data->param_in[0],data->param_in[1],data->param_in[2],data->param_in[3] },
-		scale = { data->param_in[4],data->param_in[5],data->param_in[6],data->param_in[7] },
-		translate = { data->param_in[8],data->param_in[9],data->param_in[10],data->param_in[11] };
+	const a3vec4	eulers = { *data->param_in[0],*data->param_in[1],*data->param_in[2],*data->param_in[3] },
+		scale = { *data->param_in[4],*data->param_in[5],*data->param_in[6],*data->param_in[7] },
+		translate = { *data->param_in[8],*data->param_in[9],*data->param_in[10],*data->param_in[11] };
 	if (data->pose_out && data->nodeCount)
 	{
 		a3index i;
@@ -510,7 +510,7 @@ inline a3ret a3hierarchyPoseNearest(a3_HierarchyPoseBlendOp* data, a3_BlendTree*
 {
 	const a3_HierarchyPose* pose0 = data->pose_in[0];
 	const a3_HierarchyPose* pose1 = data->pose_in[1];
-	const a3real blendParam = data->param_in[0];
+	const a3real blendParam = *data->param_in[0];
 
 	if (data->pose_out && pose0 && pose1 && data->nodeCount)
 	{
@@ -535,7 +535,7 @@ inline a3ret a3hierarchyPoseOpLERP(a3_HierarchyPoseBlendOp* data, a3_BlendTree* 
 {
 	const a3_HierarchyPose* pose0 = data->pose_in[0];
 	const a3_HierarchyPose* pose1 = data->pose_in[1];
-	const a3real blendParam = data->param_in[0];
+	const a3real blendParam = *data->param_in[0];
 	if (data->pose_out && pose0 && pose1 && data->nodeCount)
 	{
 		a3index i;
@@ -558,10 +558,10 @@ inline a3ret a3hierarchyPoseOpLookAt(a3_HierarchyStateBlendOp* data, a3_BlendTre
 {
 	const a3_HierarchyPose* pose0 = data->pose_in[0]; // Local space Hierarchy Pose
 
-	const a3real target_index = data->param_in[0];
-	const a3real x = data->param_in[1];
-	const a3real y = data->param_in[2];
-	const a3real z = data->param_in[3];
+	const a3real target_index = *data->param_in[0];
+	const a3real x = *data->param_in[1];
+	const a3real y = *data->param_in[2];
+	const a3real z = *data->param_in[3];
 
 	//a3_HierarchyPose* poseObjInv = malloc(sizeof(a3_HierarchyPose));
 
@@ -664,7 +664,7 @@ inline a3ret a3hierarchyPoseCubicBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTr
 	const a3_HierarchyPose* pose0 = data->pose_in[1];
 	const a3_HierarchyPose* pose1 = data->pose_in[2];
 	const a3_HierarchyPose* pose_post = data->pose_in[3];
-	const a3real blendParam = data->param_in[0];
+	const a3real blendParam = *data->param_in[0];
 
 	if (data->pose_out && pose0 && pose1 && pose_pre && pose_post && data->nodeCount)
 	{
@@ -705,7 +705,7 @@ inline a3ret a3hierarchyPoseSplit(a3_HierarchyPoseBlendOp* data, a3_BlendTree* t
 
 inline a3ret a3hierarchyPoseScale(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
-	const a3real blendParam = data->param_in[0];
+	const a3real blendParam = *data->param_in[0];
 
 	if (data->pose_out && data->pose_in[0] && data->nodeCount)
 	{
@@ -729,8 +729,8 @@ inline a3ret a3hierarchyPoseTriangularBlend(a3_HierarchyPoseBlendOp* data, a3_Bl
 	const a3_HierarchyPose* pose0 = data->pose_in[0];
 	const a3_HierarchyPose* pose1 = data->pose_in[1];
 	const a3_HierarchyPose* pose2 = data->pose_in[2];
-	const a3real blendParam0 = data->param_in[0];
-	const a3real blendParam1 = data->param_in[1];
+	const a3real blendParam0 = *data->param_in[0];
+	const a3real blendParam1 = *data->param_in[1];
 
 	if (data->pose_out && pose0 && pose1 && pose2 && data->nodeCount)
 	{
@@ -758,9 +758,9 @@ inline a3ret a3hierarchyPoseBinearestBlend(a3_HierarchyPoseBlendOp* data, a3_Ble
 	const a3_HierarchyPose* init1 = data->pose_in[1];
 	const a3_HierarchyPose* final1 = data->pose_in[2];
 	const a3_HierarchyPose* final2 = data->pose_in[3];
-	const a3real blendParam0 = data->param_in[0];
-	const a3real blendParam1 = data->param_in[1];
-	const a3real blendParam2 = data->param_in[2];
+	const a3real blendParam0 = *data->param_in[0];
+	const a3real blendParam1 = *data->param_in[1];
+	const a3real blendParam2 = *data->param_in[2];
 
 	if (data->pose_out && init0 && init1 && final1 && final2 && data->nodeCount)
 	{
@@ -790,9 +790,9 @@ inline a3ret a3hierarchyPoseBilinearBlend(a3_HierarchyPoseBlendOp* data, a3_Blen
 	const a3_HierarchyPose* init1 = data->pose_in[1];
 	const a3_HierarchyPose* final0 = data->pose_in[2];
 	const a3_HierarchyPose* final1 = data->pose_in[3];
-	const a3real blendParam0 = data->param_in[0];
-	const a3real blendParam1 = data->param_in[1];
-	const a3real blendParam2 = data->param_in[2];
+	const a3real blendParam0 = *data->param_in[0];
+	const a3real blendParam1 = *data->param_in[1];
+	const a3real blendParam2 = *data->param_in[2];
 
 	if (data->pose_out && init0 && init1 && final0 && final1 && data->nodeCount)
 	{
@@ -818,11 +818,11 @@ inline a3ret a3hierarchyPoseBilinearBlend(a3_HierarchyPoseBlendOp* data, a3_Blen
 
 inline a3ret a3hierarchyPoseBicubicBlend(a3_HierarchyPoseBlendOp* data, a3_BlendTree* tree)
 {
-	const a3real	blendTotal	= data->param_in[0],
-					blendA		= data->param_in[1], 
-					blendB		= data->param_in[2], 
-					blendC		= data->param_in[3],
-					blendD		= data->param_in[4];
+	const a3real	blendTotal	= *data->param_in[0],
+					blendA		= *data->param_in[1], 
+					blendB		= *data->param_in[2], 
+					blendC		= *data->param_in[3],
+					blendD		= *data->param_in[4];
 
 	a3_HierarchyPose	const* pose_A0 = data->pose_in[0];
 	a3_HierarchyPose	const* pose_A1 = data->pose_in[1];
