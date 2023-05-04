@@ -171,6 +171,7 @@ inline a3ret a3freeBlendTree(a3_BlendTree* blend_in)
 {
 	// free temp operation data structures
 	free(blend_in->poses);
+	return 0;
 }
 
 inline a3ret a3initBlendNode(a3_BlendTreeNode* node_out, a3_BlendTree* blendTree, const a3byte clipName[a3keyframeAnimation_nameLenMax])

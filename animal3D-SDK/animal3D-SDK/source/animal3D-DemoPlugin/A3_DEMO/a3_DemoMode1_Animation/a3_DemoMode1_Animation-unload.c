@@ -43,7 +43,7 @@ void a3animation_unload(a3_DemoState const* demoState, a3_DemoMode1_Animation* d
 	a3hierarchyRelease(demoMode->hierarchy_skel);
 	a3hierarchyStateRelease(demoMode->hierarchyState_skel);
 	a3hierarchyPoseGroupRelease(demoMode->hierarchyPoseGroup_skel);
-
+	a3freeBlendTree(demoMode->blendTree);
 }
 
 

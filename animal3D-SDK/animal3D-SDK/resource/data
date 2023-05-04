@@ -1,59 +1,59 @@
 {
   "nodes": [
-    {
-      "id": "0",
-      "params": [],
-      "inputs": [
-        {
-          "index": "1"
-        }
-      ]
-    },
-    {
-      "id": "1",
-      "data": {
-        "value": 1,
-        "label": "Lerp",
-        "inputs": 2,
-        "params": 1
-      },
-      "params": [
-        "0.5"
-      ],
-      "inputs": [
-        {
-          "index": "2"
-        },
-        {
-          "index": "3"
-        }
-      ]
-    },
-    {
-      "id": "2",
-      "data": {
-        "value": 2,
-        "label": "Input Node",
-        "inputs": 0,
-        "params": 1
-      },
-      "params": [
-        "xbot_walk_m"
-      ],
-      "inputs": []
-    },
-    {
-      "id": "3",
-      "data": {
-        "value": 2,
-        "label": "Input Node",
-        "inputs": 0,
-        "params": 1
-      },
-      "params": [
-        "xbot_run_m"
-      ],
-      "inputs": []
-    }
-  ]
+	  {
+		"id": "1",
+		"data": {
+		  "value": 2,
+		  "label": "Input Node",
+		  "inputs": 0,
+		  "params": 1
+		},
+		"params": [
+		  "xbot_idle_pistol"
+		],
+		"inputs": []
+	  },
+	  {
+		"id": "2",
+		"data": {
+		  "value": 2,
+		  "label": "Input Node",
+		  "inputs": 0,
+		  "params": 1
+		},
+		"params": [
+		  "xbot_walk_m"
+		],
+		"inputs": []
+	  },
+	  {
+		"id": "3",
+		"data": {
+		  "value": 0,
+		  "label": "Lerp",
+		  "inputs": 2,
+		  "params": 0
+		},
+		"params": [
+			"0.5"
+		],
+		"inputs": [
+		  {
+			"index": "1"
+		  },
+		  {
+			"index": "2"
+		  }
+		]
+	  },
+	  {
+		"id": "0",
+		"params": [],
+		"inputs": [
+		  {
+			"index": "3"
+		  }
+		]
+	  }
+	]
 }
