@@ -134,12 +134,10 @@ void a3ReadBlendTreeFromFile(a3_BlendTree* out_blendTree, const a3byte fileName[
 				}
 
 		
-				for (a3ui32 j = 0; j < 128; j++)
+				for (a3ui32 j = 0; j < maskRange[1] - maskRange[0]; j++)
 				{
-					if (j >= maskRange[0] && j < maskRange[1]) {
-						//mask nodes
-						out_blendTree->nodes[id].baskBoneIndices[j] = j;
-					}
+					//mask nodes
+					out_blendTree->nodes[id].baskBoneIndices[j] = maskRange[0] + j;
 				}
 
 				out_blendTree->nodes[id].numMaskBones = maskRange[1] - maskRange[0];
